@@ -1,0 +1,55 @@
+# Build stage
+FROM python:3.11-slim as builder
+
+WORKDIR /app
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+COPY pyproject.toml poetry.lock ./
+RUN pip install --user --no-cache-dir poetry==1.5.1 && \
+    python -m poetry config virtualenvs.create false && \
+    python -m poetry install --no-dev --no-interaction --no-ansi
+
+# Runtime stage
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install runtime dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq5 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copy Python dependencies from builder
+COPY --from=builder /root/.local /root/.local
+ENV PATH="/root/.local/bin:${PATH}"
+
+# Copy application code
+COPY . .
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1
+
+# Create non-root user
+RUN useradd -m trader && \
+    chown -R trader:trader /app
+USER trader
+
+# Create log directory
+RUN mkdir -p /app/logs && chmod 777 /app/logs
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8000/health/ || exit 1
+
+# Command to run the application
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "4", "--worker-class", "uvicorn.workers.UvicornWorker", "app.main:app"]
