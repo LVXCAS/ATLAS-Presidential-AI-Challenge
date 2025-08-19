@@ -38,7 +38,15 @@ alpaca-trade-api = "^3.1.1"
 polygon-api-client = "^1.12.0"
 # Data processing
 pandas = "^2.1.0"
-numpy = "^1.24.0"
+numpy = "^1.26.0"
+# Visualization
+matplotlib = "^3.9.0"
+seaborn = "^0.13.0"
+plotly = "^5.22.0"
+# Web Framework
+flask = "^3.0.0"
+# GUI
+tk = "^0.1.0"
 # Utilities
 click = "^8.1.0"
 rich = "^13.7.0"

@@ -455,6 +455,14 @@ class BrokerIntegrationDemo:
         else:
             print("No demo orders to clean up")
 
+    async def run_all_demos(self):
+        """Run all broker integration demos"""
+        try:
+            await self.run_demo()
+        finally:
+            # Always try to clean up
+            await self.cleanup_demo_orders()
+
 
 async def main():
     """Main demo function"""

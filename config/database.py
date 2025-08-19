@@ -181,3 +181,19 @@ async def check_database_health() -> dict:
         "redis": redis_healthy,
         "overall": postgres_healthy and redis_healthy
     }
+
+
+def get_database_config() -> dict:
+    """Get database configuration for agents.
+    
+    Returns:
+        dict: Database configuration settings
+    """
+    return {
+        "postgres_url": db_manager.postgres_url,
+        "redis_host": db_manager.redis_host,
+        "redis_port": db_manager.redis_port,
+        "redis_password": db_manager.redis_password,
+        "redis_db": db_manager.redis_db,
+        "debug": db_manager.debug
+    }
