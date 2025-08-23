@@ -1,0 +1,431 @@
+{
+  "results": {
+    "total_trades": 50,
+    "profitable_trades": 22,
+    "win_rate": 44.0,
+    "total_pnl": 1.96538973708416,
+    "total_return": 0.001965389737131773,
+    "final_portfolio": 100001.96538973713,
+    "model_accuracy": 0.9993804213135068,
+    "timestamp": "2025-08-22T23:05:13.054587"
+  },
+  "trades": [
+    {
+      "trade_num": 1,
+      "symbol": "ETHUSD",
+      "action": "SELL",
+      "confidence": 0.5,
+      "pnl": -95.30835624671764,
+      "portfolio_value": 99904.69164375328
+    },
+    {
+      "trade_num": 2,
+      "symbol": "BTCUSD",
+      "action": "HOLD",
+      "confidence": 0.5,
+      "pnl": 9.476874557587106,
+      "portfolio_value": 99914.16851831086
+    },
+    {
+      "trade_num": 3,
+      "symbol": "AAPL",
+      "action": "SELL",
+      "confidence": 0.4,
+      "pnl": -30.23120062366148,
+      "portfolio_value": 99883.9373176872
+    },
+    {
+      "trade_num": 4,
+      "symbol": "MSFT",
+      "action": "BUY",
+      "confidence": 0.44,
+      "pnl": 85.95113985528607,
+      "portfolio_value": 99969.88845754249
+    },
+    {
+      "trade_num": 5,
+      "symbol": "GOOGL",
+      "action": "SELL",
+      "confidence": 0.4,
+      "pnl": -6.371531365795164,
+      "portfolio_value": 99963.5169261767
+    },
+    {
+      "trade_num": 6,
+      "symbol": "ETHUSD",
+      "action": "SELL",
+      "confidence": 0.44,
+      "pnl": 4.963459185286084,
+      "portfolio_value": 99968.48038536198
+    },
+    {
+      "trade_num": 7,
+      "symbol": "BTCUSD",
+      "action": "BUY",
+      "confidence": 0.46,
+      "pnl": -44.32015535026438,
+      "portfolio_value": 99924.16023001172
+    },
+    {
+      "trade_num": 8,
+      "symbol": "BTCUSD",
+      "action": "BUY",
+      "confidence": 0.56,
+      "pnl": -6.555693928209486,
+      "portfolio_value": 99917.60453608351
+    },
+    {
+      "trade_num": 9,
+      "symbol": "BTCUSD",
+      "action": "BUY",
+      "confidence": 0.36,
+      "pnl": 29.92860687790514,
+      "portfolio_value": 99947.53314296142
+    },
+    {
+      "trade_num": 10,
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.52,
+      "pnl": -19.517996685504517,
+      "portfolio_value": 99928.01514627591
+    },
+    {
+      "trade_num": 11,
+      "symbol": "AAPL",
+      "action": "SELL",
+      "confidence": 0.42,
+      "pnl": -62.62272631906829,
+      "portfolio_value": 99865.39241995684
+    },
+    {
+      "trade_num": 12,
+      "symbol": "MSFT",
+      "action": "BUY",
+      "confidence": 0.56,
+      "pnl": -24.28187349595484,
+      "portfolio_value": 99841.11054646088
+    },
+    {
+      "trade_num": 13,
+      "symbol": "ETHUSD",
+      "action": "BUY",
+      "confidence": 0.6,
+      "pnl": -12.608645801973154,
+      "portfolio_value": 99828.50190065891
+    },
+    {
+      "trade_num": 14,
+      "symbol": "MSFT",
+      "action": "BUY",
+      "confidence": 0.52,
+      "pnl": 86.0192800143775,
+      "portfolio_value": 99914.52118067328
+    },
+    {
+      "trade_num": 15,
+      "symbol": "ETHUSD",
+      "action": "BUY",
+      "confidence": 0.56,
+      "pnl": 18.027366709836144,
+      "portfolio_value": 99932.54854738312
+    },
+    {
+      "trade_num": 16,
+      "symbol": "ETHUSD",
+      "action": "BUY",
+      "confidence": 0.46,
+      "pnl": 98.29393412045465,
+      "portfolio_value": 100030.84248150358
+    },
+    {
+      "trade_num": 17,
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.48,
+      "pnl": 87.48584655695623,
+      "portfolio_value": 100118.32832806054
+    },
+    {
+      "trade_num": 18,
+      "symbol": "AAPL",
+      "action": "SELL",
+      "confidence": 0.36,
+      "pnl": -69.78107360247265,
+      "portfolio_value": 100048.54725445807
+    },
+    {
+      "trade_num": 19,
+      "symbol": "BTCUSD",
+      "action": "SELL",
+      "confidence": 0.36,
+      "pnl": 22.093829147417893,
+      "portfolio_value": 100070.64108360549
+    },
+    {
+      "trade_num": 20,
+      "symbol": "GOOGL",
+      "action": "BUY",
+      "confidence": 0.38,
+      "pnl": 10.000387403089995,
+      "portfolio_value": 100080.64147100858
+    },
+    {
+      "trade_num": 21,
+      "symbol": "GOOGL",
+      "action": "HOLD",
+      "confidence": 0.4,
+      "pnl": -2.149352579567678,
+      "portfolio_value": 100078.49211842901
+    },
+    {
+      "trade_num": 22,
+      "symbol": "MSFT",
+      "action": "BUY",
+      "confidence": 0.4,
+      "pnl": 50.27386527121578,
+      "portfolio_value": 100128.76598370023
+    },
+    {
+      "trade_num": 23,
+      "symbol": "AAPL",
+      "action": "SELL",
+      "confidence": 0.52,
+      "pnl": -35.06914475783732,
+      "portfolio_value": 100093.69683894239
+    },
+    {
+      "trade_num": 24,
+      "symbol": "ETHUSD",
+      "action": "BUY",
+      "confidence": 0.34,
+      "pnl": -11.49189266349692,
+      "portfolio_value": 100082.20494627889
+    },
+    {
+      "trade_num": 25,
+      "symbol": "ETHUSD",
+      "action": "BUY",
+      "confidence": 0.64,
+      "pnl": -14.094517172785615,
+      "portfolio_value": 100068.1104291061
+    },
+    {
+      "trade_num": 26,
+      "symbol": "BTCUSD",
+      "action": "BUY",
+      "confidence": 0.38,
+      "pnl": -33.84907128167349,
+      "portfolio_value": 100034.26135782443
+    },
+    {
+      "trade_num": 27,
+      "symbol": "ETHUSD",
+      "action": "SELL",
+      "confidence": 0.44,
+      "pnl": -45.81990172407359,
+      "portfolio_value": 99988.44145610037
+    },
+    {
+      "trade_num": 28,
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.64,
+      "pnl": 17.555168625183526,
+      "portfolio_value": 100005.99662472555
+    },
+    {
+      "trade_num": 29,
+      "symbol": "GOOGL",
+      "action": "BUY",
+      "confidence": 0.54,
+      "pnl": -21.154421987904158,
+      "portfolio_value": 99984.84220273765
+    },
+    {
+      "trade_num": 30,
+      "symbol": "GOOGL",
+      "action": "HOLD",
+      "confidence": 0.34,
+      "pnl": -3.7175940605136804,
+      "portfolio_value": 99981.12460867714
+    },
+    {
+      "trade_num": 31,
+      "symbol": "GOOGL",
+      "action": "BUY",
+      "confidence": 0.46,
+      "pnl": -7.005621807094187,
+      "portfolio_value": 99974.11898687005
+    },
+    {
+      "trade_num": 32,
+      "symbol": "BTCUSD",
+      "action": "BUY",
+      "confidence": 0.48,
+      "pnl": 43.555630487673426,
+      "portfolio_value": 100017.67461735771
+    },
+    {
+      "trade_num": 33,
+      "symbol": "ETHUSD",
+      "action": "SELL",
+      "confidence": 0.48,
+      "pnl": -29.66787812290852,
+      "portfolio_value": 99988.0067392348
+    },
+    {
+      "trade_num": 34,
+      "symbol": "GOOGL",
+      "action": "BUY",
+      "confidence": 0.46,
+      "pnl": -18.556366678667267,
+      "portfolio_value": 99969.45037255614
+    },
+    {
+      "trade_num": 35,
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.42,
+      "pnl": -47.77561044152101,
+      "portfolio_value": 99921.67476211462
+    },
+    {
+      "trade_num": 36,
+      "symbol": "MSFT",
+      "action": "SELL",
+      "confidence": 0.42,
+      "pnl": -50.51121102165608,
+      "portfolio_value": 99871.16355109296
+    },
+    {
+      "trade_num": 37,
+      "symbol": "GOOGL",
+      "action": "BUY",
+      "confidence": 0.4,
+      "pnl": -36.172086472658556,
+      "portfolio_value": 99834.99146462031
+    },
+    {
+      "trade_num": 38,
+      "symbol": "BTCUSD",
+      "action": "BUY",
+      "confidence": 0.38,
+      "pnl": 72.02166606919319,
+      "portfolio_value": 99907.0131306895
+    },
+    {
+      "trade_num": 39,
+      "symbol": "GOOGL",
+      "action": "BUY",
+      "confidence": 0.38,
+      "pnl": -38.89000985246304,
+      "portfolio_value": 99868.12312083704
+    },
+    {
+      "trade_num": 40,
+      "symbol": "MSFT",
+      "action": "SELL",
+      "confidence": 0.38,
+      "pnl": 12.009775991269379,
+      "portfolio_value": 99880.13289682832
+    },
+    {
+      "trade_num": 41,
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.86,
+      "pnl": 4.129085076285278,
+      "portfolio_value": 99884.26198190461
+    },
+    {
+      "trade_num": 42,
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.5,
+      "pnl": 13.41794114440308,
+      "portfolio_value": 99897.67992304901
+    },
+    {
+      "trade_num": 43,
+      "symbol": "GOOGL",
+      "action": "SELL",
+      "confidence": 0.42,
+      "pnl": 15.150034204140994,
+      "portfolio_value": 99912.82995725315
+    },
+    {
+      "trade_num": 44,
+      "symbol": "MSFT",
+      "action": "SELL",
+      "confidence": 0.44,
+      "pnl": -76.54779721139207,
+      "portfolio_value": 99836.28216004177
+    },
+    {
+      "trade_num": 45,
+      "symbol": "GOOGL",
+      "action": "BUY",
+      "confidence": 0.4,
+      "pnl": 96.57112128694894,
+      "portfolio_value": 99932.85328132872
+    },
+    {
+      "trade_num": 46,
+      "symbol": "AAPL",
+      "action": "BUY",
+      "confidence": 0.38,
+      "pnl": 99.12683568398771,
+      "portfolio_value": 100031.9801170127
+    },
+    {
+      "trade_num": 47,
+      "symbol": "MSFT",
+      "action": "SELL",
+      "confidence": 0.36,
+      "pnl": 42.579935528375955,
+      "portfolio_value": 100074.56005254108
+    },
+    {
+      "trade_num": 48,
+      "symbol": "GOOGL",
+      "action": "BUY",
+      "confidence": 0.44,
+      "pnl": -47.96095100127019,
+      "portfolio_value": 100026.59910153982
+    },
+    {
+      "trade_num": 49,
+      "symbol": "MSFT",
+      "action": "SELL",
+      "confidence": 0.48,
+      "pnl": -31.59582369988047,
+      "portfolio_value": 99995.00327783993
+    },
+    {
+      "trade_num": 50,
+      "symbol": "BTCUSD",
+      "action": "SELL",
+      "confidence": 0.48,
+      "pnl": 6.962111897195513,
+      "portfolio_value": 100001.96538973713
+    }
+  ],
+  "accuracy_history": [
+    {
+      "accuracy": 0.6933085501858736,
+      "samples": 1614,
+      "timestamp": "2025-08-22T23:05:12.648416"
+    },
+    {
+      "accuracy": 0.9993804213135068,
+      "samples": 1614,
+      "timestamp": "2025-08-22T23:05:12.806208"
+    },
+    {
+      "accuracy": 0.9993804213135068,
+      "samples": 1614,
+      "timestamp": "2025-08-22T23:05:12.966319"
+    }
+  ]
+}

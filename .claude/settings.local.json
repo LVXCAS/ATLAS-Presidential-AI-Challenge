@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(docker:*)",
+      "Bash(python:*)",
+      "Bash(launch-hive-trade.bat)",
+      "Bash(cmd.exe:*)",
+      "Bash(grep:*)",
+      "Bash(start-live-dashboard.bat)",
+      "Bash(curl:*)",
+      "Bash(npm start)",
+      "Bash(npm install:*)",
+      "Bash(npm cache clean:*)",
+      "Bash(start \"\" \"C:\\Users\\lucas\\Hive Trade\\bloomberg-terminal.html\")",
+      "Bash(start \"\" \"C:\\Users\\lucas\\Hive Trade\\dashboard-simple.html\")",
+      "Bash(timeout:*)",
+      "Bash(dir:*)",
+      "Bash(start \"\" \"bloomberg-terminal.html\")",
+      "Bash(start \"\" \"crypto-dashboard.html\")",
+      "Bash(start \"\" \"ai-training-dashboard.html\")",
+      "Bash(start \"\" \"dashboard-simple.html\")"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

@@ -275,6 +275,8 @@ class BacktestingEngine:
         self.current_time: Optional[datetime] = None
         self.order_counter = 0
         self.trade_counter = 0
+        self._price_history = {}
+        self._volume_history = {}
         
         # Performance tracking
         self.daily_returns: List[float] = []
@@ -1061,15 +1063,23 @@ def simple_momentum_strategy(engine: BacktestingEngine, market_data: MarketData,
     # This would normally use historical data to calculate moving averages
     # For this example, we'll use a simplified approach
     
-    # Simple buy/sell logic based on price momentum
-    if hasattr(engine, '_price_history'):
-        engine._price_history.append(market_data.close)
-    else:
-        engine._price_history = [market_data.close]
+    # Initialize price history
+    if not hasattr(engine, '_price_history'):
+        engine._price_history = {}
     
-    if len(engine._price_history) >= long_window:
-        short_ma = np.mean(engine._price_history[-short_window:])
-        long_ma = np.mean(engine._price_history[-long_window:])
+    symbol = market_data.symbol
+    
+    if symbol not in engine._price_history:
+        engine._price_history[symbol] = []
+        
+    # Update history
+    engine._price_history[symbol].append(market_data.close)
+    
+    prices = engine._price_history[symbol]
+
+    if len(prices) >= long_window:
+        short_ma = np.mean(prices[-short_window:])
+        long_ma = np.mean(prices[-long_window:])
         
         # Get current position
         current_position = engine.portfolio.positions.get(market_data.symbol)

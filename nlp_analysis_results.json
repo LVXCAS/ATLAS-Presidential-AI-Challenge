@@ -1,0 +1,270 @@
+{
+  "timestamp": "2025-08-22T18:52:09.974122",
+  "analysis_results": [
+    {
+      "article": {
+        "id": 1,
+        "symbol": "AAPL",
+        "title": "Apple Reports Record Q4 Earnings, Beats Wall Street Expectations by 12%",
+        "content": "Apple Inc. announced today that it has achieved record-breaking quarterly earnings of $94.9 billion, \n        surpassing analyst expectations by a significant margin. The tech giant's strong performance was driven by \n        robust iPhone sales and growing services revenue. CEO Tim Cook stated that the company expects continued \n        growth in the upcoming quarter, with new product launches planned for 2024. Apple's stock price target \n        has been raised to $200 by Goldman Sachs analysts following this exceptional performance.",
+        "source": "Reuters",
+        "timestamp": "2024-01-15 16:30:00",
+        "category": "earnings"
+      },
+      "sentiment": {
+        "finbert_sentiment": {
+          "positive": 0.8,
+          "negative": 0,
+          "neutral": 0.19999999999999996,
+          "score": 0.8
+        },
+        "vader_sentiment": {
+          "compound": 0.6400000000000001,
+          "pos": 0.5599999999999999,
+          "neu": 0.76,
+          "neg": 0
+        },
+        "composite_sentiment": 0.8,
+        "confidence": 0.8799999999999999
+      },
+      "entities": [
+        {
+          "text": "Apple Inc.",
+          "label": "ORG",
+          "confidence": 0.95
+        },
+        {
+          "text": "Goldman Sachs",
+          "label": "ORG",
+          "confidence": 0.89
+        },
+        {
+          "text": "Tim Cook",
+          "label": "PERSON",
+          "confidence": 0.91
+        },
+        {
+          "text": "$94.9B",
+          "label": "REVENUE",
+          "confidence": 0.82
+        }
+      ],
+      "signals": {
+        "earnings_signals": [],
+        "rating_changes": [],
+        "price_targets": [],
+        "guidance_updates": [
+          {
+            "type": "positive_guidance",
+            "confidence": 0.78,
+            "impact": "positive",
+            "magnitude": "medium"
+          }
+        ],
+        "insider_activity": []
+      },
+      "trading_impact": {
+        "total_impact_score": 0.597,
+        "recommended_action": "BUY",
+        "confidence": 0.80895,
+        "position_size_multiplier": 1.597,
+        "risk_adjustment": 0.8806,
+        "time_horizon": "short"
+      }
+    },
+    {
+      "article": {
+        "id": 2,
+        "symbol": "TSLA",
+        "title": "Tesla Faces Production Challenges at Gigafactory Shanghai",
+        "content": "Tesla Motors is experiencing significant production delays at its Shanghai Gigafactory due to \n        supply chain disruptions and regulatory compliance issues. The electric vehicle manufacturer has \n        temporarily reduced production capacity by 30% and may miss its Q1 delivery targets. Industry analysts \n        are concerned about Tesla's ability to maintain its growth trajectory. Morgan Stanley has downgraded \n        TSLA to 'Underweight' with a price target of $180, citing operational challenges and increasing \n        competition in the EV market.",
+        "source": "Bloomberg",
+        "timestamp": "2024-01-15 14:22:00",
+        "category": "operations"
+      },
+      "sentiment": {
+        "finbert_sentiment": {
+          "positive": 0,
+          "negative": 0.75,
+          "neutral": 0.25,
+          "score": -0.75
+        },
+        "vader_sentiment": {
+          "compound": -0.6000000000000001,
+          "pos": 0,
+          "neu": 0.75,
+          "neg": 0.5249999999999999
+        },
+        "composite_sentiment": -0.75,
+        "confidence": 0.8624999999999999
+      },
+      "entities": [
+        {
+          "text": "Tesla Motors",
+          "label": "ORG",
+          "confidence": 0.93
+        },
+        {
+          "text": "$180",
+          "label": "PRICE_TARGET",
+          "confidence": 0.85
+        }
+      ],
+      "signals": {
+        "earnings_signals": [],
+        "rating_changes": [
+          {
+            "type": "downgrade",
+            "confidence": 0.87,
+            "impact": "negative",
+            "magnitude": "medium"
+          }
+        ],
+        "price_targets": [
+          {
+            "target": 180,
+            "confidence": 0.82,
+            "source": "analyst"
+          }
+        ],
+        "guidance_updates": [
+          {
+            "type": "guidance_revision",
+            "confidence": 0.76,
+            "impact": "negative",
+            "magnitude": "medium"
+          }
+        ],
+        "insider_activity": []
+      },
+      "trading_impact": {
+        "total_impact_score": -0.738,
+        "recommended_action": "SELL",
+        "confidence": 0.8583,
+        "position_size_multiplier": 1.738,
+        "risk_adjustment": 0.8524,
+        "time_horizon": "short"
+      }
+    },
+    {
+      "article": {
+        "id": 3,
+        "symbol": "MSFT",
+        "title": "Microsoft Azure Cloud Revenue Soars 35% as AI Adoption Accelerates",
+        "content": "Microsoft Corporation reported exceptional growth in its Azure cloud computing division, with \n        revenue increasing 35% year-over-year. The surge is attributed to accelerated enterprise adoption of \n        artificial intelligence services and cloud migration initiatives. Microsoft's partnership with OpenAI \n        continues to drive innovation in the AI space. The company announced new AI-powered features for Office 365 \n        and plans to invest an additional $10 billion in AI infrastructure this year. Analysts remain bullish \n        on Microsoft's long-term prospects in the cloud and AI markets.",
+        "source": "Financial Times",
+        "timestamp": "2024-01-15 15:45:00",
+        "category": "technology"
+      },
+      "sentiment": {
+        "finbert_sentiment": {
+          "positive": 0.6,
+          "negative": 0,
+          "neutral": 0.4,
+          "score": 0.6
+        },
+        "vader_sentiment": {
+          "compound": 0.48,
+          "pos": 0.42,
+          "neu": 0.72,
+          "neg": 0
+        },
+        "composite_sentiment": 0.6,
+        "confidence": 0.8099999999999999
+      },
+      "entities": [
+        {
+          "text": "Microsoft Corporation",
+          "label": "ORG",
+          "confidence": 0.96
+        },
+        {
+          "text": "$10B",
+          "label": "REVENUE",
+          "confidence": 0.82
+        }
+      ],
+      "signals": {
+        "earnings_signals": [],
+        "rating_changes": [],
+        "price_targets": [],
+        "guidance_updates": [],
+        "insider_activity": []
+      },
+      "trading_impact": {
+        "total_impact_score": 0.36,
+        "recommended_action": "BUY",
+        "confidence": 0.726,
+        "position_size_multiplier": 1.3599999999999999,
+        "risk_adjustment": 0.928,
+        "time_horizon": "medium"
+      }
+    },
+    {
+      "article": {
+        "id": 4,
+        "symbol": "SPY",
+        "title": "Federal Reserve Hints at Potential Rate Cuts Amid Cooling Inflation",
+        "content": "Federal Reserve Chairman Jerome Powell indicated today that the central bank is considering \n        interest rate cuts in the coming months as inflation continues to moderate. The latest CPI data shows \n        inflation falling to 2.8%, approaching the Fed's 2% target. Powell emphasized that any rate decisions \n        will be data-dependent and cautioned against premature celebrations. Market participants are pricing \n        in a 75% probability of a 25 basis point cut at the next FOMC meeting. This dovish stance has boosted \n        equity markets, with the S&P 500 reaching new all-time highs.",
+        "source": "MarketWatch",
+        "timestamp": "2024-01-15 18:15:00",
+        "category": "monetary_policy"
+      },
+      "sentiment": {
+        "finbert_sentiment": {
+          "positive": 0.25,
+          "negative": 0,
+          "neutral": 0.75,
+          "score": 0.25
+        },
+        "vader_sentiment": {
+          "compound": 0.2,
+          "pos": 0.175,
+          "neu": 0.65,
+          "neg": 0
+        },
+        "composite_sentiment": 0.25,
+        "confidence": 0.6875
+      },
+      "entities": [
+        {
+          "text": "Federal Reserve",
+          "label": "ORG",
+          "confidence": 0.92
+        },
+        {
+          "text": "Jerome Powell",
+          "label": "PERSON",
+          "confidence": 0.88
+        }
+      ],
+      "signals": {
+        "earnings_signals": [],
+        "rating_changes": [],
+        "price_targets": [],
+        "guidance_updates": [],
+        "insider_activity": []
+      },
+      "trading_impact": {
+        "total_impact_score": 0.15,
+        "recommended_action": "HOLD",
+        "confidence": 0.53,
+        "position_size_multiplier": 1.15,
+        "risk_adjustment": 0.97,
+        "time_horizon": "medium"
+      }
+    }
+  ],
+  "summary": {
+    "average_sentiment": 0.225,
+    "sentiment_distribution": {
+      "positive": 3,
+      "negative": 1,
+      "neutral": 0
+    },
+    "market_regime": "BULLISH",
+    "total_articles": 4,
+    "total_entities": 10,
+    "total_signals": 4
+  }
+}

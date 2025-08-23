@@ -2,21 +2,21 @@
 # Backtesting Report
 
 ## Summary
-- **Total Return**: 13.72%
-- **Annualized Return**: 6.43%
-- **Volatility**: 2684.54%
-- **Sharpe Ratio**: 0.00
-- **Maximum Drawdown**: 97.52%
+- **Total Return**: -1.07%
+- **Annualized Return**: -0.52%
+- **Volatility**: 33.43%
+- **Sharpe Ratio**: -0.02
+- **Maximum Drawdown**: 10.59%
 
 ## Risk Metrics
-- **Sortino Ratio**: 0.07
-- **Calmar Ratio**: 0.07
-- **VaR (95%)**: -3.20%
-- **CVaR (95%)**: -7.38%
-- **Max Drawdown Duration**: 309 days
+- **Sortino Ratio**: -0.02
+- **Calmar Ratio**: -0.05
+- **VaR (95%)**: -4.75%
+- **CVaR (95%)**: -5.48%
+- **Max Drawdown Duration**: 474 days
 
 ## Trading Statistics
-- **Total Trades**: 1
+- **Total Trades**: 34
 - **Win Rate**: 0.00%
 - **Profit Factor**: 0.00
 - **Average Win**: $0.00
@@ -25,7 +25,7 @@
 - **Largest Loss**: $0.00
 
 ## Final Portfolio
-- **Total Value**: $113,719.79
-- **Cash**: $2,481.19
-- **Realized P&L**: $0.00
-- **Unrealized P&L**: $13,723.04
+- **Total Value**: $98,933.35
+- **Cash**: $98,933.35
+- **Realized P&L**: $-1,032.65
+- **Unrealized P&L**: $28.90

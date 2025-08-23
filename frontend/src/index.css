@@ -1,0 +1,17 @@
+/* Bloomberg Terminal Global Styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background-color: #000000;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}

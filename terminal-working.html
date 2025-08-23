@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HIVE TRADE - Live Terminal</title>
+    <style>
+        body { 
+            background: #000; 
+            color: #FFA500; 
+            font-family: 'Courier New', monospace; 
+            font-size: 12px; 
+            margin: 10px; 
+        }
+        .header { 
+            background: #FFA500; 
+            color: #000; 
+            padding: 5px; 
+            font-weight: bold; 
+        }
+        .status { 
+            background: #111; 
+            padding: 5px; 
+            margin: 5px 0; 
+        }
+        .data { 
+            margin: 10px 0; 
+            padding: 5px; 
+            border: 1px solid #333; 
+        }
+        .positive { color: #00ff00; }
+        .negative { color: #ff4444; }
+        .loading { color: #888; }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+        }
+        td, th { 
+            padding: 3px 8px; 
+            border: 1px solid #333; 
+            text-align: left; 
+        }
+        th { 
+            background: #222; 
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        HIVE TRADE - BLOOMBERG TERMINAL LIVE SYSTEM
+        <span id="status" style="float: right;">STARTING...</span>
+    </div>
+    
+    <div class="status">
+        <span>TIME: <span id="time">--:--:--</span></span> | 
+        <span>PORTFOLIO: <span id="portfolio">$0.00</span></span> | 
+        <span>P&L: <span id="pnl">$0.00</span></span> | 
+        <span>POSITIONS: <span id="pos-count">0</span></span> | 
+        <span>AGENTS: <span id="agents">0/0</span></span>
+    </div>
+    
+    <div class="data">
+        <h3>PORTFOLIO PERFORMANCE:</h3>
+        <div>Total Value: <span id="total-value">$0.00</span></div>
+        <div>Total P&L: <span id="total-pnl">$0.00</span></div>
+        <div>Day P&L: <span id="day-pnl">$0.00</span></div>
+    </div>
+    
+    <div class="data">
+        <h3>CURRENT POSITIONS:</h3>
+        <table id="positions-table">
+            <tr><th>SYMBOL</th><th>QTY</th><th>PRICE</th><th>P&L</th><th>%</th></tr>
+            <tr><td colspan="5" class="loading">Loading positions...</td></tr>
+        </table>
+    </div>
+    
+    <div class="data">
+        <h3>MARKET DATA:</h3>
+        <table id="market-table">
+            <tr><th>SYMBOL</th><th>LAST</th><th>CHANGE</th><th>VOLUME</th></tr>
+            <tr><td colspan="4" class="loading">Loading market data...</td></tr>
+        </table>
+    </div>
+    
+    <div class="data">
+        <h3>AI AGENT SIGNALS:</h3>
+        <div id="signals">Loading signals...</div>
+    </div>
+    
+    <script>
+        let apiUrl = 'http://localhost:8001/api/dashboard/live-feed';
+        let connected = false;
+        
+        function updateTime() {
+            document.getElementById('time').textContent = new Date().toLocaleTimeString();
+        }
+        
+        function updateStatus(msg, color = '#FFA500') {
+            document.getElementById('status').textContent = msg;
+            document.getElementById('status').style.color = color;
+        }
+        
+        function formatMoney(value) {
+            return '$' + Math.abs(value).toLocaleString('en-US', {minimumFractionDigits: 2});
+        }
+        
+        function formatChange(value) {
+            return (value >= 0 ? '+' : '') + formatMoney(value);
+        }
+        
+        async function fetchData() {
+            try {
+                console.log('Fetching from:', apiUrl);
+                
+                const response = await fetch(apiUrl);
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Data received:', data);
+                
+                if (!connected) {
+                    connected = true;
+                    updateStatus('CONNECTED', '#00ff00');
+                }
+                
+                updateDashboard(data);
+                
+            } catch (error) {
+                console.error('Fetch error:', error);
+                connected = false;
+                updateStatus('DISCONNECTED', '#ff4444');
+            }
+        }
+        
+        function updateDashboard(data) {
+            // Portfolio
+            if (data.portfolio) {
+                document.getElementById('portfolio').textContent = formatMoney(data.portfolio.totalValue);
+                document.getElementById('total-value').textContent = formatMoney(data.portfolio.totalValue);
+                
+                const totalPnL = data.portfolio.totalPnL || 0;
+                const totalPnLEl = document.getElementById('total-pnl');
+                totalPnLEl.textContent = formatChange(totalPnL);
+                totalPnLEl.className = totalPnL >= 0 ? 'positive' : 'negative';
+                
+                const dayPnL = data.portfolio.dayPnL || 0;
+                const dayPnLEl = document.getElementById('day-pnl');
+                dayPnLEl.textContent = formatChange(dayPnL);
+                dayPnLEl.className = dayPnL >= 0 ? 'positive' : 'negative';
+                
+                // Status bar P&L
+                const pnlEl = document.getElementById('pnl');
+                pnlEl.textContent = formatChange(totalPnL);
+                pnlEl.className = totalPnL >= 0 ? 'positive' : 'negative';
+            }
+            
+            // Positions
+            if (data.positions) {
+                document.getElementById('pos-count').textContent = data.positions.length;
+                
+                const table = document.getElementById('positions-table');
+                // Clear existing rows except header
+                while (table.rows.length > 1) {
+                    table.deleteRow(1);
+                }
+                
+                if (data.positions.length === 0) {
+                    const row = table.insertRow();
+                    row.innerHTML = '<td colspan="5">No positions</td>';
+                } else {
+                    data.positions.forEach(pos => {
+                        const row = table.insertRow();
+                        const pnlClass = pos.pnl >= 0 ? 'positive' : 'negative';
+                        const pctClass = pos.pnlPct >= 0 ? 'positive' : 'negative';
+                        
+                        row.innerHTML = `
+                            <td><strong>${pos.symbol}</strong></td>
+                            <td>${pos.qty}</td>
+                            <td>$${pos.price.toFixed(2)}</td>
+                            <td class="${pnlClass}">${formatChange(pos.pnl)}</td>
+                            <td class="${pctClass}">${pos.pnlPct >= 0 ? '+' : ''}${pos.pnlPct.toFixed(1)}%</td>
+                        `;
+                    });
+                }
+            }
+            
+            // Market data
+            if (data.market) {
+                const table = document.getElementById('market-table');
+                // Clear existing rows except header
+                while (table.rows.length > 1) {
+                    table.deleteRow(1);
+                }
+                
+                data.market.forEach(item => {
+                    const row = table.insertRow();
+                    const chgClass = item.chg >= 0 ? 'positive' : 'negative';
+                    
+                    row.innerHTML = `
+                        <td><strong>${item.symbol}</strong></td>
+                        <td>$${item.last.toFixed(2)}</td>
+                        <td class="${chgClass}">${item.chg >= 0 ? '+' : ''}${item.chg.toFixed(2)}</td>
+                        <td>${item.vol}</td>
+                    `;
+                });
+            }
+            
+            // Signals
+            if (data.signals) {
+                const activeSignals = data.signals.filter(s => s.signal !== 'HOLD').length;
+                document.getElementById('agents').textContent = `${activeSignals}/6 ACTIVE`;
+                
+                const signalsDiv = document.getElementById('signals');
+                signalsDiv.innerHTML = '';
+                
+                if (data.signals.length === 0) {
+                    signalsDiv.innerHTML = 'No signals';
+                } else {
+                    data.signals.forEach(signal => {
+                        const signalColor = signal.signal === 'BUY' ? 'positive' : 
+                                          signal.signal === 'SELL' ? 'negative' : '';
+                        
+                        const signalDiv = document.createElement('div');
+                        signalDiv.style.margin = '5px 0';
+                        signalDiv.style.padding = '3px';
+                        signalDiv.style.border = '1px solid #333';
+                        signalDiv.innerHTML = `
+                            <strong>${signal.agent}</strong>: 
+                            <span class="${signalColor}">${signal.signal}</span> 
+                            ${signal.symbol} | 
+                            Size: ${signal.size} | 
+                            Conf: ${(signal.confidence * 100).toFixed(0)}%
+                        `;
+                        
+                        signalsDiv.appendChild(signalDiv);
+                    });
+                }
+            }
+        }
+        
+        // Start the application
+        function init() {
+            console.log('HIVE TRADE Terminal Starting...');
+            updateTime();
+            fetchData();
+            
+            // Update time every second
+            setInterval(updateTime, 1000);
+            
+            // Fetch data every 3 seconds
+            setInterval(fetchData, 3000);
+        }
+        
+        // Start when page loads
+        window.onload = init;
+    </script>
+</body>
+</html>

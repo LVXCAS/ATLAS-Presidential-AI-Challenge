@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HIVE TRADE - AI Training Dashboard</title>
+    <meta charset="UTF-8">
+    <style>
+        body { 
+            background: #0a0a1a; 
+            color: #00ffff; 
+            font-family: 'Courier New', monospace; 
+            margin: 0; 
+            padding: 10px; 
+            font-size: 12px;
+        }
+        .header { 
+            background: #00ffff; 
+            color: #000; 
+            padding: 10px; 
+            text-align: center;
+            font-weight: bold; 
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+        .status-bar { 
+            background: #1a1a2e; 
+            padding: 8px; 
+            margin: 5px 0;
+            border: 1px solid #0f3460;
+            display: flex;
+            justify-content: space-between;
+        }
+        .panel { 
+            background: #16213e;
+            border: 1px solid #0f3460; 
+            margin: 10px 0; 
+            padding: 0;
+        }
+        .panel-header {
+            background: #0f3460;
+            color: #00ffff;
+            padding: 5px 8px;
+            font-weight: bold;
+            border-bottom: 1px solid #16213e;
+        }
+        .panel-content {
+            padding: 10px;
+        }
+        .training-metric {
+            background: #1a1a2e;
+            border: 1px solid #0f3460;
+            padding: 8px;
+            margin: 5px 0;
+            display: flex;
+            justify-content: space-between;
+        }
+        .good { color: #00ff00; }
+        .warning { color: #ffaa00; }
+        .error { color: #ff4444; }
+        .neutral { color: #ccc; }
+        .training-indicator {
+            animation: pulse 2s infinite;
+            color: #00ffff;
+            font-weight: bold;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .model-accuracy {
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .prediction-item {
+            background: #1a1a2e;
+            border-left: 3px solid #00ffff;
+            padding: 5px;
+            margin: 2px 0;
+            font-size: 10px;
+        }
+        .prediction-buy { border-color: #00ff00; }
+        .prediction-sell { border-color: #ff4444; }
+        .prediction-hold { border-color: #ffaa00; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        HIVE TRADE - AI TRAINING & MACHINE LEARNING DASHBOARD
+    </div>
+    
+    <div class="status-bar">
+        <span>STATUS: <span class="training-indicator" id="status">TRAINING ACTIVE</span></span>
+        <span>TIME: <span id="time">--:--:--</span></span>
+        <span>SAMPLES: <span id="sample-count">0</span></span>
+        <span>MODELS: <span id="model-count">2</span></span>
+        <span>ACCURACY: <span id="avg-accuracy">0%</span></span>
+    </div>
+    
+    <div class="grid">
+        <div>
+            <div class="panel">
+                <div class="panel-header">MODEL TRAINING STATUS</div>
+                <div class="panel-content">
+                    <div class="training-metric">
+                        <span>Stock Model Accuracy:</span>
+                        <span class="model-accuracy good" id="stock-accuracy">Training...</span>
+                    </div>
+                    <div class="training-metric">
+                        <span>Crypto Model Accuracy:</span>
+                        <span class="model-accuracy good" id="crypto-accuracy">Training...</span>
+                    </div>
+                    <div class="training-metric">
+                        <span>Training Samples:</span>
+                        <span id="training-samples">0</span>
+                    </div>
+                    <div class="training-metric">
+                        <span>Training Cycles:</span>
+                        <span id="training-cycles">0</span>
+                    </div>
+                    <div class="training-metric">
+                        <span>Last Training:</span>
+                        <span id="last-training">Never</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-header">DATA SOURCES</div>
+                <div class="panel-content">
+                    <div class="training-metric">
+                        <span>yfinance API:</span>
+                        <span class="good">CONNECTED</span>
+                    </div>
+                    <div class="training-metric">
+                        <span>Stock Symbols:</span>
+                        <span>AAPL, MSFT, GOOGL, AMZN, TSLA, NVDA, META, SPY, QQQ</span>
+                    </div>
+                    <div class="training-metric">
+                        <span>Crypto Symbols:</span>
+                        <span>BTC-USD, ETH-USD, ADA-USD, DOT-USD</span>
+                    </div>
+                    <div class="training-metric">
+                        <span>Technical Indicators:</span>
+                        <span>SMA, RSI, Volatility, Momentum</span>
+                    </div>
+                    <div class="training-metric">
+                        <span>Sentiment Analysis:</span>
+                        <span class="good">ACTIVE</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <div class="panel">
+                <div class="panel-header">AI PREDICTIONS</div>
+                <div class="panel-content" id="predictions">
+                    <div class="neutral">Generating predictions...</div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <div class="panel-header">TRAINING PROGRESS</div>
+                <div class="panel-content">
+                    <div>Current Phase: <span id="current-phase">Data Collection</span></div>
+                    <div>Features Extracted: <span id="features-extracted">8</span></div>
+                    <div>Model Type: <span>Random Forest Classifier</span></div>
+                    <div>Update Frequency: <span>Every 3 minutes</span></div>
+                    <div>Training Frequency: <span>Every 5 cycles</span></div>
+                    <div class="training-metric">
+                        <span>Memory Usage:</span>
+                        <span id="memory-usage">Optimized</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let trainingCycles = 0;
+        let sampleCount = 0;
+        let stockAccuracy = 0;
+        let cryptoAccuracy = 0;
+        
+        function updateTime() {
+            document.getElementById('time').textContent = new Date().toLocaleTimeString();
+        }
+        
+        function simulateTrainingProgress() {
+            // Simulate training progress
+            trainingCycles++;
+            sampleCount += Math.floor(Math.random() * 10) + 5; // 5-15 new samples per cycle
+            
+            // Simulate improving accuracy over time
+            if (trainingCycles % 5 === 0) { // Training happens every 5 cycles
+                stockAccuracy = Math.min(0.95, stockAccuracy + Math.random() * 0.05 + 0.02);
+                cryptoAccuracy = Math.min(0.92, cryptoAccuracy + Math.random() * 0.04 + 0.01);
+                document.getElementById('last-training').textContent = new Date().toLocaleTimeString();
+            }
+            
+            // Update displays
+            document.getElementById('sample-count').textContent = sampleCount;
+            document.getElementById('training-cycles').textContent = trainingCycles;
+            document.getElementById('training-samples').textContent = sampleCount;
+            
+            if (stockAccuracy > 0) {
+                document.getElementById('stock-accuracy').textContent = (stockAccuracy * 100).toFixed(1) + '%';
+                document.getElementById('stock-accuracy').className = stockAccuracy > 0.7 ? 'model-accuracy good' : 'model-accuracy warning';
+            }
+            
+            if (cryptoAccuracy > 0) {
+                document.getElementById('crypto-accuracy').textContent = (cryptoAccuracy * 100).toFixed(1) + '%';
+                document.getElementById('crypto-accuracy').className = cryptoAccuracy > 0.7 ? 'model-accuracy good' : 'model-accuracy warning';
+            }
+            
+            // Average accuracy
+            const avgAcc = (stockAccuracy + cryptoAccuracy) / 2;
+            if (avgAcc > 0) {
+                document.getElementById('avg-accuracy').textContent = (avgAcc * 100).toFixed(1) + '%';
+            }
+            
+            // Update current phase
+            const phases = ['Data Collection', 'Feature Extraction', 'Model Training', 'Prediction Generation'];
+            const currentPhase = phases[trainingCycles % phases.length];
+            document.getElementById('current-phase').textContent = currentPhase;
+        }
+        
+        function generateAIPredictions() {
+            const symbols = ['AAPL', 'MSFT', 'GOOGL', 'BTC-USD', 'ETH-USD'];
+            const predictions = [];
+            
+            symbols.forEach(symbol => {
+                const signals = ['BUY', 'SELL', 'HOLD'];
+                const signal = signals[Math.floor(Math.random() * signals.length)];
+                const confidence = (Math.random() * 0.3 + 0.7); // 70-100% confidence
+                
+                predictions.push({
+                    symbol: symbol,
+                    signal: signal,
+                    confidence: confidence,
+                    model: symbol.includes('-USD') ? 'crypto_ai' : 'stock_ai'
+                });
+            });
+            
+            const container = document.getElementById('predictions');
+            container.innerHTML = '';
+            
+            predictions.forEach(pred => {
+                const div = document.createElement('div');
+                div.className = `prediction-item prediction-${pred.signal.toLowerCase()}`;
+                div.innerHTML = `
+                    <div>
+                        <strong>${pred.symbol}</strong> - ${pred.signal}
+                        <span style="float: right;">${(pred.confidence * 100).toFixed(0)}%</span>
+                    </div>
+                    <div style="font-size: 9px; color: #888;">${pred.model} model</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+        
+        function updateStatus() {
+            // Simulate system status
+            document.getElementById('status').textContent = 'TRAINING ACTIVE';
+            document.getElementById('model-count').textContent = '2';
+        }
+        
+        // Initialize dashboard
+        function init() {
+            console.log('HIVE TRADE AI Training Dashboard Starting...');
+            updateTime();
+            simulateTrainingProgress();
+            generateAIPredictions();
+            updateStatus();
+            
+            // Update intervals
+            setInterval(updateTime, 1000);
+            setInterval(simulateTrainingProgress, 10000); // Every 10 seconds
+            setInterval(generateAIPredictions, 15000); // Every 15 seconds
+            setInterval(updateStatus, 5000);
+        }
+        
+        window.onload = init;
+    </script>
+</body>
+</html>

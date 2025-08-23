@@ -1,0 +1,243 @@
+groups:
+  - name: bloomberg_terminal_alerts
+    rules:
+      # System alerts
+      - alert: HighCPUUsage
+        expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is above 80% for more than 5 minutes on {{ $labels.instance }}"
+
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+          service: system
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is above 85% for more than 5 minutes on {{ $labels.instance }}"
+
+      - alert: DiskSpaceLow
+        expr: (1 - (node_filesystem_avail_bytes{fstype!="tmpfs"} / node_filesystem_size_bytes{fstype!="tmpfs"})) * 100 > 90
+        for: 10m
+        labels:
+          severity: critical
+          service: system
+        annotations:
+          summary: "Disk space low on {{ $labels.instance }}"
+          description: "Disk usage is above 90% on {{ $labels.instance }} filesystem {{ $labels.mountpoint }}"
+
+      # Application alerts
+      - alert: APIHighErrorRate
+        expr: rate(bloomberg_http_requests_total{status=~"5.."}[5m]) / rate(bloomberg_http_requests_total[5m]) > 0.05
+        for: 2m
+        labels:
+          severity: critical
+          service: api
+        annotations:
+          summary: "High API error rate"
+          description: "API error rate is above 5% for more than 2 minutes"
+
+      - alert: APIHighLatency
+        expr: histogram_quantile(0.95, rate(bloomberg_http_request_duration_seconds_bucket[5m])) > 2
+        for: 5m
+        labels:
+          severity: warning
+          service: api
+        annotations:
+          summary: "High API latency"
+          description: "95th percentile API latency is above 2 seconds"
+
+      # Trading alerts
+      - alert: TradingLossThreshold
+        expr: bloomberg_portfolio_value_usd < 950000
+        for: 1m
+        labels:
+          severity: critical
+          service: trading
+        annotations:
+          summary: "Portfolio value below loss threshold"
+          description: "Portfolio value has dropped below $950,000 (5% loss)"
+
+      - alert: HighValueAtRisk
+        expr: bloomberg_risk_var_usd > 50000
+        for: 2m
+        labels:
+          severity: critical
+          service: risk
+        annotations:
+          summary: "High Value at Risk"
+          description: "VaR exceeds $50,000 threshold"
+
+      - alert: MaxDrawdownExceeded
+        expr: bloomberg_risk_max_drawdown_percent > 15
+        for: 1m
+        labels:
+          severity: emergency
+          service: risk
+        annotations:
+          summary: "Maximum drawdown exceeded"
+          description: "Portfolio drawdown exceeds 15% threshold"
+
+      - alert: LowTradingWinRate
+        expr: rate(bloomberg_trades_total{outcome="win"}[1h]) / rate(bloomberg_trades_total[1h]) < 0.4
+        for: 30m
+        labels:
+          severity: warning
+          service: trading
+        annotations:
+          summary: "Low trading win rate"
+          description: "Win rate has been below 40% for the past hour"
+
+      # Market data alerts
+      - alert: MarketDataLatencyHigh
+        expr: histogram_quantile(0.95, rate(bloomberg_market_data_latency_seconds_bucket[5m])) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          service: market_data
+        annotations:
+          summary: "High market data latency"
+          description: "95th percentile market data latency is above 100ms"
+
+      - alert: MarketDataConnectionLoss
+        expr: bloomberg_websocket_connections_active < 1
+        for: 1m
+        labels:
+          severity: critical
+          service: market_data
+        annotations:
+          summary: "Market data connection lost"
+          description: "No active WebSocket connections to market data providers"
+
+      # ML Training alerts
+      - alert: TrainingJobFailureRate
+        expr: rate(bloomberg_training_jobs_total{status="failed"}[1h]) / rate(bloomberg_training_jobs_total[1h]) > 0.2
+        for: 10m
+        labels:
+          severity: warning
+          service: ml_training
+        annotations:
+          summary: "High training job failure rate"
+          description: "More than 20% of training jobs are failing"
+
+      - alert: ModelAccuracyDegraded
+        expr: bloomberg_model_accuracy < 0.7
+        for: 5m
+        labels:
+          severity: warning
+          service: ml_training
+        annotations:
+          summary: "Model accuracy degraded"
+          description: "Model accuracy has dropped below 70% for {{ $labels.model_name }}"
+
+      # Infrastructure alerts
+      - alert: RedisConnectionLoss
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: infrastructure
+        annotations:
+          summary: "Redis connection lost"
+          description: "Cannot connect to Redis server"
+
+      - alert: DatabaseConnectionLoss
+        expr: up{job="database"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          service: infrastructure
+        annotations:
+          summary: "Database connection lost"
+          description: "Cannot connect to main database"
+
+      - alert: ContainerDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: infrastructure
+        annotations:
+          summary: "Container is down"
+          description: "Container {{ $labels.instance }} has been down for more than 2 minutes"
+
+      # Agent alerts
+      - alert: AgentExecutionRateLow
+        expr: rate(bloomberg_agent_signals_total{executed="true"}[1h]) / rate(bloomberg_agent_signals_total[1h]) < 0.1
+        for: 30m
+        labels:
+          severity: warning
+          service: agents
+        annotations:
+          summary: "Low agent execution rate"
+          description: "Agent {{ $labels.agent }} has execution rate below 10%"
+
+      - alert: AgentConfidenceLow
+        expr: avg_over_time(bloomberg_agent_confidence[1h]) < 0.5
+        for: 30m
+        labels:
+          severity: warning
+          service: agents
+        annotations:
+          summary: "Low agent confidence"
+          description: "Agent {{ $labels.agent }} average confidence below 50%"
+
+  - name: prometheus_meta
+    rules:
+      - alert: PrometheusTargetDown
+        expr: up == 0
+        for: 5m
+        labels:
+          severity: critical
+          service: monitoring
+        annotations:
+          summary: "Prometheus target down"
+          description: "{{ $labels.job }} target {{ $labels.instance }} has been down for more than 5 minutes"
+
+      - alert: PrometheusConfigurationReload
+        expr: prometheus_config_last_reload_successful != 1
+        for: 5m
+        labels:
+          severity: warning
+          service: monitoring
+        annotations:
+          summary: "Prometheus configuration reload failed"
+          description: "Prometheus configuration reload has failed"
+
+  - name: business_logic
+    rules:
+      # Custom business logic alerts
+      - alert: UnusualTradingVolume
+        expr: rate(bloomberg_trade_pnl_usd_count[1h]) > 100
+        for: 10m
+        labels:
+          severity: info
+          service: trading
+        annotations:
+          summary: "Unusual trading volume detected"
+          description: "Trading volume is unusually high (>100 trades/hour)"
+
+      - alert: LargeSingleTradeLoss
+        expr: bloomberg_trade_pnl_usd < -5000
+        labels:
+          severity: warning
+          service: trading
+        annotations:
+          summary: "Large single trade loss"
+          description: "Single trade loss exceeds $5,000"
+
+      - alert: PositionConcentrationRisk
+        expr: bloomberg_risk_max_position_weight > 0.2
+        for: 5m
+        labels:
+          severity: warning
+          service: risk
+        annotations:
+          summary: "High position concentration"
+          description: "Single position exceeds 20% of portfolio"

@@ -1,147 +1,230 @@
-# LangGraph Adaptive Multi-Strategy AI Trading System
+# Hive Trade - Bloomberg Terminal Style Trading System
 
-A production-ready algorithmic trading platform that implements a graph of intelligent agents using LangGraph. Each agent computes, evaluates, and fuses signals from multiple trading strategies to achieve autonomous 24/7 global trading operations.
+A professional-grade autonomous trading system with a Bloomberg Terminal-inspired interface, comprehensive monitoring, and advanced risk management capabilities.
 
-## 🚀 Key Features
-
-- **Autonomous Trading Agents**: LangGraph-powered agents that collaborate and make independent decisions
-- **Multi-Strategy Fusion**: Momentum, mean reversion, sentiment, options volatility, and more
-- **Global 24/7 Operations**: Trade across US, European, Asian, and crypto markets
-- **Explainable AI**: Every decision includes top-3 reasoning factors
-- **Continuous Learning**: Real-time model adaptation and profit optimization
-- **Comprehensive Risk Management**: Dynamic VaR, position limits, and emergency controls
-
-## 🏗️ Architecture
-
-The system uses a graph-based architecture where intelligent agents collaborate through LangGraph:
-
-```
-Market Data → Sentiment Analysis → Strategy Agents → Portfolio Allocator → Risk Manager → Execution Engine
-     ↓              ↓                    ↓               ↓                ↓              ↓
-Alternative Data → Learning Optimizer ←→ Agent Coordination ←→ Monitoring & Alerts
-```
-
-## 📁 Project Structure
-
-```
-langgraph-trading-system/
-├── agents/                 # LangGraph trading agents
-├── strategies/            # Trading strategies and technical analysis
-├── data/                  # Market data ingestion and processing
-├── config/                # Configuration management
-├── tests/                 # Comprehensive test suite
-├── pyproject.toml         # Poetry dependencies and configuration
-└── README.md             # This file
-```
-
-## 🛠️ Development Setup
+## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.11+
-- Poetry for dependency management
-- PostgreSQL for data storage
-- Redis for caching
 
-### Installation
+- Docker & Docker Compose
+- 8GB+ RAM (recommended)
+- 20GB+ free disk space
+- Alpaca Trading API account
 
-1. Clone the repository:
+### Production Deployment
+
+1. **Clone and setup:**
+   ```bash
+   git clone <repository-url>
+   cd hive-trade
+   chmod +x deploy.sh
+   ```
+
+2. **Deploy:**
+   ```bash
+   ./deploy.sh
+   ```
+   This will create `.env.production` template - configure it with your settings and run again.
+
+3. **Access the system:**
+   - Trading Terminal: https://localhost
+   - Grafana Dashboards: https://localhost/grafana
+   - API Documentation: https://localhost/api/docs
+
+## 📋 System Architecture
+
+### Core Services
+
+- **Frontend**: React-based Bloomberg Terminal interface
+- **Backend**: FastAPI-based trading engine with WebSocket support  
+- **Database**: TimescaleDB for time-series financial data
+- **Cache**: Redis for real-time data and session management
+- **Monitoring**: Prometheus, Grafana, Jaeger distributed tracing
+- **Proxy**: Nginx reverse proxy with SSL termination
+
+### Trading Components
+
+- **Market Data**: Real-time streaming from Alpaca API
+- **Order Management**: Advanced order types and execution
+- **Risk Management**: Real-time position and portfolio risk monitoring
+- **Analytics**: Performance tracking and strategy analysis
+- **Agents**: AI-powered trading strategies and automation
+
+## 🎛️ Bloomberg Terminal Interface
+
+### Available Panels
+
+1. **Dashboard** - Executive overview with key metrics
+2. **System Status** - System health and connectivity
+3. **Market Watch** - Real-time quotes and watchlists
+4. **Technical Chart** - Advanced charting with indicators
+5. **Order Book** - Level 2 market data
+6. **Positions** - Portfolio positions tracking
+7. **Orders** - Active orders management
+8. **Risk Monitor** - Real-time risk metrics
+9. **News Feed** - Financial news with filtering
+10. **Analytics** - Trading performance analysis
+11. **Alerts** - System and trading notifications
+12. **Monitoring** - System metrics and health
+13. **Settings** - Terminal configuration
+
+### Features
+
+- **6x6 Grid Layout** - Flexible panel arrangement
+- **Real-time Updates** - WebSocket-based live data
+- **Panel Management** - Minimize, maximize, close controls
+- **Quick Symbol Navigation** - Cross-panel symbol synchronization
+- **Keyboard Shortcuts** - Professional hotkeys
+- **Dark Theme** - Bloomberg-inspired professional styling
+
+## ⚙️ Configuration
+
+### Environment Variables
+
+Create `.env.production` with the following:
+
 ```bash
-git clone <repository-url>
-cd langgraph-trading-system
+# Database Configuration
+DB_PASSWORD=your_secure_database_password
+DB_MEMORY=4GB
+DB_CPUS=2
+
+# Redis Configuration  
+REDIS_PASSWORD=your_secure_redis_password
+
+# API Keys (REQUIRED)
+ALPACA_API_KEY=your_alpaca_api_key
+ALPACA_SECRET_KEY=your_alpaca_secret_key
+ALPACA_BASE_URL=https://paper-api.alpaca.markets
+
+# Security
+JWT_SECRET=your_very_long_jwt_secret_key_32_chars_min
+
+# Monitoring
+GRAFANA_PASSWORD=your_grafana_admin_password
 ```
 
-2. Install dependencies:
+## 📊 Monitoring & Observability
+
+### Metrics Collection
+
+- **Business Metrics**: Trading performance, P&L, win rates
+- **System Metrics**: CPU, memory, disk, network usage
+- **Application Metrics**: API latency, error rates, throughput
+- **Custom Metrics**: Agent performance, risk calculations
+
+### Dashboards
+
+Access Grafana at `https://localhost/grafana`:
+
+- **Trading Performance Dashboard**: P&L, positions, orders
+- **System Health Dashboard**: Infrastructure metrics
+- **Risk Management Dashboard**: Risk metrics and alerts
+- **Agent Performance Dashboard**: AI strategy tracking
+
+## 💾 Data Management
+
+### Backup Strategy
+
+Automated backups:
+- **Database**: Daily PostgreSQL dumps
+- **Application Data**: Configuration and models
+- **Retention**: Configurable (default 30 days)
+- **Cloud Storage**: Optional S3 integration
+
+## 🤖 Trading Agents
+
+### Available Strategies
+
+1. **Mean Reversion Agent**: Statistical arbitrage
+2. **Momentum Agent**: Trend following
+3. **Arbitrage Agent**: Cross-market opportunities
+4. **News Sentiment Agent**: NLP-based trading
+5. **Adaptive Optimizer**: Dynamic strategy allocation
+
+## 🏗️ Development
+
+### Development Setup
+
+1. **Setup development environment:**
+   ```bash
+   chmod +x docker/scripts/setup-dev.sh
+   ./docker/scripts/setup-dev.sh
+   ```
+
+2. **Start development services:**
+   ```bash
+   ./start-dev.sh
+   ```
+
+## 📚 API Documentation
+
+Interactive API documentation available at:
+- **Swagger UI**: `https://localhost/api/docs`
+- **ReDoc**: `https://localhost/api/redoc`
+
+## 🔧 Deployment Commands
+
 ```bash
-poetry install
+# Deploy production system
+./deploy.sh
+
+# Stop all services
+./deploy.sh stop
+
+# View service status
+./deploy.sh status
+
+# View logs
+./deploy.sh logs [service]
+
+# Manual backup
+./deploy.sh backup
+
+# Update deployment
+./deploy.sh update
 ```
 
-3. Activate the virtual environment:
-```bash
-poetry shell
-```
+## 📈 Performance Features
 
-4. Set up pre-commit hooks:
-```bash
-pre-commit install
-```
+- **Async Operations**: Non-blocking I/O throughout
+- **Connection Pooling**: Optimized database connections
+- **Multi-layer Caching**: Redis and application-level caching
+- **Load Balancing**: Nginx upstream configuration
+- **Code Splitting**: Dynamic frontend loading
+- **Time-series Optimization**: TimescaleDB hypertables
 
-### Code Quality
+## 🔐 Security Features
 
-The project uses several tools to maintain code quality:
+- **JWT Authentication**: Secure API access
+- **SSL/TLS Encryption**: HTTPS by default
+- **Rate Limiting**: API protection
+- **Input Validation**: Comprehensive data validation
+- **Audit Logging**: Complete activity tracking
 
-- **Black**: Code formatting
-- **isort**: Import sorting
-- **mypy**: Type checking
-- **flake8**: Linting
-- **pytest**: Testing
+## 🚨 Troubleshooting
 
-Run all quality checks:
-```bash
-# Format code
-black .
-isort .
+### Common Issues
 
-# Type checking
-mypy .
+1. **Services not starting:**
+   ```bash
+   docker-compose -f docker-compose.production.yml logs
+   ```
 
-# Run tests
-pytest
-```
+2. **Database connection issues:**
+   ```bash
+   docker-compose -f docker-compose.production.yml exec timescaledb psql -U hive_user -d hive_trading
+   ```
 
-## 🧪 Testing
-
-The project includes comprehensive testing:
-
-```bash
-# Run all tests
-pytest
-
-# Run with coverage
-pytest --cov=agents --cov=strategies --cov=data --cov=config
-
-# Run specific test categories
-pytest -m unit          # Unit tests only
-pytest -m integration   # Integration tests only
-pytest -m backtest      # Backtesting tests only
-```
-
-## 📊 Performance Targets
-
-- **Latency**: Sub-second decision making
-- **Uptime**: 99.9% during market hours
-- **Returns**: 50-200% monthly target
-- **Risk**: Max 10% daily drawdown
-- **Scale**: 50,000+ symbols monitoring
-
-## 🔒 Security
-
-- Encrypted API key storage
-- Comprehensive audit trails
-- Role-based access control
-- Multi-factor authentication
-
-## 📈 Getting Started
-
-1. Configure your environment variables
-2. Set up database connections
-3. Configure broker API credentials
-4. Run paper trading validation
-5. Deploy to live trading
-
-See the full documentation for detailed setup instructions.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and quality checks
-5. Submit a pull request
-
-## 📄 License
-
-This project is proprietary software. All rights reserved.
+3. **API key errors:**
+   - Verify Alpaca credentials
+   - Check API key permissions
+   - Confirm paper vs live environment
 
 ## ⚠️ Disclaimer
 
-This software is for educational and research purposes. Trading involves substantial risk of loss. Past performance does not guarantee future results. Use at your own risk.
+This software is for educational and research purposes. Trading involves substantial risk of loss. Use at your own risk. The authors are not responsible for any financial losses incurred through the use of this software.
+
+---
+
+**Built with ❤️ for professional traders and developers**
