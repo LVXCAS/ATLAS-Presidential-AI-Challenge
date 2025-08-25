@@ -1,0 +1,66 @@
+# Multi-stage build for React Dashboard
+FROM node:18-alpine as builder
+
+# Set build arguments
+ARG BUILD_DATE
+ARG VCS_REF
+ARG VERSION
+
+# Add metadata labels
+LABEL maintainer="Hive Trade Team" \
+      org.label-schema.build-date=$BUILD_DATE \
+      org.label-schema.vcs-ref=$VCS_REF \
+      org.label-schema.version=$VERSION \
+      org.label-schema.name="Hive Trade Dashboard" \
+      org.label-schema.description="Real-time trading dashboard interface"
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY frontend/package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production && npm cache clean --force
+
+# Copy source code
+COPY frontend/ .
+
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM nginx:alpine as production
+
+# Install curl for health checks
+RUN apk add --no-cache curl
+
+# Copy built application from builder stage
+COPY --from=builder /app/build /usr/share/nginx/html
+
+# Copy nginx configuration
+COPY docker/nginx/dashboard.conf /etc/nginx/conf.d/default.conf
+
+# Create non-root user for nginx
+RUN addgroup -g 1001 -S dashboard && \
+    adduser -S -D -H -u 1001 -h /var/cache/nginx -s /sbin/nologin -G dashboard -g dashboard dashboard
+
+# Set proper permissions
+RUN chown -R dashboard:dashboard /var/cache/nginx && \
+    chown -R dashboard:dashboard /var/log/nginx && \
+    chown -R dashboard:dashboard /etc/nginx/conf.d && \
+    touch /var/run/nginx.pid && \
+    chown -R dashboard:dashboard /var/run/nginx.pid
+
+# Switch to non-root user
+USER dashboard
+
+# Expose port
+EXPOSE 3000
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:3000 || exit 1
+
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]

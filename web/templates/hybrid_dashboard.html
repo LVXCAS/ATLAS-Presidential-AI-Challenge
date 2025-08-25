@@ -1,0 +1,1309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hive Trade - Bloomberg x Robinhood Hybrid Terminal</title>
+    
+    <!-- Core Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://unpkg.com/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- UI Libraries -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Bloomberg Terminal Colors */
+            --bloomberg-black: #000000;
+            --bloomberg-amber: #FF6600;
+            --bloomberg-blue: #0066CC;
+            --bloomberg-green: #00AA00;
+            --bloomberg-red: #FF3333;
+            --bloomberg-yellow: #FFCC00;
+            --bloomberg-cyan: #00CCCC;
+            
+            /* Robinhood Colors */
+            --robinhood-green: #00D09C;
+            --robinhood-red: #FF5733;
+            --robinhood-dark: #1C1C1E;
+            --robinhood-light: #F7F7F7;
+            
+            /* Hybrid System Colors */
+            --primary-bg: #0A0A0B;
+            --secondary-bg: #1A1A1E;
+            --tertiary-bg: #2A2A2E;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B0B0B5;
+            --accent-primary: var(--bloomberg-amber);
+            --accent-secondary: var(--robinhood-green);
+            --border-color: #3A3A3E;
+            
+            /* Typography */
+            --font-terminal: 'JetBrains Mono', 'Courier New', monospace;
+            --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            background: var(--primary-bg);
+            color: var(--text-primary);
+            font-family: var(--font-ui);
+            overflow: hidden;
+            height: 100vh;
+        }
+        
+        /* Mode Toggle System */
+        .mode-toggle {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 10000;
+            display: flex;
+            background: var(--secondary-bg);
+            border-radius: 25px;
+            border: 1px solid var(--border-color);
+            padding: 4px;
+        }
+        
+        .mode-btn {
+            padding: 8px 16px;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .mode-btn.active {
+            background: var(--accent-primary);
+            color: var(--primary-bg);
+        }
+        
+        /* Command Bar */
+        .command-bar {
+            position: fixed;
+            top: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 600px;
+            max-width: 90vw;
+            z-index: 9999;
+            background: var(--secondary-bg);
+            border: 2px solid var(--accent-primary);
+            border-radius: 8px;
+            padding: 12px;
+            font-family: var(--font-terminal);
+            font-size: 14px;
+            color: var(--text-primary);
+            display: none;
+        }
+        
+        .command-bar:focus {
+            outline: none;
+            border-color: var(--accent-secondary);
+        }
+        
+        /* Focus Mode (Robinhood Style) */
+        .focus-mode {
+            display: none;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .focus-mode.active {
+            display: block;
+        }
+        
+        .focus-card {
+            background: var(--secondary-bg);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .focus-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(255, 102, 0, 0.1);
+        }
+        
+        .focus-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .focus-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .expand-btn {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+        
+        .expand-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+        }
+        
+        /* Matrix Mode (Bloomberg Style) */
+        .matrix-mode {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            height: 100vh;
+            gap: 2px;
+            background: var(--primary-bg);
+            padding: 2px;
+        }
+        
+        .matrix-mode.active {
+            display: grid;
+        }
+        
+        .matrix-panel {
+            background: var(--secondary-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .matrix-panel-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 8px;
+            min-height: 24px;
+        }
+        
+        .matrix-panel-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--accent-primary);
+            font-family: var(--font-terminal);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .matrix-panel-controls {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .matrix-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+            border: none;
+            cursor: pointer;
+            font-size: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .matrix-control.close { background: var(--robinhood-red); }
+        .matrix-control.minimize { background: var(--bloomberg-yellow); }
+        .matrix-control.expand { background: var(--robinhood-green); }
+        
+        .matrix-panel-content {
+            flex: 1;
+            overflow: auto;
+            font-family: var(--font-terminal);
+            font-size: 10px;
+            line-height: 1.2;
+        }
+        
+        /* Specific Panel Layouts */
+        .watchlist-panel { grid-column: 1 / 4; grid-row: 1 / 5; }
+        .chart-panel { grid-column: 4 / 10; grid-row: 1 / 6; }
+        .orderbook-panel { grid-column: 10 / 13; grid-row: 1 / 4; }
+        .news-panel { grid-column: 10 / 13; grid-row: 4 / 8; }
+        .positions-panel { grid-column: 1 / 7; grid-row: 5 / 7; }
+        .orders-panel { grid-column: 7 / 10; grid-row: 6 / 8; }
+        .terminal-panel { grid-column: 1 / 10; grid-row: 7 / 9; }
+        .risk-panel { grid-column: 1 / 4; grid-row: 5 / 6; }
+        
+        /* Real-time Data Styling */
+        .price-up { color: var(--robinhood-green); }
+        .price-down { color: var(--robinhood-red); }
+        .price-unchanged { color: var(--text-secondary); }
+        
+        .flash-green { animation: flashGreen 0.5s ease; }
+        .flash-red { animation: flashRed 0.5s ease; }
+        
+        @keyframes flashGreen {
+            0% { background-color: transparent; }
+            50% { background-color: rgba(0, 208, 156, 0.3); }
+            100% { background-color: transparent; }
+        }
+        
+        @keyframes flashRed {
+            0% { background-color: transparent; }
+            50% { background-color: rgba(255, 87, 51, 0.3); }
+            100% { background-color: transparent; }
+        }
+        
+        /* Progressive Complexity Indicators */
+        .complexity-meter {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            display: flex;
+            gap: 2px;
+        }
+        
+        .complexity-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: var(--border-color);
+            transition: all 0.3s ease;
+        }
+        
+        .complexity-dot.active {
+            background: var(--accent-primary);
+        }
+        
+        /* Data Tables */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9px;
+            font-family: var(--font-terminal);
+        }
+        
+        .data-table th,
+        .data-table td {
+            padding: 2px 4px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .data-table th {
+            color: var(--accent-primary);
+            font-weight: 600;
+            background: var(--tertiary-bg);
+        }
+        
+        .data-table tr:hover {
+            background: var(--tertiary-bg);
+        }
+        
+        /* Chart Containers */
+        .chart-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        
+        /* Loading States */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+        
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border-color);
+            border-top: 2px solid var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .matrix-mode {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto;
+                height: auto;
+                overflow-y: auto;
+            }
+            
+            .matrix-panel {
+                grid-column: 1 !important;
+                grid-row: auto !important;
+                margin-bottom: 8px;
+                min-height: 200px;
+            }
+            
+            .focus-mode {
+                padding: 10px;
+            }
+            
+            .command-bar {
+                width: calc(100vw - 20px);
+                left: 10px;
+                transform: none;
+            }
+        }
+        
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--secondary-bg);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 3px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-primary);
+        }
+        
+        /* Status Bar */
+        .status-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 24px;
+            background: var(--tertiary-bg);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            padding: 0 12px;
+            font-size: 11px;
+            font-family: var(--font-terminal);
+            z-index: 1000;
+        }
+        
+        .status-item {
+            margin-right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--robinhood-green);
+        }
+        
+        .status-indicator.warning { background: var(--bloomberg-yellow); }
+        .status-indicator.error { background: var(--robinhood-red); }
+        
+        /* Tooltips */
+        .tooltip {
+            position: relative;
+            cursor: help;
+        }
+        
+        .tooltip:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--tertiary-bg);
+            color: var(--text-primary);
+            padding: 8px 12px;
+            border-radius: 4px;
+            white-space: nowrap;
+            z-index: 1000;
+            font-size: 11px;
+            border: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Mode Toggle -->
+    <div class="mode-toggle">
+        <button class="mode-btn active" data-mode="focus">
+            <i class="fas fa-mobile-alt"></i> Focus
+        </button>
+        <button class="mode-btn" data-mode="matrix">
+            <i class="fas fa-th"></i> Matrix
+        </button>
+    </div>
+    
+    <!-- Universal Command Bar -->
+    <input type="text" class="command-bar" id="commandBar" placeholder="Type command or symbol (Ctrl+K to open)..." autocomplete="off">
+    
+    <!-- Focus Mode (Robinhood Style) -->
+    <div class="focus-mode active" id="focusMode">
+        <!-- Portfolio Overview Card -->
+        <div class="focus-card">
+            <div class="focus-header">
+                <div class="focus-title">Portfolio</div>
+                <button class="expand-btn" data-expand="portfolio">Expand</button>
+            </div>
+            <div id="portfolioFocus">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 16px;">
+                    <div>
+                        <div style="font-size: 24px; font-weight: 700; color: var(--robinhood-green);" id="portfolioValue">$1,000,000.00</div>
+                        <div style="font-size: 14px; color: var(--text-secondary);">Total Portfolio Value</div>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 18px; font-weight: 600; color: var(--robinhood-green);" id="portfolioPnL">+$0.00</div>
+                        <div style="font-size: 14px; color: var(--text-secondary);">Today's P&L</div>
+                    </div>
+                </div>
+                <div id="portfolioChart" style="height: 200px;"></div>
+            </div>
+        </div>
+        
+        <!-- Watchlist Card -->
+        <div class="focus-card">
+            <div class="focus-header">
+                <div class="focus-title">Watchlist</div>
+                <button class="expand-btn" data-expand="watchlist">Expand</button>
+            </div>
+            <div id="watchlistFocus">
+                <div id="watchlistItems"></div>
+            </div>
+        </div>
+        
+        <!-- Market Overview Card -->
+        <div class="focus-card">
+            <div class="focus-header">
+                <div class="focus-title">Market Overview</div>
+                <button class="expand-btn" data-expand="market">Expand</button>
+            </div>
+            <div id="marketFocus">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 16px;">
+                    <div>
+                        <div style="font-size: 16px; font-weight: 600;" id="spyPrice">$XXX.XX</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">SPY</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 16px; font-weight: 600;" id="qqqPrice">$XXX.XX</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">QQQ</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 16px; font-weight: 600;" id="vixPrice">$XX.XX</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">VIX</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI Signals Card -->
+        <div class="focus-card">
+            <div class="focus-header">
+                <div class="focus-title">AI Trading Signals</div>
+                <button class="expand-btn" data-expand="signals">Expand</button>
+            </div>
+            <div id="signalsFocus">
+                <div id="aiSignals"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Matrix Mode (Bloomberg Style) -->
+    <div class="matrix-mode" id="matrixMode">
+        <!-- Watchlist Panel -->
+        <div class="matrix-panel watchlist-panel">
+            <div class="matrix-panel-header">
+                <div class="matrix-panel-title">Watchlist</div>
+                <div class="complexity-meter">
+                    <div class="complexity-dot active"></div>
+                    <div class="complexity-dot"></div>
+                    <div class="complexity-dot"></div>
+                </div>
+                <div class="matrix-panel-controls">
+                    <button class="matrix-control expand">□</button>
+                    <button class="matrix-control minimize">-</button>
+                    <button class="matrix-control close">×</button>
+                </div>
+            </div>
+            <div class="matrix-panel-content">
+                <table class="data-table" id="watchlistTable">
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Last</th>
+                            <th>Chg</th>
+                            <th>%Chg</th>
+                            <th>Vol</th>
+                        </tr>
+                    </thead>
+                    <tbody id="watchlistTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Chart Panel -->
+        <div class="matrix-panel chart-panel">
+            <div class="matrix-panel-header">
+                <div class="matrix-panel-title">Chart - <span id="currentSymbol">SPY</span></div>
+                <div class="complexity-meter">
+                    <div class="complexity-dot active"></div>
+                    <div class="complexity-dot active"></div>
+                    <div class="complexity-dot"></div>
+                </div>
+                <div class="matrix-panel-controls">
+                    <button class="matrix-control expand">□</button>
+                    <button class="matrix-control minimize">-</button>
+                    <button class="matrix-control close">×</button>
+                </div>
+            </div>
+            <div class="matrix-panel-content">
+                <div class="chart-container" id="mainChart"></div>
+            </div>
+        </div>
+        
+        <!-- Order Book Panel -->
+        <div class="matrix-panel orderbook-panel">
+            <div class="matrix-panel-header">
+                <div class="matrix-panel-title">Level II</div>
+                <div class="complexity-meter">
+                    <div class="complexity-dot active"></div>
+                    <div class="complexity-dot active"></div>
+                    <div class="complexity-dot active"></div>
+                </div>
+                <div class="matrix-panel-controls">
+                    <button class="matrix-control expand">□</button>
+                    <button class="matrix-control minimize">-</button>
+                    <button class="matrix-control close">×</button>
+                </div>
+            </div>
+            <div class="matrix-panel-content">
+                <div id="orderBook">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 2px; margin-bottom: 4px; font-weight: 600; color: var(--accent-primary);">
+                        <div>Size</div>
+                        <div>Price</div>
+                        <div>Orders</div>
+                    </div>
+                    <div id="asks" style="margin-bottom: 8px;"></div>
+                    <div style="border-top: 1px solid var(--accent-primary); padding: 4px 0; text-align: center; font-weight: 600;">
+                        <span id="spread">$0.01</span> SPREAD
+                    </div>
+                    <div id="bids"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- News Panel -->
+        <div class="matrix-panel news-panel">
+            <div class="matrix-panel-header">
+                <div class="matrix-panel-title">News Feed</div>
+                <div class="complexity-meter">
+                    <div class="complexity-dot active"></div>
+                    <div class="complexity-dot"></div>
+                    <div class="complexity-dot"></div>
+                </div>
+                <div class="matrix-panel-controls">
+                    <button class="matrix-control expand">□</button>
+                    <button class="matrix-control minimize">-</button>
+                    <button class="matrix-control close">×</button>
+                </div>
+            </div>
+            <div class="matrix-panel-content">
+                <div id="newsFeed">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Loading news...
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Positions Panel -->
+        <div class="matrix-panel positions-panel">
+            <div class="matrix-panel-header">
+                <div class="matrix-panel-title">Positions</div>
+                <div class="complexity-meter">
+                    <div class="complexity-dot active"></div>
+                    <div class="complexity-dot active"></div>
+                    <div class="complexity-dot"></div>
+                </div>
+                <div class="matrix-panel-controls">
+                    <button class="matrix-control expand">□</button>
+                    <button class="matrix-control minimize">-</button>
+                    <button class="matrix-control close">×</button>
+                </div>
+            </div>
+            <div class="matrix-panel-content">
+                <table class="data-table" id="positionsTable">
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Market</th>
+                            <th>P&L</th>
+                            <th>%P&L</th>
+                        </tr>
+                    </thead>
+                    <tbody id="positionsTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Orders Panel -->
+        <div class="matrix-panel orders-panel">
+            <div class="matrix-panel-header">
+                <div class="matrix-panel-title">Orders</div>
+                <div class="matrix-panel-controls">
+                    <button class="matrix-control expand">□</button>
+                    <button class="matrix-control minimize">-</button>
+                    <button class="matrix-control close">×</button>
+                </div>
+            </div>
+            <div class="matrix-panel-content">
+                <table class="data-table" id="ordersTable">
+                    <thead>
+                        <tr>
+                            <th>Symbol</th>
+                            <th>Side</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Terminal Panel -->
+        <div class="matrix-panel terminal-panel">
+            <div class="matrix-panel-header">
+                <div class="matrix-panel-title">Terminal</div>
+                <div class="matrix-panel-controls">
+                    <button class="matrix-control expand">□</button>
+                    <button class="matrix-control minimize">-</button>
+                    <button class="matrix-control close">×</button>
+                </div>
+            </div>
+            <div class="matrix-panel-content">
+                <div id="terminal" style="font-family: var(--font-terminal); font-size: 11px; height: 100%; overflow-y: auto;">
+                    <div style="color: var(--accent-primary);">HIVE TRADE TERMINAL v2.0</div>
+                    <div style="color: var(--text-secondary); margin-bottom: 8px;">Ready for commands...</div>
+                    <div id="terminalOutput"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Risk Panel -->
+        <div class="matrix-panel risk-panel">
+            <div class="matrix-panel-header">
+                <div class="matrix-panel-title">Risk</div>
+                <div class="matrix-panel-controls">
+                    <button class="matrix-control expand">□</button>
+                    <button class="matrix-control minimize">-</button>
+                    <button class="matrix-control close">×</button>
+                </div>
+            </div>
+            <div class="matrix-panel-content">
+                <div style="margin-bottom: 8px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span>VaR (1d, 95%)</span>
+                        <span id="var1d" style="color: var(--robinhood-red);">$0.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span>Max Drawdown</span>
+                        <span id="maxDrawdown" style="color: var(--robinhood-red);">0.00%</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                        <span>Beta</span>
+                        <span id="portfolioBeta">0.00</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span>Sharpe</span>
+                        <span id="sharpeRatio">0.00</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="status-item">
+            <div class="status-indicator" id="connectionStatus"></div>
+            <span id="connectionText">Connected</span>
+        </div>
+        <div class="status-item">
+            <span>Market: </span>
+            <span id="marketStatus">OPEN</span>
+        </div>
+        <div class="status-item">
+            <span>Latency: </span>
+            <span id="latency">12ms</span>
+        </div>
+        <div class="status-item">
+            <span>Updates: </span>
+            <span id="updateCount">0</span>
+        </div>
+        <div class="status-item">
+            <span id="currentTime">00:00:00</span>
+        </div>
+    </div>
+
+    <script>
+        // Global Variables
+        let socket;
+        let currentMode = 'focus';
+        let watchlistSymbols = ['SPY', 'QQQ', 'AAPL', 'GOOGL', 'MSFT', 'TSLA', 'NVDA', 'AMD', 'AMZN', 'META'];
+        let marketData = {};
+        let portfolioData = {};
+        let chartInstance;
+        let updateCounter = 0;
+        
+        // Initialize Application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeSocket();
+            initializeUI();
+            startDataStreams();
+            setupEventListeners();
+            updateClock();
+            setInterval(updateClock, 1000);
+        });
+        
+        // Socket.IO Connection
+        function initializeSocket() {
+            socket = io();
+            
+            socket.on('connect', function() {
+                console.log('Connected to server');
+                document.getElementById('connectionStatus').className = 'status-indicator';
+                document.getElementById('connectionText').textContent = 'Connected';
+            });
+            
+            socket.on('disconnect', function() {
+                console.log('Disconnected from server');
+                document.getElementById('connectionStatus').className = 'status-indicator error';
+                document.getElementById('connectionText').textContent = 'Disconnected';
+            });
+            
+            socket.on('market_data', function(data) {
+                updateMarketData(data);
+                updateCounter++;
+                document.getElementById('updateCount').textContent = updateCounter;
+            });
+            
+            socket.on('portfolio_update', function(data) {
+                updatePortfolio(data);
+            });
+            
+            socket.on('ai_signal', function(data) {
+                updateAISignals(data);
+            });
+            
+            socket.on('news_update', function(data) {
+                updateNews(data);
+            });
+        }
+        
+        // UI Initialization
+        function initializeUI() {
+            // Initialize charts
+            initializeCharts();
+            
+            // Load initial data
+            loadWatchlist();
+            loadPortfolio();
+            loadNews();
+            
+            // Setup command bar
+            setupCommandBar();
+        }
+        
+        // Event Listeners
+        function setupEventListeners() {
+            // Mode toggle
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    switchMode(this.dataset.mode);
+                });
+            });
+            
+            // Expand buttons
+            document.querySelectorAll('.expand-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    expandPanel(this.dataset.expand);
+                });
+            });
+            
+            // Command bar toggle
+            document.addEventListener('keydown', function(e) {
+                if (e.ctrlKey && e.key === 'k') {
+                    e.preventDefault();
+                    toggleCommandBar();
+                }
+                if (e.key === 'Escape') {
+                    hideCommandBar();
+                }
+            });
+        }
+        
+        // Mode Switching
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // Update buttons
+            document.querySelectorAll('.mode-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.mode === mode);
+            });
+            
+            // Show/hide modes
+            document.getElementById('focusMode').classList.toggle('active', mode === 'focus');
+            document.getElementById('matrixMode').classList.toggle('active', mode === 'matrix');
+            
+            // Reinitialize charts for current mode
+            setTimeout(() => {
+                initializeCharts();
+            }, 100);
+        }
+        
+        // Command Bar Functions
+        function setupCommandBar() {
+            const commandBar = document.getElementById('commandBar');
+            
+            commandBar.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    executeCommand(this.value);
+                    this.value = '';
+                    hideCommandBar();
+                }
+            });
+            
+            commandBar.addEventListener('input', function() {
+                // Auto-complete suggestions could go here
+            });
+        }
+        
+        function toggleCommandBar() {
+            const commandBar = document.getElementById('commandBar');
+            if (commandBar.style.display === 'block') {
+                hideCommandBar();
+            } else {
+                commandBar.style.display = 'block';
+                commandBar.focus();
+            }
+        }
+        
+        function hideCommandBar() {
+            const commandBar = document.getElementById('commandBar');
+            commandBar.style.display = 'none';
+        }
+        
+        function executeCommand(command) {
+            command = command.trim().toLowerCase();
+            
+            // Bloomberg-style commands
+            if (command.includes(' us equity')) {
+                const symbol = command.split(' ')[0].toUpperCase();
+                loadSymbol(symbol);
+                return;
+            }
+            
+            // Natural language commands
+            if (command.startsWith('show ') || command.startsWith('load ')) {
+                const symbol = command.split(' ').pop().toUpperCase();
+                loadSymbol(symbol);
+                return;
+            }
+            
+            if (command === 'matrix' || command === 'm') {
+                switchMode('matrix');
+                return;
+            }
+            
+            if (command === 'focus' || command === 'f') {
+                switchMode('focus');
+                return;
+            }
+            
+            // Default: treat as symbol
+            if (command.length <= 5) {
+                loadSymbol(command.toUpperCase());
+            }
+        }
+        
+        // Chart Initialization
+        function initializeCharts() {
+            if (currentMode === 'focus') {
+                initializeFocusCharts();
+            } else {
+                initializeMatrixCharts();
+            }
+        }
+        
+        function initializeFocusCharts() {
+            // Portfolio chart
+            const portfolioCtx = document.getElementById('portfolioChart');
+            if (portfolioCtx) {
+                // Initialize portfolio performance chart
+                const chart = new Chart(portfolioCtx, {
+                    type: 'line',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Portfolio Value',
+                            data: [],
+                            borderColor: 'rgb(0, 208, 156)',
+                            backgroundColor: 'rgba(0, 208, 156, 0.1)',
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            x: {
+                                display: false
+                            },
+                            y: {
+                                display: false
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        function initializeMatrixCharts() {
+            // Main trading chart
+            const chartContainer = document.getElementById('mainChart');
+            if (chartContainer && !chartInstance) {
+                chartInstance = LightweightCharts.createChart(chartContainer, {
+                    width: chartContainer.clientWidth,
+                    height: chartContainer.clientHeight,
+                    layout: {
+                        backgroundColor: '#1A1A1E',
+                        textColor: '#FFFFFF',
+                    },
+                    grid: {
+                        vertLines: {
+                            color: '#3A3A3E',
+                        },
+                        horzLines: {
+                            color: '#3A3A3E',
+                        },
+                    },
+                    crosshair: {
+                        mode: LightweightCharts.CrosshairMode.Normal,
+                    },
+                    priceScale: {
+                        borderColor: '#FF6600',
+                    },
+                    timeScale: {
+                        borderColor: '#FF6600',
+                    },
+                });
+                
+                const candlestickSeries = chartInstance.addCandlestickSeries({
+                    upColor: '#00D09C',
+                    downColor: '#FF5733',
+                    borderVisible: false,
+                    wickUpColor: '#00D09C',
+                    wickDownColor: '#FF5733',
+                });
+            }
+        }
+        
+        // Data Loading Functions
+        function loadWatchlist() {
+            // Request watchlist data
+            socket.emit('get_watchlist', { symbols: watchlistSymbols });
+        }
+        
+        function loadPortfolio() {
+            // Request portfolio data
+            socket.emit('get_portfolio');
+        }
+        
+        function loadNews() {
+            // Request news data
+            socket.emit('get_news');
+        }
+        
+        function loadSymbol(symbol) {
+            // Load specific symbol data
+            document.getElementById('currentSymbol').textContent = symbol;
+            socket.emit('get_symbol_data', { symbol: symbol });
+        }
+        
+        // Data Update Functions
+        function updateMarketData(data) {
+            marketData = { ...marketData, ...data };
+            
+            // Update watchlist
+            updateWatchlistDisplay();
+            
+            // Update market overview
+            updateMarketOverview();
+            
+            // Flash price changes
+            flashPriceChanges(data);
+        }
+        
+        function updateWatchlistDisplay() {
+            const focusWatchlist = document.getElementById('watchlistItems');
+            const matrixWatchlist = document.getElementById('watchlistTableBody');
+            
+            if (focusWatchlist) {
+                focusWatchlist.innerHTML = '';
+                watchlistSymbols.forEach(symbol => {
+                    if (marketData[symbol]) {
+                        const data = marketData[symbol];
+                        const item = document.createElement('div');
+                        item.style.cssText = 'display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border-color);';
+                        item.innerHTML = `
+                            <div>
+                                <div style="font-weight: 600;">${symbol}</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);">${data.name || symbol}</div>
+                            </div>
+                            <div style="text-align: right;">
+                                <div style="font-weight: 600; color: ${data.change >= 0 ? 'var(--robinhood-green)' : 'var(--robinhood-red)'};">
+                                    $${data.price.toFixed(2)}
+                                </div>
+                                <div style="font-size: 12px; color: ${data.change >= 0 ? 'var(--robinhood-green)' : 'var(--robinhood-red)'};">
+                                    ${data.change >= 0 ? '+' : ''}${data.changePercent.toFixed(2)}%
+                                </div>
+                            </div>
+                        `;
+                        focusWatchlist.appendChild(item);
+                    }
+                });
+            }
+            
+            if (matrixWatchlist) {
+                matrixWatchlist.innerHTML = '';
+                watchlistSymbols.forEach(symbol => {
+                    if (marketData[symbol]) {
+                        const data = marketData[symbol];
+                        const row = document.createElement('tr');
+                        row.style.cursor = 'pointer';
+                        row.onclick = () => loadSymbol(symbol);
+                        
+                        const changeClass = data.change >= 0 ? 'price-up' : 'price-down';
+                        
+                        row.innerHTML = `
+                            <td>${symbol}</td>
+                            <td class="${changeClass}">$${data.price.toFixed(2)}</td>
+                            <td class="${changeClass}">${data.change >= 0 ? '+' : ''}${data.change.toFixed(2)}</td>
+                            <td class="${changeClass}">${data.change >= 0 ? '+' : ''}${data.changePercent.toFixed(2)}%</td>
+                            <td>${formatVolume(data.volume)}</td>
+                        `;
+                        matrixWatchlist.appendChild(row);
+                    }
+                });
+            }
+        }
+        
+        function updateMarketOverview() {
+            // Update major indices
+            if (marketData['SPY']) {
+                document.getElementById('spyPrice').textContent = `$${marketData['SPY'].price.toFixed(2)}`;
+                document.getElementById('spyPrice').className = marketData['SPY'].change >= 0 ? 'price-up' : 'price-down';
+            }
+            if (marketData['QQQ']) {
+                document.getElementById('qqqPrice').textContent = `$${marketData['QQQ'].price.toFixed(2)}`;
+                document.getElementById('qqqPrice').className = marketData['QQQ'].change >= 0 ? 'price-up' : 'price-down';
+            }
+            if (marketData['VIX']) {
+                document.getElementById('vixPrice').textContent = `$${marketData['VIX'].price.toFixed(2)}`;
+                document.getElementById('vixPrice').className = marketData['VIX'].change >= 0 ? 'price-up' : 'price-down';
+            }
+        }
+        
+        function updatePortfolio(data) {
+            portfolioData = data;
+            
+            // Update portfolio values
+            document.getElementById('portfolioValue').textContent = `$${data.totalValue.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+            document.getElementById('portfolioPnL').textContent = `${data.dayPnL >= 0 ? '+' : ''}$${data.dayPnL.toLocaleString('en-US', { minimumFractionDigits: 2 })}`;
+            document.getElementById('portfolioPnL').className = data.dayPnL >= 0 ? 'price-up' : 'price-down';
+            
+            // Update positions table
+            const positionsTable = document.getElementById('positionsTableBody');
+            if (positionsTable && data.positions) {
+                positionsTable.innerHTML = '';
+                data.positions.forEach(position => {
+                    const row = document.createElement('tr');
+                    const pnlClass = position.pnl >= 0 ? 'price-up' : 'price-down';
+                    
+                    row.innerHTML = `
+                        <td>${position.symbol}</td>
+                        <td>${position.quantity}</td>
+                        <td>$${position.avgPrice.toFixed(2)}</td>
+                        <td>$${position.currentPrice.toFixed(2)}</td>
+                        <td class="${pnlClass}">$${position.pnl.toFixed(2)}</td>
+                        <td class="${pnlClass}">${position.pnlPercent.toFixed(2)}%</td>
+                    `;
+                    positionsTable.appendChild(row);
+                });
+            }
+            
+            // Update risk metrics
+            if (data.risk) {
+                document.getElementById('var1d').textContent = `$${data.risk.var1d.toFixed(2)}`;
+                document.getElementById('maxDrawdown').textContent = `${data.risk.maxDrawdown.toFixed(2)}%`;
+                document.getElementById('portfolioBeta').textContent = data.risk.beta.toFixed(2);
+                document.getElementById('sharpeRatio').textContent = data.risk.sharpe.toFixed(2);
+            }
+        }
+        
+        function updateAISignals(data) {
+            const signalsContainer = document.getElementById('aiSignals');
+            if (signalsContainer && data.signals) {
+                signalsContainer.innerHTML = '';
+                data.signals.forEach(signal => {
+                    const signalDiv = document.createElement('div');
+                    signalDiv.style.cssText = 'padding: 12px; margin-bottom: 8px; border-radius: 8px; border: 1px solid var(--border-color);';
+                    
+                    const confidenceColor = signal.confidence > 0.7 ? 'var(--robinhood-green)' : 
+                                          signal.confidence > 0.5 ? 'var(--bloomberg-yellow)' : 'var(--robinhood-red)';
+                    
+                    signalDiv.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                            <div style="font-weight: 600;">${signal.symbol}</div>
+                            <div style="color: ${confidenceColor}; font-weight: 600;">${(signal.confidence * 100).toFixed(0)}%</div>
+                        </div>
+                        <div style="font-size: 14px; color: var(--text-secondary); margin-bottom: 4px;">${signal.signal}</div>
+                        <div style="font-size: 12px; color: var(--text-secondary);">${signal.reasoning}</div>
+                    `;
+                    signalsContainer.appendChild(signalDiv);
+                });
+            }
+        }
+        
+        function updateNews(data) {
+            const newsContainer = document.getElementById('newsFeed');
+            if (newsContainer && data.news) {
+                newsContainer.innerHTML = '';
+                data.news.forEach(item => {
+                    const newsDiv = document.createElement('div');
+                    newsDiv.style.cssText = 'padding: 8px; margin-bottom: 6px; border-bottom: 1px solid var(--border-color); cursor: pointer;';
+                    newsDiv.onclick = () => window.open(item.url, '_blank');
+                    
+                    newsDiv.innerHTML = `
+                        <div style="font-size: 10px; font-weight: 600; margin-bottom: 2px;">${item.headline}</div>
+                        <div style="font-size: 9px; color: var(--text-secondary); margin-bottom: 2px;">${item.source} • ${new Date(item.timestamp).toLocaleTimeString()}</div>
+                        <div style="font-size: 8px; color: var(--text-secondary);">${item.summary}</div>
+                    `;
+                    newsContainer.appendChild(newsDiv);
+                });
+            }
+        }
+        
+        // Utility Functions
+        function flashPriceChanges(data) {
+            Object.keys(data).forEach(symbol => {
+                const change = data[symbol].change;
+                // Add flash animation to relevant elements
+                const elements = document.querySelectorAll(`[data-symbol="${symbol}"]`);
+                elements.forEach(el => {
+                    el.classList.remove('flash-green', 'flash-red');
+                    if (change > 0) {
+                        el.classList.add('flash-green');
+                    } else if (change < 0) {
+                        el.classList.add('flash-red');
+                    }
+                });
+            });
+        }
+        
+        function formatVolume(volume) {
+            if (volume >= 1000000) {
+                return (volume / 1000000).toFixed(1) + 'M';
+            } else if (volume >= 1000) {
+                return (volume / 1000).toFixed(1) + 'K';
+            }
+            return volume.toString();
+        }
+        
+        function updateClock() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleTimeString();
+        }
+        
+        function expandPanel(panelType) {
+            // Switch to matrix mode and highlight specific panel
+            switchMode('matrix');
+            
+            // Could add panel-specific expansion logic here
+            setTimeout(() => {
+                const panel = document.querySelector(`.${panelType}-panel`);
+                if (panel) {
+                    panel.style.transform = 'scale(1.02)';
+                    panel.style.border = '2px solid var(--accent-primary)';
+                    setTimeout(() => {
+                        panel.style.transform = '';
+                        panel.style.border = '';
+                    }, 1000);
+                }
+            }, 100);
+        }
+        
+        function startDataStreams() {
+            // Start real-time data streams
+            socket.emit('start_market_data', { symbols: watchlistSymbols });
+            socket.emit('start_portfolio_updates');
+            socket.emit('start_news_feed');
+            socket.emit('start_ai_signals');
+            
+            // Periodic updates
+            setInterval(() => {
+                socket.emit('heartbeat');
+            }, 5000);
+        }
+        
+        // Initialize everything when page loads
+        console.log('Hive Trade Hybrid Terminal Loading...');
+    </script>
+</body>
+</html>

@@ -75,12 +75,12 @@ class Settings(BaseSettings):
     # Application
     app_name: str = Field(default="Bloomberg Terminal API")
     version: str = Field(default="1.0.0")
-    debug: bool = Field(default=False)
+    debug: bool = Field(default=True)
     environment: str = Field(default="development")
     
     # API
     api_port: int = Field(default=8000)
-    allowed_origins: List[str] = Field(default=["http://localhost:3000"])
+    allowed_origins: List[str] = Field(default=["http://localhost:3000", "http://localhost:5185", "http://localhost:5184", "http://localhost:5173"])
     api_key: Optional[str] = Field(default=None)
     
     # Component settings

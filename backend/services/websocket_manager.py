@@ -48,6 +48,7 @@ class WebSocketManager:
     async def connect(self, client_id: str, websocket: WebSocket) -> None:
         """Accept and manage new WebSocket connection."""
         try:
+            # Accept the WebSocket connection
             await websocket.accept()
             
             connection = ClientConnection(
@@ -74,7 +75,10 @@ class WebSocketManager:
             
             # Start monitoring tasks for this client if not already running
             if not self.is_running:
-                await self._start_background_tasks()
+                try:
+                    await self._start_background_tasks()
+                except Exception as e:
+                    logger.warning(f"Failed to start background tasks: {e}. Running in simple mode.")
             
         except Exception as e:
             logger.error(f"Error connecting client {client_id}: {e}")
@@ -325,9 +329,14 @@ class WebSocketManager:
         # Start background tasks
         self._tasks = [
             asyncio.create_task(self._ping_clients()),
-            asyncio.create_task(self._monitor_performance()),
-            asyncio.create_task(self._stream_redis_data())
+            asyncio.create_task(self._monitor_performance())
         ]
+        
+        # Try to add Redis streaming if available
+        try:
+            self._tasks.append(asyncio.create_task(self._stream_redis_data()))
+        except Exception as e:
+            logger.warning(f"Redis streaming unavailable: {e}")
         
         logger.info("WebSocket background tasks started")
     

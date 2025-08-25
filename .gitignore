@@ -197,6 +197,10 @@ data/backtest_results/
 logs/
 *.log
 trading_logs/
+live_*.log
+*_trades.log
+deployment.log
+strategy_switches.log
 
 # Configuration files with sensitive data
 config/production.yaml
@@ -205,30 +209,71 @@ config/api_keys.yaml
 .env.production
 .env.local
 
-# Database
+# Database files
 *.db
 *.sqlite
 *.sqlite3
-database/
+database/old/
+database/backups/
 
 # Cache
 cache/
 .cache/
 redis_data/
 
-# Temporary files
+# Temporary and output files
 tmp/
 temp/
 *.tmp
+*_results_*.json
+*_analysis_*.json
+*_analysis_*.txt
+*_report_*.txt
+*_metrics_*.json
+backtest_*.txt
+backtest_*.json
+log_*_*.txt
+log_*_*.json
+market_data_*_*.txt
+market_data_*_*.json
+sentiment_*_*.txt
+sentiment_*_*.json
+security_*_*.txt
+security_*_*.json
+sqlite_*_*.txt
+correlation_*.json
+crypto_analysis_*.json
+futures_analysis_*.json
+international_markets_*.json
+options_analysis_*.json
+portfolio_heatmap_*.json
+system_metrics_*.json
+system_optimization_*.txt
+multitimeframe_*.json
+multitimeframe_*.txt
+extended_backtest_*.json
+extended_backtest_*.txt
+ensemble_*.json
+ai_training_*.json
 
-# Model files
+# Model files and training artifacts
 models/
 *.pkl
 *.joblib
 *.model
+*.pth
+
+# Archive and backup directories
+archive/
+scripts/temp/
+paper_trading_backups/
+test_backups/
 
 # Jupyter notebooks with outputs
 *.ipynb
+
+# Task summaries and documentation artifacts
+TASK_*.md
 
 # OS specific
 .DS_Store
@@ -238,11 +283,23 @@ models/
 .Trashes
 ehthumbs.db
 Thumbs.db
+nul
 
 # Docker
 docker-compose.override.yml
+docker-compose.*.yml
 .dockerignore
 
 # Kubernetes
 k8s/secrets/
 *.kubeconfig
+
+# Development artifacts
+*.png
+*.jpg
+*.gif
+multi_strategy_backtest_results.png
+
+# IDE and editor files
+.vscode/settings.json.bak
+.claude/

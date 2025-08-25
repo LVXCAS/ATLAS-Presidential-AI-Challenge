@@ -12,6 +12,7 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 from config.logging_config import get_logger
 from config.settings import settings
+from config.database_optimization import db_optimizer
 
 logger = get_logger(__name__)
 
@@ -22,7 +23,7 @@ class Base(DeclarativeBase):
 
 
 class DatabaseManager:
-    """Database connection manager for PostgreSQL and Redis."""
+    """Database connection manager for PostgreSQL and Redis with optimizations."""
     
     def __init__(self):
         self.postgres_engine = None
@@ -31,6 +32,7 @@ class DatabaseManager:
         self.postgres_async_session_factory = None
         self.redis_pool = None
         self._initialized = False
+        self._optimized = False
     
     async def initialize(self):
         """Initialize database connections."""
@@ -50,34 +52,30 @@ class DatabaseManager:
             self._initialized = True
             logger.info("Database connections initialized successfully")
             
+            # Apply production optimizations
+            await self._apply_optimizations()
+            
         except Exception as e:
             logger.error(f"Failed to initialize database connections: {e}")
             raise
     
     async def _init_postgres(self):
-        """Initialize PostgreSQL connections."""
-        # Synchronous engine for migrations and setup
-        self.postgres_engine = create_engine(
-            settings.database.url,
-            echo=settings.debug
-        )
+        """Initialize optimized PostgreSQL connections."""
+        # Use optimized engine for production performance
+        self.postgres_engine = db_optimizer.get_optimized_postgres_engine()
         
-        # Session factory
+        # Session factory with optimized settings
         self.postgres_session_factory = sessionmaker(
             bind=self.postgres_engine,
-            expire_on_commit=False
+            expire_on_commit=False,
+            autoflush=True,
+            autocommit=False
         )
     
     async def _init_redis(self):
-        """Initialize Redis connection pool."""
-        redis_url = f"redis://:{settings.redis.password or ''}@{settings.redis.host}:{settings.redis.port}/{settings.redis.db}"
-        
-        self.redis_pool = redis.ConnectionPool.from_url(
-            redis_url,
-            max_connections=10,  # Default value
-            socket_timeout=5,    # Default value
-            decode_responses=True
-        )
+        """Initialize optimized Redis connection pool."""
+        # Use optimized Redis pool for production performance
+        self.redis_pool = await db_optimizer.get_optimized_redis_pool()
     
     async def _test_connections(self):
         """Test database connections."""
@@ -119,7 +117,41 @@ class DatabaseManager:
             await self.redis_pool.disconnect()
         
         self._initialized = False
+        self._optimized = False
         logger.info("Database connections closed")
+    
+    async def _apply_optimizations(self):
+        """Apply database optimizations for production performance."""
+        if self._optimized:
+            return
+            
+        try:
+            logger.info("🔧 Applying production database optimizations...")
+            
+            # Apply PostgreSQL optimizations
+            await db_optimizer.optimize_postgres_settings(self.postgres_engine)
+            await db_optimizer.create_database_indexes(self.postgres_engine)
+            await db_optimizer.create_performance_views(self.postgres_engine)
+            
+            self._optimized = True
+            logger.info("✅ Database optimizations applied successfully")
+            
+        except Exception as e:
+            logger.warning(f"⚠️  Could not apply all database optimizations: {e}")
+    
+    async def get_performance_metrics(self) -> dict:
+        """Get database performance metrics."""
+        if not self._initialized:
+            raise RuntimeError("Database not initialized")
+            
+        return await db_optimizer.monitor_database_performance(self.postgres_engine)
+    
+    async def analyze_performance(self) -> dict:
+        """Analyze database performance and get recommendations."""
+        if not self._initialized:
+            raise RuntimeError("Database not initialized")
+            
+        return await db_optimizer.analyze_query_performance(self.postgres_engine)
 
 
 # Global database manager instance

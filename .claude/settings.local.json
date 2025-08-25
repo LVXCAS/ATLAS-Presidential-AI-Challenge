@@ -18,7 +18,11 @@
       "Bash(start \"\" \"bloomberg-terminal.html\")",
       "Bash(start \"\" \"crypto-dashboard.html\")",
       "Bash(start \"\" \"ai-training-dashboard.html\")",
-      "Bash(start \"\" \"dashboard-simple.html\")"
+      "Bash(start \"\" \"dashboard-simple.html\")",
+      "Bash(pip install:*)",
+      "Bash(npm create:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []
