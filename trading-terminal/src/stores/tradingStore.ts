@@ -35,6 +35,7 @@ interface TradingState {
   setSystemStatus: (status: SystemStatus) => void;
   setConnected: (connected: boolean) => void;
   initWebSocket: () => void;
+  fetchLiveMarketData: () => Promise<void>;
   placeOrder: (symbol: string, side: 'BUY' | 'SELL', quantity: number) => Promise<void>;
   toggleAgent: (agentName: string) => Promise<void>;
 }
@@ -136,6 +137,45 @@ export const useTradingStore = create<TradingState>((set, get) => ({
       }
     } catch (error) {
       console.error('Order placement error:', error);
+    }
+  },
+
+  fetchLiveMarketData: async () => {
+    try {
+      // Fetch diverse market data across major sectors
+      const sectors = ['Technology', 'Financial', 'ETF', 'Healthcare', 'Energy'];
+      let allMarketData: { [symbol: string]: any } = {};
+      
+      // Fetch data from multiple sectors in parallel
+      const sectorRequests = sectors.map(async (sector) => {
+        try {
+          const response = await fetch(`http://localhost:8001/api/v1/live/market-data?sector=${sector}&limit=5`);
+          if (response.ok) {
+            const result = await response.json();
+            if (result.status === 'success' && result.data) {
+              return result.data;
+            }
+          }
+        } catch (error) {
+          console.error(`Error fetching ${sector} data:`, error);
+        }
+        return {};
+      });
+      
+      // Wait for all sector data to complete
+      const sectorResults = await Promise.all(sectorRequests);
+      
+      // Combine all sector data
+      sectorResults.forEach(data => {
+        Object.assign(allMarketData, data);
+      });
+      
+      // Update store with comprehensive market data
+      if (Object.keys(allMarketData).length > 0) {
+        get().setMarketData(allMarketData);
+      }
+    } catch (error) {
+      console.error('Market data fetch error:', error);
     }
   },
 

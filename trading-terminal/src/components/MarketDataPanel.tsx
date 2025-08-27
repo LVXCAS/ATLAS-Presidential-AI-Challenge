@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/styles/ag-grid.css';
@@ -41,8 +41,29 @@ const GridContainer = styled.div`
 const MarketDataPanel: React.FC = () => {
   const marketData = useTradingStore((state) => state.marketData);
   const placeOrder = useTradingStore((state) => state.placeOrder);
+  const fetchLiveMarketData = useTradingStore((state) => state.fetchLiveMarketData);
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date());
+  const [isLoading, setIsLoading] = useState(false);
 
   const rowData = Object.values(marketData);
+
+  // Fetch market data on component mount and set up refresh interval
+  useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      await fetchLiveMarketData();
+      setLastUpdate(new Date());
+      setIsLoading(false);
+    };
+
+    // Initial fetch
+    fetchData();
+
+    // Set up refresh interval (every 30 seconds)
+    const interval = setInterval(fetchData, 30000);
+
+    return () => clearInterval(interval);
+  }, [fetchLiveMarketData]);
 
   const columnDefs: any[] = [
     { 
@@ -96,6 +117,23 @@ const MarketDataPanel: React.FC = () => {
       valueFormatter: (params: any) => `${params.value?.toFixed(2) || '0.00'}`
     },
     {
+      field: 'timestamp',
+      headerName: 'TIME',
+      width: 70,
+      valueFormatter: (params: any) => {
+        if (!params.value) return '';
+        const timestamp = parseInt(params.value);
+        const date = new Date(timestamp * 1000);
+        return date.toLocaleTimeString('en-US', { 
+          hour12: false, 
+          hour: '2-digit', 
+          minute: '2-digit',
+          second: '2-digit'
+        });
+      },
+      cellStyle: { color: '#888', fontSize: '9px' }
+    },
+    {
       headerName: 'ACTIONS',
       width: 120,
       cellRenderer: (params: any) => {
@@ -142,7 +180,46 @@ const MarketDataPanel: React.FC = () => {
 
   return (
     <PanelContainer>
-      <PanelTitle>Market Data</PanelTitle>
+      <PanelTitle>
+        Market Data 
+        <div style={{ 
+          float: 'right', 
+          fontSize: '9px', 
+          color: '#666',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px'
+        }}>
+          {isLoading && <span style={{ color: '#ffa500' }}>🔄 Updating...</span>}
+          <span>Last Update: {lastUpdate.toLocaleTimeString('en-US', { 
+            hour12: false,
+            hour: '2-digit',
+            minute: '2-digit', 
+            second: '2-digit'
+          })} ({Intl.DateTimeFormat().resolvedOptions().timeZone})</span>
+          <button
+            onClick={async () => {
+              setIsLoading(true);
+              await fetchLiveMarketData();
+              setLastUpdate(new Date());
+              setIsLoading(false);
+            }}
+            disabled={isLoading}
+            style={{
+              backgroundColor: '#004400',
+              color: '#00ff00',
+              border: '1px solid #00ff00',
+              padding: '2px 6px',
+              cursor: isLoading ? 'not-allowed' : 'pointer',
+              fontSize: '8px',
+              borderRadius: '2px'
+            }}
+          >
+            REFRESH
+          </button>
+          <span style={{ color: '#00ff00' }}>●</span>
+        </div>
+      </PanelTitle>
       <GridContainer className="ag-theme-balham">
         <AgGridReact
           rowData={rowData}

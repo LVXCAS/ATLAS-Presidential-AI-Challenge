@@ -45,7 +45,7 @@ export const StockSearch: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:8002/api/stocks/search?query=${encodeURIComponent(query)}`);
+      const response = await fetch(`http://localhost:8001/api/stocks/search?query=${encodeURIComponent(query)}`);
       if (response.ok) {
         const data = await response.json();
         setSearchResults(data.results || []);
@@ -63,7 +63,7 @@ export const StockSearch: React.FC = () => {
     
     try {
       // Fetch historical bars (using daily data for better availability)
-      const barsResponse = await fetch(`http://localhost:8002/api/stocks/bars/${symbol}?timespan=day&multiplier=1&from_date=2024-08-01&limit=50`);
+      const barsResponse = await fetch(`http://localhost:8001/api/stocks/bars/${symbol}?timespan=day&limit=50`);
       if (barsResponse.ok) {
         const barsData = await barsResponse.json();
         setStockData(barsData.bars || []);
@@ -72,7 +72,7 @@ export const StockSearch: React.FC = () => {
       }
 
       // Fetch current quote
-      const quoteResponse = await fetch(`http://localhost:8002/api/stocks/quote/${symbol}`);
+      const quoteResponse = await fetch(`http://localhost:8001/api/stocks/quote/${symbol}`);
       if (quoteResponse.ok) {
         const quoteData = await quoteResponse.json();
         setStockQuote(quoteData);

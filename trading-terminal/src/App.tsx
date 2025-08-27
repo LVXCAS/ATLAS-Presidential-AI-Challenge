@@ -696,6 +696,331 @@ const ProfessionalChart = ({ symbol, marketData, timeframe, indicators, chartSty
   );
 };
 
+// ALPACA API Configuration Component
+const AlpacaApiConfig = () => {
+  const [apiKey, setApiKey] = useState('');
+  const [apiSecret, setApiSecret] = useState('');
+  const [baseUrl, setBaseUrl] = useState('paper'); // 'paper' or 'live'
+  const [connectionStatus, setConnectionStatus] = useState('disconnected');
+  const [isConnecting, setIsConnecting] = useState(false);
+
+  // Load saved credentials on component mount
+  useEffect(() => {
+    const savedKey = localStorage.getItem('alpaca_api_key');
+    const savedSecret = localStorage.getItem('alpaca_api_secret');
+    const savedUrl = localStorage.getItem('alpaca_base_url') || 'paper';
+    
+    if (savedKey) setApiKey(savedKey);
+    if (savedSecret) setApiSecret('•'.repeat(savedSecret.length));
+    setBaseUrl(savedUrl);
+    
+    // Check connection status on load
+    if (savedKey && savedSecret) {
+      checkConnection();
+    }
+  }, []);
+
+  const checkConnection = async () => {
+    try {
+      const response = await fetch('http://localhost:8001/api/alpaca/status');
+      const result = await response.json();
+      setConnectionStatus(result.status || 'disconnected');
+    } catch (error) {
+      console.error('Failed to check connection:', error);
+      setConnectionStatus('error');
+    }
+  };
+
+  const testConnection = async () => {
+    if (!apiKey.trim() || !apiSecret.trim()) {
+      alert('Please enter both API Key and Secret');
+      return;
+    }
+
+    setIsConnecting(true);
+    setConnectionStatus('connecting');
+
+    try {
+      const response = await fetch('http://localhost:8001/api/alpaca/configure', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          api_key: apiKey,
+          api_secret: apiSecret.includes('•') ? localStorage.getItem('alpaca_api_secret') : apiSecret,
+          base_url: baseUrl
+        })
+      });
+
+      const result = await response.json();
+      
+      if (response.ok && result.status === 'connected') {
+        setConnectionStatus('connected');
+        // Save credentials securely
+        localStorage.setItem('alpaca_api_key', apiKey);
+        if (!apiSecret.includes('•')) {
+          localStorage.setItem('alpaca_api_secret', apiSecret);
+          setApiSecret('•'.repeat(apiSecret.length)); // Mask the secret
+        }
+        localStorage.setItem('alpaca_base_url', baseUrl);
+      } else {
+        setConnectionStatus('error');
+        alert(result.message || 'Connection failed');
+      }
+    } catch (error) {
+      console.error('Connection test failed:', error);
+      setConnectionStatus('error');
+      alert('Failed to connect to Alpaca API');
+    }
+
+    setIsConnecting(false);
+  };
+
+  const clearCredentials = () => {
+    localStorage.removeItem('alpaca_api_key');
+    localStorage.removeItem('alpaca_api_secret');
+    localStorage.removeItem('alpaca_base_url');
+    setApiKey('');
+    setApiSecret('');
+    setBaseUrl('paper');
+    setConnectionStatus('disconnected');
+  };
+
+  const getStatusColor = () => {
+    switch (connectionStatus) {
+      case 'connected': return '#00ff00';
+      case 'connecting': return '#ffa500';
+      case 'error': return '#ff0000';
+      default: return '#666';
+    }
+  };
+
+  const getStatusText = () => {
+    switch (connectionStatus) {
+      case 'connected': return '✅ Connected';
+      case 'connecting': return '🔄 Connecting...';
+      case 'error': return '❌ Error';
+      default: return '🔌 Disconnected';
+    }
+  };
+
+  return (
+    <div style={{
+      width: '100%',
+      maxWidth: '800px',
+      margin: '0 auto',
+      color: '#00ff00'
+    }}>
+      {/* Header */}
+      <div style={{
+        background: '#333',
+        padding: '15px',
+        borderRadius: '5px',
+        marginBottom: '20px',
+        border: '1px solid #666'
+      }}>
+        <h2 style={{ 
+          color: '#ffa500', 
+          margin: '0 0 10px 0',
+          fontSize: '16px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px'
+        }}>
+          🔐 ALPACA API CONFIGURATION
+          <span style={{ 
+            color: getStatusColor(),
+            fontSize: '12px',
+            marginLeft: 'auto'
+          }}>
+            {getStatusText()}
+          </span>
+        </h2>
+        <p style={{ 
+          color: '#ccc', 
+          margin: 0, 
+          fontSize: '11px',
+          lineHeight: '1.4'
+        }}>
+          Connect your Alpaca Trading account to enable live trading functionality.
+          Your credentials are stored securely in your browser.
+        </p>
+      </div>
+
+      {/* Configuration Form */}
+      <div style={{
+        background: '#111',
+        padding: '20px',
+        borderRadius: '5px',
+        border: '1px solid #333'
+      }}>
+        <div style={{
+          display: 'grid',
+          gap: '20px',
+          gridTemplateColumns: '1fr 1fr'
+        }}>
+          {/* Left Column */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            {/* API Key */}
+            <div>
+              <label style={{ 
+                display: 'block', 
+                color: '#ffa500', 
+                fontSize: '11px',
+                fontWeight: 'bold',
+                marginBottom: '5px'
+              }}>
+                API KEY *
+              </label>
+              <input
+                type="text"
+                value={apiKey}
+                onChange={(e) => setApiKey(e.target.value)}
+                placeholder="Enter your Alpaca API Key"
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  background: '#000',
+                  border: '1px solid #666',
+                  color: '#00ff00',
+                  fontSize: '10px',
+                  fontFamily: 'Courier New, monospace'
+                }}
+              />
+            </div>
+
+            {/* API Secret */}
+            <div>
+              <label style={{ 
+                display: 'block', 
+                color: '#ffa500', 
+                fontSize: '11px',
+                fontWeight: 'bold',
+                marginBottom: '5px'
+              }}>
+                API SECRET *
+              </label>
+              <input
+                type="password"
+                value={apiSecret}
+                onChange={(e) => setApiSecret(e.target.value)}
+                placeholder="Enter your Alpaca API Secret"
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  background: '#000',
+                  border: '1px solid #666',
+                  color: '#00ff00',
+                  fontSize: '10px',
+                  fontFamily: 'Courier New, monospace'
+                }}
+              />
+            </div>
+          </div>
+
+          {/* Right Column */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            {/* Environment */}
+            <div>
+              <label style={{ 
+                display: 'block', 
+                color: '#ffa500', 
+                fontSize: '11px',
+                fontWeight: 'bold',
+                marginBottom: '5px'
+              }}>
+                ENVIRONMENT
+              </label>
+              <select
+                value={baseUrl}
+                onChange={(e) => setBaseUrl(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  background: '#000',
+                  border: '1px solid #666',
+                  color: '#00ff00',
+                  fontSize: '10px',
+                  fontFamily: 'Courier New, monospace'
+                }}
+              >
+                <option value="paper">Paper Trading (Sandbox)</option>
+                <option value="live">Live Trading (Real Money)</option>
+              </select>
+            </div>
+
+            {/* Actions */}
+            <div style={{ display: 'flex', gap: '10px', marginTop: '10px' }}>
+              <button
+                onClick={testConnection}
+                disabled={isConnecting}
+                style={{
+                  flex: 1,
+                  padding: '10px',
+                  background: '#004400',
+                  color: '#00ff00',
+                  border: '1px solid #00ff00',
+                  cursor: isConnecting ? 'not-allowed' : 'pointer',
+                  fontSize: '10px',
+                  fontWeight: 'bold',
+                  opacity: isConnecting ? 0.6 : 1
+                }}
+              >
+                {isConnecting ? 'TESTING...' : 'TEST CONNECTION'}
+              </button>
+              
+              <button
+                onClick={clearCredentials}
+                style={{
+                  padding: '10px',
+                  background: '#440000',
+                  color: '#ff0000',
+                  border: '1px solid #ff0000',
+                  cursor: 'pointer',
+                  fontSize: '10px',
+                  fontWeight: 'bold'
+                }}
+              >
+                CLEAR
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Info Panel */}
+        <div style={{
+          marginTop: '20px',
+          padding: '15px',
+          background: '#0a0a0a',
+          border: '1px solid #333',
+          borderRadius: '3px'
+        }}>
+          <h3 style={{ 
+            color: '#ffa500', 
+            fontSize: '12px',
+            margin: '0 0 10px 0'
+          }}>
+            📋 SETUP INSTRUCTIONS
+          </h3>
+          <div style={{ fontSize: '10px', color: '#ccc', lineHeight: '1.6' }}>
+            <p style={{ margin: '0 0 8px 0' }}>
+              1. Sign up for an account at <span style={{color: '#00ff00'}}>alpaca.markets</span>
+            </p>
+            <p style={{ margin: '0 0 8px 0' }}>
+              2. Navigate to the API section in your Alpaca dashboard
+            </p>
+            <p style={{ margin: '0 0 8px 0' }}>
+              3. Generate new API keys (Key ID and Secret Key)
+            </p>
+            <p style={{ margin: '0 0 0 0' }}>
+              4. Use <span style={{color: '#ffa500'}}>Paper Trading</span> for testing or <span style={{color: '#ff6666'}}>Live Trading</span> for real money
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function App() {
   // Selected symbol for charts
   const [selectedSymbol, setSelectedSymbol] = useState('SPY');
@@ -1567,6 +1892,7 @@ function App() {
               { id: 'MARKET_DATA', label: 'MARKET DATA', icon: '💹' },
               { id: 'OPTIONS', label: 'OPTIONS', icon: '🎯' },
               { id: 'AGENTS', label: 'AI AGENTS', icon: '🤖' },
+              { id: 'ALPACA_API', label: 'ALPACA API', icon: '🔐' },
               { id: 'NEWS', label: 'NEWS & SENTIMENT', icon: '📰' },
               { id: 'PERFORMANCE', label: 'PERFORMANCE', icon: '📊' },
               { id: 'ORDERS', label: 'ORDERS', icon: '📋' }
@@ -2575,6 +2901,20 @@ function App() {
                     </div>
                   </div>
                 </div>
+              </div>
+            )}
+
+            {activeTab === 'ALPACA_API' && (
+              <div style={{
+                height: '100%',
+                background: '#0a0a0a',
+                border: '1px solid #222',
+                padding: '20px',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '20px'
+              }}>
+                <AlpacaApiConfig />
               </div>
             )}
 
