@@ -27,7 +27,7 @@ from services.risk_service import RiskService
 from services.websocket_manager import WebSocketManager
 from services.orchestration_service import OrchestrationService
 from services.risk_monitoring_service import RiskMonitoringService
-from api.routes import market_data, orders, portfolio, risk, system, agents, risk_management, backtesting, training, monitoring, live_data
+from api.routes import market_data, orders, portfolio, risk, system, agents, risk_management, backtesting, training, monitoring, live_data, stock_data
 
 # Metrics
 REQUEST_COUNT = Counter('http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'status'])
@@ -325,6 +325,7 @@ app.include_router(backtesting.router, prefix="/api/v1/backtesting", tags=["back
 app.include_router(training.router, prefix="/api/v1/training", tags=["training"])
 app.include_router(monitoring.router, prefix="/api/v1/monitoring", tags=["monitoring"])
 app.include_router(live_data.router, prefix="/api/v1/live", tags=["live-data"])
+app.include_router(stock_data.router, tags=["stock-data"])
 
 
 if __name__ == "__main__":

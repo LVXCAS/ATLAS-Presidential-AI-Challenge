@@ -32,7 +32,6 @@ class RedisSettings(BaseModel):
 
 class TradingSettings(BaseModel):
     """Trading configuration."""
-    paper_trading: bool = Field(default=True)
     max_position_size: float = Field(default=10000.0)
     max_portfolio_value: float = Field(default=1000000.0)
     risk_limit: float = Field(default=0.02)  # 2% max daily loss
@@ -43,7 +42,7 @@ class AlpacaSettings(BaseModel):
     """Alpaca broker configuration."""
     api_key: Optional[str] = Field(default=None)
     secret_key: Optional[str] = Field(default=None)
-    base_url: str = Field(default="https://paper-api.alpaca.markets")  # Paper trading by default
+    base_url: str = Field(default="https://api.alpaca.markets")  # Live trading
     data_url: str = Field(default="https://data.alpaca.markets")
 
 
@@ -141,12 +140,14 @@ class Settings(BaseSettings):
         # Polygon
         if os.getenv("POLYGON_API_KEY"):
             self.polygon.api_key = os.getenv("POLYGON_API_KEY")
+        else:
+            # Default Polygon API key
+            self.polygon.api_key = "7pqdvQXt0kEHuDWicU3D_e9YxuXF565q"
         
         # Environment-specific overrides
         if self.environment == "production":
             self.debug = False
             self.database.echo = False
-            self.trading.paper_trading = False
             self.alpaca.base_url = "https://api.alpaca.markets"
             self.monitoring.log_level = "WARNING"
         elif self.environment == "development":

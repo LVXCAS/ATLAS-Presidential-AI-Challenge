@@ -236,7 +236,7 @@ class OrderService:
             await self._store_order_in_db(order)
             
             # Submit to broker
-            if self.alpaca_api and not settings.trading.paper_trading:
+            if self.alpaca_api:
                 broker_order = await self._submit_to_alpaca(order_request)
                 if broker_order:
                     order.broker_order_id = broker_order.id
@@ -245,9 +245,8 @@ class OrderService:
                     order.status = OrderStatus.REJECTED
                     order.rejection_reason = "Broker submission failed"
             else:
-                # Paper trading mode
-                order.status = OrderStatus.NEW
-                await self._simulate_order_execution(order)
+                order.status = OrderStatus.REJECTED
+                order.rejection_reason = "No broker connection available"
             
             # Update order
             order.updated_at = datetime.now(timezone.utc)
@@ -444,34 +443,6 @@ class OrderService:
         except Exception as e:
             logger.error(f"Error submitting order to Alpaca: {e}")
             return None
-    
-    async def _simulate_order_execution(self, order: Order) -> None:
-        """Simulate order execution for paper trading."""
-        try:
-            await asyncio.sleep(0.1)  # Simulate network latency
-            
-            if order.order_type == OrderType.MARKET:
-                # Market orders fill immediately
-                last_price = await self._get_last_price(order.symbol)
-                if last_price:
-                    await self._execute_order(order, order.quantity, last_price)
-            
-            elif order.order_type == OrderType.LIMIT:
-                # Limit orders might fill if price is favorable
-                current_price = await self._get_last_price(order.symbol)
-                if current_price:
-                    should_fill = False
-                    if order.side == OrderSide.BUY and current_price <= order.price:
-                        should_fill = True
-                    elif order.side == OrderSide.SELL and current_price >= order.price:
-                        should_fill = True
-                    
-                    if should_fill:
-                        await asyncio.sleep(0.5)  # Simulate partial delay
-                        await self._execute_order(order, order.quantity, order.price)
-            
-        except Exception as e:
-            logger.error(f"Error simulating order execution: {e}")
     
     async def _execute_order(self, order: Order, quantity: int, price: float) -> None:
         """Execute order (fill or partial fill)."""

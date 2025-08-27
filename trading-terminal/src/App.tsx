@@ -2,6 +2,7 @@
 import { createGlobalStyle } from 'styled-components';
 import { useState, useEffect, useRef } from 'react';
 import webSocketService, { MarketDataMessage, AgentSignalMessage, PortfolioUpdateMessage, RiskAlertMessage, SystemStatusMessage } from './services/websocketService';
+import { StockSearch } from './components/StockSearch';
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -175,34 +176,11 @@ const InteractiveCommandLine = ({ marketData, agents, setAgents, webSocketConnec
           break;
 
         case 'MODE':
-          if (parts.length === 2) {
-            const newMode = parts[1].toUpperCase();
-            if (['SIMULATION', 'PAPER', 'LIVE'].includes(newMode)) {
-              setTradingMode(newMode);
-              setOutput(prev => [...prev, { type: 'success', text: `TRADING MODE SET TO: ${newMode}` }]);
-              
-              if (newMode === 'LIVE') {
-                setOutput(prev => [...prev, { type: 'warning', text: 'CONNECTING TO LIVE DATA FEEDS...' }]);
-                // Start live data fetching
-                fetchLiveMarketData();
-                fetchLiveNews();
-              } else {
-                setIsConnected(false);
-                setIsSimulationMode(newMode === 'SIMULATION');
-                setOutput(prev => [...prev, { type: 'info', text: `${newMode} MODE ACTIVATED - REAL-TIME DATA FEED` }]);
-              }
-            } else {
-              setOutput(prev => [...prev, { type: 'error', text: 'INVALID MODE - USE: SIMULATION, PAPER, OR LIVE' }]);
-            }
-          } else {
-            setOutput(prev => [...prev, 
-              { type: 'info', text: `CURRENT MODE: ${tradingMode}` },
-              { type: 'info', text: 'USAGE: MODE <SIMULATION|PAPER|LIVE>' },
-              { type: 'info', text: 'SIMULATION - High volatility demo data' },
-              { type: 'info', text: 'PAPER - Realistic market simulation' },
-              { type: 'info', text: 'LIVE - Real trading (requires connection)' }
-            ]);
-          }
+          setOutput(prev => [...prev, 
+            { type: 'info', text: `CURRENT MODE: LIVE (Fixed)` },
+            { type: 'info', text: 'System operates in LIVE trading mode only' },
+            { type: 'info', text: 'All orders are placed in real market' }
+          ]);
           break;
 
         case 'HELP':
@@ -211,7 +189,7 @@ const InteractiveCommandLine = ({ marketData, agents, setAgents, webSocketConnec
             { type: 'info', text: 'BUY <SYMBOL> <QTY> - Place buy order' },
             { type: 'info', text: 'SELL <SYMBOL> <QTY> - Place sell order' },
             { type: 'info', text: 'AGENT START/STOP <NAME> - Control agents' },
-            { type: 'info', text: 'MODE <SIMULATION|PAPER|LIVE> - Switch trading mode' },
+            { type: 'info', text: 'MODE - Show current trading mode (LIVE only)' },
             { type: 'info', text: 'PORTFOLIO - Portfolio summary' },
             { type: 'info', text: 'MARKET - Market snapshot' },
             { type: 'info', text: 'STATUS - System status' },
@@ -723,7 +701,7 @@ function App() {
   const [selectedSymbol, setSelectedSymbol] = useState('SPY');
   
   // Active tabs state
-  const [activeTab, setActiveTab] = useState('MARKET_DATA');
+  const [activeTab, setActiveTab] = useState('STOCK_SEARCH');
   const [chartTimeframe, setChartTimeframe] = useState('1M');
   const [chartIndicators, setChartIndicators] = useState(['MA', 'RSI', 'VWAP']);
   const [chartStyle, setChartStyle] = useState('CANDLE'); // CANDLE, LINE, HEIKIN_ASHI
@@ -731,8 +709,7 @@ function App() {
   
   // WebSocket connection state
   const [isConnected, setIsConnected] = useState(false);
-  const [isSimulationMode, setIsSimulationMode] = useState(false);
-  const [tradingMode, setTradingMode] = useState('SIMULATION'); // SIMULATION, LIVE, PAPER
+  const [tradingMode, setTradingMode] = useState('LIVE'); // LIVE trading only
   const [connectionError, setConnectionError] = useState<string | null>(null);
   const [realtimeUpdates, setRealtimeUpdates] = useState(0);
   
@@ -1372,8 +1349,7 @@ function App() {
         setConnectionError(`${tradingMode} MODE - All features working`);
         setIsConnected(false); // Show current mode
         
-        // Enhanced fallback data with mode-specific behavior
-        setIsSimulationMode(tradingMode === 'SIMULATION');
+        // Enhanced fallback data for live trading
         let updateCount = 0;
         const interval = setInterval(() => {
           updateCount++;
@@ -1500,7 +1476,7 @@ function App() {
             }
           }
           
-        }, tradingMode === 'SIMULATION' ? 1000 : tradingMode === 'PAPER' ? 1500 : 2000); // Mode-specific intervals
+        }, 1000); // Live trading interval
 
         return () => clearInterval(interval);
       }
@@ -1542,40 +1518,23 @@ function App() {
             HIVE TRADE QUANTUM TERMINAL v2.0
           </div>
           <div style={{ display: 'flex', gap: '20px', alignItems: 'center' }}>
-            {/* Trading Mode Switcher */}
+            {/* Trading Mode Display */}
             <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
               <span style={{ color: '#666', fontSize: '9px' }}>MODE:</span>
-              {['SIMULATION', 'PAPER', 'LIVE'].map(mode => (
-                <button
-                  key={mode}
-                  onClick={() => {
-                    setTradingMode(mode);
-                    if (mode === 'LIVE') {
-                      // Connect to live data feeds
-                      fetchLiveMarketData();
-                      fetchLiveNews();
-                    } else {
-                      setIsConnected(false);
-                      setIsSimulationMode(mode === 'SIMULATION');
-                    }
-                  }}
-                  style={{
-                    background: tradingMode === mode ? (mode === 'LIVE' ? '#ff0000' : mode === 'PAPER' ? '#ffa500' : '#ff9500') : '#333',
-                    color: tradingMode === mode ? '#000' : '#ccc',
-                    border: '1px solid #666',
-                    padding: '2px 6px',
-                    fontSize: '8px',
-                    cursor: 'pointer',
-                    fontWeight: tradingMode === mode ? 'bold' : 'normal'
-                  }}
-                >
-                  {mode}
-                </button>
-              ))}
+              <span style={{
+                background: '#ff0000',
+                color: '#000',
+                border: '1px solid #666',
+                padding: '2px 6px',
+                fontSize: '8px',
+                fontWeight: 'bold'
+              }}>
+                LIVE
+              </span>
             </div>
             
-            <div style={{ color: isConnected ? '#00ff00' : tradingMode === 'LIVE' ? '#ff0000' : '#ff9500' }}>
-              ● {isConnected ? 'CONNECTED' : tradingMode === 'LIVE' ? 'OFFLINE' : `${tradingMode} MODE`}
+            <div style={{ color: isConnected ? '#00ff00' : '#ff0000' }}>
+              ● {isConnected ? 'CONNECTED' : 'OFFLINE'}
             </div>
             <div style={{ color: '#00ff00' }}>● MARKET OPEN</div>
             <div style={{ color: '#ffa500', fontSize: '10px' }}>
@@ -1603,6 +1562,7 @@ function App() {
             gap: '2px'
           }}>
             {[
+              { id: 'STOCK_SEARCH', label: 'STOCK SEARCH', icon: '🔍' },
               { id: 'CHARTS', label: 'CHARTS', icon: '📈' },
               { id: 'MARKET_DATA', label: 'MARKET DATA', icon: '💹' },
               { id: 'OPTIONS', label: 'OPTIONS', icon: '🎯' },
@@ -1638,6 +1598,16 @@ function App() {
             overflow: 'hidden',
             padding: '10px'
           }}>
+            {activeTab === 'STOCK_SEARCH' && (
+              <div style={{ 
+                height: '100%', 
+                background: '#0a0a0a',
+                overflow: 'auto'
+              }}>
+                <StockSearch />
+              </div>
+            )}
+
             {activeTab === 'CHARTS' && (
               <ProfessionalChart 
                 symbol={selectedSymbol} 
