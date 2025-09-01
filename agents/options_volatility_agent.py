@@ -686,7 +686,7 @@ class OptionsVolatilityAgent:
             return []
     
     async def _get_options_data(self, symbol: str) -> List[OptionsData]:
-        """Get options chain data (mock implementation)"""
+        """Get options chain data with theta and expiration filters"""
         try:
             ticker = yf.Ticker(symbol)
             current_price = ticker.history(period="1d")['Close'].iloc[-1]
@@ -694,11 +694,18 @@ class OptionsVolatilityAgent:
             # Mock options data
             options_data = []
             strikes = np.arange(current_price * 0.8, current_price * 1.2, current_price * 0.05)
-            expirations = [datetime.now() + timedelta(days=d) for d in [7, 14, 30, 60]]
+            # Updated expirations - minimum 2 weeks (14 days) in advance
+            # Using 15, 22, 31, 46, 61 days to ensure we stay above the 14-day minimum
+            expirations = [datetime.now() + timedelta(days=d) for d in [15, 22, 31, 46, 61]]
             
             for exp in expirations:
+                # Check minimum 2 weeks expiration filter
+                days_to_expiration = (exp - datetime.now()).days
+                if days_to_expiration < 14:  # Must be at least 2 weeks in advance
+                    continue
+                    
                 for strike in strikes:
-                    tte = (exp - datetime.now()).days / 365.0
+                    tte = days_to_expiration / 365.0
                     
                     for option_type in ['call', 'put']:
                         # Mock implied volatility
@@ -719,6 +726,11 @@ class OptionsVolatilityAgent:
                         greeks = self.bs_calculator.calculate_greeks(
                             current_price, strike, tte, self.risk_free_rate, iv, option_type
                         )
+                        
+                        # Apply theta filter - reject options with theta magnitude > 10% of option price
+                        theta_threshold = abs(theo_price * 0.10)  # 10% of option price
+                        if abs(greeks['theta']) > theta_threshold:
+                            continue  # Skip this option due to high theta
                         
                         option = OptionsData(
                             symbol=symbol,
