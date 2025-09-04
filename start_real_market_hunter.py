@@ -19,7 +19,7 @@ sys.path.append('.')
 # Load environment variables
 try:
     from dotenv import load_dotenv
-    load_dotenv('.env.development')
+    load_dotenv('.env')
     POLYGON_API_KEY = os.getenv('POLYGON_API_KEY')
     ALPACA_API_KEY = os.getenv('ALPACA_API_KEY')
     ALPACA_SECRET_KEY = os.getenv('ALPACA_SECRET_KEY')
@@ -292,12 +292,14 @@ class RealMarketDataHunter:
         if rsi < 60 and price_change > -0.01:
             strike = price * 1.05  # 5% OTM
             premium = price * 0.02  # Estimate 2% premium
+            delta = -0.3  # OTM call sold has negative delta from seller's perspective
             
             strategies.append({
                 'symbol': symbol,
                 'strategy': 'COVERED_CALL',
                 'strike': strike,
                 'premium': premium,
+                'delta': delta,
                 'confidence': 0.6,
                 'reason': f"Covered Call ${strike:.2f} strike for ${premium:.2f} premium"
             })
@@ -306,12 +308,14 @@ class RealMarketDataHunter:
         if price_change > 0.03 and rsi < 75:
             strike = price * 1.02
             premium = price * 0.04
+            delta = 0.6  # ITM/ATM call has high positive delta
             
             strategies.append({
                 'symbol': symbol,
                 'strategy': 'LONG_CALL',
                 'strike': strike,
                 'premium': premium,
+                'delta': delta,
                 'confidence': 0.5 + abs(price_change) * 5,
                 'reason': f"Momentum call ${strike:.2f} strike, momentum: {price_change:.1%}"
             })
@@ -342,8 +346,9 @@ class RealMarketDataHunter:
         # Analyze each stock with real data
         for symbol in self.all_stocks:
             try:
-                # Get real market data
-                data = await self.get_real_market_data(symbol)
+                self.log_trade(f"Fetching data for {symbol}...")
+                # Get real market data with timeout
+                data = await asyncio.wait_for(self.get_real_market_data(symbol), timeout=10)
                 
                 if data:
                     successful_fetches += 1
@@ -383,6 +388,8 @@ class RealMarketDataHunter:
                 # Small delay to avoid rate limits
                 await asyncio.sleep(0.1)
                 
+            except asyncio.TimeoutError:
+                self.log_trade(f"Timeout fetching data for {symbol} - skipping")
             except Exception as e:
                 self.log_trade(f"Error processing {symbol}: {e}")
         
@@ -440,7 +447,75 @@ class RealMarketDataHunter:
         
         else:  # OPTIONS
             strategy = opp['strategy']
-            self.log_trade(f"REAL OPTIONS #{self.trade_count}: {strategy} {opp['symbol']} ${opp['strike']:.2f} strike | Premium: ${opp['premium']:.2f} | Confidence: {opp['confidence']:.1%} | {opp['reason']}")
+            try:
+                if self.broker:
+                    # Create options order for Alpaca
+                    from agents.broker_integration import OrderRequest, OrderSide, OrderType
+                    
+                    # Determine if we're buying or selling the option
+                    if strategy in ['LONG_PUT', 'LONG_CALL']:
+                        side = OrderSide.BUY
+                        qty = 1  # Buy 1 contract
+                    elif strategy in ['COVERED_CALL', 'COVERED_PUT']:
+                        side = OrderSide.SELL  
+                        qty = 1  # Sell 1 contract
+                    else:
+                        side = OrderSide.BUY
+                        qty = 1
+                    
+                    # Alpaca paper trading doesn't support real options, so we'll simulate with leveraged positions
+                    # Calculate equivalent stock position that mimics options exposure
+                    
+                    # Options strategies to stock equivalent mapping
+                    if strategy == 'LONG_PUT':
+                        # Long put = bearish position, equivalent to short stock with less capital
+                        equivalent_side = OrderSide.SELL  # Short position
+                        # Use delta-adjusted quantity (puts typically have negative delta)
+                        equivalent_qty = int(50 * abs(opp.get('delta', 0.5)))  # 50-100 shares based on delta
+                    elif strategy == 'LONG_CALL':  
+                        # Long call = bullish position
+                        equivalent_side = OrderSide.BUY
+                        equivalent_qty = int(50 * opp.get('delta', 0.5))  # 25-50 shares based on delta
+                    elif strategy == 'COVERED_CALL':
+                        # Covered call = own stock + sell call (conservative bullish)
+                        equivalent_side = OrderSide.BUY  
+                        equivalent_qty = 100  # Full position like owning 100 shares
+                    elif strategy == 'COVERED_PUT':
+                        # Covered put = short stock + sell put
+                        equivalent_side = OrderSide.SELL
+                        equivalent_qty = 100
+                    else:
+                        equivalent_side = side
+                        equivalent_qty = 50  # Default moderate position
+                    
+                    # Ensure minimum quantity
+                    equivalent_qty = max(1, equivalent_qty)
+                    
+                    options_order = OrderRequest(
+                        symbol=opp['symbol'],
+                        qty=equivalent_qty,
+                        side=equivalent_side,
+                        type=OrderType.MARKET
+                    )
+                    
+                    order_response = await self.broker.submit_order(options_order)
+                    self.log_trade(f"REAL TRADE #{self.trade_count}: {strategy} {opp['symbol']} Equivalent Position ({equivalent_qty} shares) | ID: {order_response.id} | Strike: ${opp.get('strike', 0):.2f} | Premium: ${opp.get('premium', 0):.2f} | Confidence: {opp['confidence']:.1%} | {opp['reason']}")
+                    
+                    # Update position tracker
+                    if opp['symbol'] not in self.position_tracker:
+                        self.position_tracker[opp['symbol']] = 0
+                    
+                    if equivalent_side == OrderSide.BUY:
+                        self.position_tracker[opp['symbol']] += equivalent_qty
+                    else:
+                        self.position_tracker[opp['symbol']] -= equivalent_qty
+                        
+                else:
+                    self.log_trade(f"REAL OPTIONS #{self.trade_count}: {strategy} {opp['symbol']} ${opp['strike']:.2f} strike | Premium: ${opp['premium']:.2f} | Confidence: {opp['confidence']:.1%} | {opp['reason']}")
+                    
+            except Exception as e:
+                self.log_trade(f"Error executing options trade: {e}")
+                self.log_trade(f"REAL OPTIONS #{self.trade_count}: {strategy} {opp['symbol']} ${opp['strike']:.2f} strike | Premium: ${opp['premium']:.2f} | Confidence: {opp['confidence']:.1%} | {opp['reason']}")
     
     async def start_real_market_hunting(self):
         """Start real market data hunting system"""
@@ -484,11 +559,20 @@ class RealMarketDataHunter:
         try:
             hunt_cycle = 0
             while True:
-                current_time = datetime.now()
+                # Use Eastern Time for market hours
+                import pytz
+                et = pytz.timezone('US/Eastern')
+                current_time = datetime.now(et)
                 current_hour = current_time.hour
+                current_minute = current_time.minute
                 
-                # Hunt during market hours (9 AM - 4 PM)
-                if 9 <= current_hour <= 16:
+                # Hunt during market hours (9:30 AM - 4 PM ET)
+                market_open = (current_hour > 9) or (current_hour == 9 and current_minute >= 30)
+                market_close = current_hour < 16
+                
+                self.log_trade(f"Market check: {current_time.strftime('%H:%M ET')}, Open: {market_open}, Before Close: {market_close}")
+                
+                if market_open and market_close:
                     hunt_cycle += 1
                     self.log_trade(f"=== REAL DATA HUNT CYCLE #{hunt_cycle} ===")
                     
@@ -499,6 +583,11 @@ class RealMarketDataHunter:
                         positions_str = ", ".join([f"{sym}: {pos}" for sym, pos in self.position_tracker.items() if pos != 0])
                         if positions_str:
                             self.log_trade(f"Active Positions: {positions_str}")
+                
+                else:
+                    self.log_trade("Market closed - waiting 60 seconds...")
+                    await asyncio.sleep(60)  # Check every minute when market is closed
+                    continue
                 
                 # Wait 5 minutes before next hunt (to respect API limits)
                 await asyncio.sleep(300)

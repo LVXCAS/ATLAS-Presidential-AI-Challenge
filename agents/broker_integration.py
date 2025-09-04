@@ -177,11 +177,11 @@ class OrderResponse:
             hwm=Decimal(str(alpaca_order.hwm)) if alpaca_order.hwm else None,
             quantity=Decimal(str(alpaca_order.qty)),
             price=Decimal(str(alpaca_order.limit_price)) if alpaca_order.limit_price else None,
-            filled_price=Decimal(str(alpaca_order.filled_price)) if alpaca_order.filled_price else None,
-            filled_quantity=Decimal(str(alpaca_order.filled_quantity)) if alpaca_order.filled_quantity else None,
-            commission=Decimal(str(alpaca_order.commission)) if alpaca_order.commission else None,
-            slippage=Decimal(str(alpaca_order.slippage)) if alpaca_order.slippage else None,
-            metadata=alpaca_order.metadata
+            filled_price=Decimal(str(alpaca_order.filled_avg_price)) if hasattr(alpaca_order, 'filled_avg_price') and alpaca_order.filled_avg_price else None,
+            filled_quantity=Decimal(str(alpaca_order.filled_qty)) if hasattr(alpaca_order, 'filled_qty') and alpaca_order.filled_qty else None,
+            commission=Decimal(str(alpaca_order.commission)) if hasattr(alpaca_order, 'commission') and alpaca_order.commission else None,
+            slippage=None,  # Alpaca doesn't provide slippage directly
+            metadata=getattr(alpaca_order, 'metadata', {})
         )
 
 
