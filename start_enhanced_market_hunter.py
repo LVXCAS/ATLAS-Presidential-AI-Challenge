@@ -51,23 +51,62 @@ class EnhancedMarketHunter:
         self.price_cache = {}
         self.last_cache_update = {}
         
-        # Stock universe for trading
-        self.stock_sectors = {
-            'mega_cap': ['AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'TSLA', 'META'],
-            'large_cap_tech': ['ADBE', 'CRM', 'NFLX', 'AMD', 'INTC', 'ORCL', 'CSCO'],
-            'financial': ['JPM', 'BAC', 'WFC', 'GS', 'MS', 'C', 'AXP'],
-            'healthcare': ['JNJ', 'UNH', 'PFE', 'ABBV', 'MRK', 'TMO', 'ABT'],
-            'consumer': ['WMT', 'PG', 'KO', 'PEP', 'MCD', 'NKE', 'SBUX'],
-            'industrial': ['CAT', 'BA', 'GE', 'MMM', 'HON', 'UPS', 'LMT'],
-            'energy': ['XOM', 'CVX', 'COP', 'SLB', 'EOG', 'PXD'],
-            'etfs': ['SPY', 'QQQ', 'IWM', 'DIA', 'VTI', 'XLF', 'XLK']
-        }
+        # Comprehensive stock universe: S&P 500, NASDAQ-100, and Dow Jones
+        self.sp500_stocks = [
+            'AAPL','MSFT','AMZN','NVDA','GOOGL','GOOG','BRK-B','META','TSLA','UNH','LLY','V','XOM','JPM',
+            'JNJ','WMT','MA','AVGO','HD','PG','CVX','ABBV','MRK','KO','PEP','COST','BAC','TMO','NFLX',
+            'DHR','ABT','CRM','VZ','ADBE','WFC','CMCSA','ACN','NKE','LIN','TXN','RTX','NEE','AMD','QCOM',
+            'PM','LOW','SPGI','HON','UNP','T','INTU','MDT','CAT','AMGN','GS','ORCL','INTC','AXP','IBM',
+            'COP','NOW','PFE','AMAT','BMY','DE','GILD','MU','BKNG','TJX','SCHW','ADP','ADI','SYK','TMUS',
+            'LRCX','PLD','CB','MMC','FI','MO','DUK','TGT','CSX','SO','KLAC','ITW','EOG','WM','APD',
+            'CL','CME','FCX','SHW','MAR','USB','HCA','NSC','ICE','GD','COF','EMR','PGR','NOC','TFC',
+            'BSX','GM','F','MCD','BDX','AON','JCI','TRV','CARR','MMM','PSX','MPC','D','EXC','KMI',
+            'SLB','PAYX','AIG','NUE','ECL','OKE','CTAS','GWW','CMI','WELL','ORLY','TEL','RSG','MSI',
+            'ETN','FAST','VRTX','VRSK','HPQ','BK','MTB','PH','CPRT','GLW','WBA','DG','CTVA','LHX',
+            'KR','EW','BIIB','MLM','A','DVA','DD','EA','HPE','MDLZ','IEX','RMD','ADM','WAB','XEL',
+            'URI','WRB','FITB','LVS','SIVB','ZION','RF','HBAN','CFG','KEY','PVH','HRL','CLX','TSN',
+            'WDC','MHK','LW','XRAY','PNR','SWK','NLSN','PRGO','HAS','DISH','GPS','NWL','UAA','UA'
+        ]
         
-        # Flatten to list
-        self.all_stocks = []
-        for sector, stocks in self.stock_sectors.items():
-            self.all_stocks.extend(stocks)
-        self.all_stocks = list(set(self.all_stocks))
+        self.nasdaq100_stocks = [
+            'AAPL','MSFT','AMZN','NVDA','GOOGL','GOOG','META','TSLA','COST','NFLX','ADBE','PEP','TMUS',
+            'CMCSA','INTC','TXN','QCOM','INTU','AMD','AMAT','LRCX','MU','ADI','MELI','KLAC','CDNS',
+            'SNPS','MRVL','ORLY','CSX','ABNB','FTNT','CHTR','TEAM','NXPI','ADP','WDAY','DXCM','PAYX',
+            'ROST','FAST','BIIB','KDP','EA','VRSK','CTSH','LULU','CSGP','DLTR','ODFL','CRWD','ANSS',
+            'FANG','LCID','MRNA','DDOG','ZM','DOCU','PTON','EBAY','ILMN','WBA','SIRI','MAT','CERN',
+            'ALGN','BMRN','EXPE','VRTX','REGN','GILD','ISRG','BKNG','SBUX','FISV','MDLZ','MNST',
+            'ATVI','PDD','PYPL','NTES','JD','BIDU','HON','ASML','AVGO','MCHP','PCAR','SGEN','XLNX'
+        ]
+        
+        self.dow_jones_stocks = [
+            'AAPL','MSFT','UNH','GS','HD','CAT','MCD','V','AXP','BA','TRV','JPM','JNJ','PG','CVX',
+            'MRK','WMT','DIS','CRM','NKE','IBM','MMM','KO','DOW','CSCO','INTC','VZ','WBA','AMGN','HON'
+        ]
+        
+        # ETFs for broader market exposure
+        self.etfs = ['SPY', 'QQQ', 'IWM', 'DIA', 'VTI', 'XLF', 'XLK', 'XLV', 'XLE', 'XLI', 'XLY', 'XLP', 'XLU']
+        
+        # Combine all stocks and remove duplicates
+        self.all_stocks = list(set(
+            self.sp500_stocks + 
+            self.nasdaq100_stocks + 
+            self.dow_jones_stocks + 
+            self.etfs
+        ))
+        
+        # Create sector mapping for comprehensive risk management
+        self.stock_sectors = {
+            'mega_cap_tech': ['AAPL', 'MSFT', 'GOOGL', 'GOOG', 'AMZN', 'NVDA', 'META', 'TSLA'],
+            'financial': ['JPM', 'BAC', 'WFC', 'GS', 'MS', 'C', 'AXP', 'BK', 'USB', 'TFC', 'COF'],
+            'healthcare': ['JNJ', 'UNH', 'PFE', 'ABBV', 'MRK', 'TMO', 'ABT', 'LLY', 'BMY', 'GILD'],
+            'consumer_discretionary': ['WMT', 'HD', 'TGT', 'NKE', 'MCD', 'SBUX', 'TJX', 'LOW'],
+            'consumer_staples': ['PG', 'KO', 'PEP', 'COST', 'WMT', 'CL', 'MDLZ'],
+            'industrials': ['CAT', 'BA', 'GE', 'MMM', 'HON', 'UPS', 'LMT', 'RTX', 'DE'],
+            'technology': ['NFLX', 'CRM', 'ADBE', 'INTC', 'IBM', 'ORCL', 'AMD', 'TXN', 'QCOM'],
+            'energy': ['XOM', 'CVX', 'COP', 'SLB', 'EOG', 'PXD', 'MPC', 'PSX'],
+            'utilities': ['NEE', 'DUK', 'SO', 'D', 'EXC', 'XEL'],
+            'etfs': self.etfs
+        }
         
         # Performance tracking
         self.last_portfolio_report = None
@@ -301,8 +340,18 @@ class EnhancedMarketHunter:
         # Get current prices for position monitoring
         price_updates = {}
         
+        # For performance with large stock universe, sample a subset each cycle
+        # This ensures we scan different stocks each time while managing API limits
+        import random
+        shuffled_stocks = self.all_stocks.copy()
+        random.shuffle(shuffled_stocks)
+        sample_size = min(120, len(shuffled_stocks))  # Scan up to 120 stocks per cycle
+        sampled_stocks = shuffled_stocks[:sample_size]
+        
+        self.log_trade(f"Scanning {len(sampled_stocks)} stocks from universe of {len(self.all_stocks)}")
+        
         # Analyze each stock with real data
-        for symbol in self.all_stocks:
+        for symbol in sampled_stocks:
             try:
                 self.log_trade(f"Fetching data for {symbol}...")
                 data = await asyncio.wait_for(self.get_real_market_data(symbol), timeout=10)
@@ -333,16 +382,36 @@ class EnhancedMarketHunter:
                             })
                     
                     # Analyze for options opportunities
-                    if data['volatility'] > 20 and confidence > 0.6:  # Only trade options on volatile, confident signals
-                        options_id = await self.position_manager.execute_options_trade(
-                            symbol, data['price'], data['volatility'], data['rsi'], data['price_change']
+                    if data['volatility'] > 15 and confidence > 0.55:  # Lowered thresholds for broader coverage
+                        # Define liquid options stocks (higher volume, better spreads)
+                        liquid_options_stocks = (
+                            self.stock_sectors['mega_cap_tech'] + 
+                            ['SPY', 'QQQ', 'IWM', 'DIA', 'XLF', 'XLK'] +  # Major ETFs
+                            ['JPM', 'BAC', 'WFC', 'GS', 'C'] +  # Major financials
+                            ['JNJ', 'PFE', 'MRK', 'UNH'] +  # Major healthcare
+                            ['XOM', 'CVX', 'COP'] +  # Major energy
+                            ['WMT', 'HD', 'MCD', 'NKE', 'DIS'] +  # Major consumer
+                            ['BA', 'CAT', 'MMM', 'GE'] +  # Major industrials
+                            ['V', 'MA', 'AXP'] +  # Payment processors
+                            ['NFLX', 'CRM', 'ADBE', 'INTC', 'AMD', 'ORCL']  # Major tech
                         )
-                        if options_id:
-                            options_opportunities.append({
-                                'symbol': symbol,
-                                'options_position_id': options_id,
-                                'confidence': confidence
-                            })
+                        
+                        # Trade options on liquid stocks, or any stock with very high confidence
+                        if symbol in liquid_options_stocks or confidence > 0.75:
+                            options_id = await self.position_manager.execute_options_trade(
+                                symbol, data['price'], data['volatility'], data['rsi'], data['price_change']
+                            )
+                            if options_id:
+                                options_opportunities.append({
+                                    'symbol': symbol,
+                                    'options_position_id': options_id,
+                                    'confidence': confidence
+                                })
+                                self.log_trade(f"OPTIONS TRADE: {symbol} strategy executed - ID: {options_id}")
+                            else:
+                                # Only log failures for high-confidence trades to reduce noise
+                                if confidence > 0.7:
+                                    self.log_trade(f"OPTIONS FAILED: {symbol} - no suitable contracts found")
                 
                 # Small delay to avoid rate limits
                 await asyncio.sleep(0.1)
@@ -433,12 +502,16 @@ class EnhancedMarketHunter:
     async def start_enhanced_hunting(self):
         """Start enhanced trading system"""
         print("HIVE TRADE - ENHANCED MARKET HUNTER")
-        print("=" * 50)
+        print("=" * 60)
         print(f"Started: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-        print(f"Trading {len(self.all_stocks)} stocks with options")
+        print(f"Trading Universe: {len(self.all_stocks)} stocks")
+        print(f"  • S&P 500: {len(self.sp500_stocks)} stocks") 
+        print(f"  • NASDAQ-100: {len(self.nasdaq100_stocks)} stocks")
+        print(f"  • Dow Jones: {len(self.dow_jones_stocks)} stocks")
+        print(f"  • ETFs: {len(self.etfs)} funds")
         print("Features: Real Options, Position Management, Risk Controls")
         print("Data Sources: Polygon + Alpaca + Yahoo Finance")
-        print("-" * 50)
+        print("-" * 60)
         
         # Initialize broker connection
         try:
@@ -451,6 +524,10 @@ class EnhancedMarketHunter:
             account_info = await self.broker.get_account_info()
             if account_info:
                 account_value = float(account_info.get('buying_power', 100000))
+                # Fix: Ensure account value is never 0
+                if account_value <= 0:
+                    account_value = 100000  # Default to $100k for paper trading
+                    self.log_trade("Warning: Account value was 0, using default $100,000")
                 self.risk_manager.update_account_value(account_value)
                 self.log_trade(f"Connected to Alpaca: {account_info.get('account_number', 'N/A')}")
                 self.log_trade(f"Account Value: ${account_value:,.2f}")
@@ -517,6 +594,10 @@ class EnhancedMarketHunter:
             await self.log_portfolio_status()
         except Exception as e:
             self.log_trade(f"Enhanced market hunting error: {e}")
+            import traceback
+            self.log_trade(f"Error details: {traceback.format_exc()}")
+            # Try to recover gracefully
+            await asyncio.sleep(60)  # Wait 1 minute before trying again
         
         self.log_trade("Enhanced market hunting session ended")
         return self.trade_count
