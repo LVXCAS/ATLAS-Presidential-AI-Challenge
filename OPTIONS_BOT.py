@@ -36,19 +36,39 @@ try:
     POLYGON_API_KEY = os.getenv('POLYGON_API_KEY')
     ALPACA_API_KEY = os.getenv('ALPACA_API_KEY')
     ALPACA_SECRET_KEY = os.getenv('ALPACA_SECRET_KEY')
+    FRED_API_KEY = os.getenv('FRED_API_KEY', '98e96c3261987f1c116c1506e6dde103')
 except:
     POLYGON_API_KEY = None
     ALPACA_API_KEY = None
     ALPACA_SECRET_KEY = None
+    FRED_API_KEY = '98e96c3261987f1c116c1506e6dde103'
 
 # Import components
 from agents.broker_integration import AlpacaBrokerIntegration
 from agents.options_trading_agent import OptionsTrader, OptionsStrategy
 from agents.options_broker import OptionsBroker
 from agents.risk_management import RiskManager, RiskLevel
+
+# Live trading integration
+try:
+    from agents.live_data_manager import setup_live_data
+    from agents.live_trading_engine import LiveTradingEngine
+    LIVE_TRADING_AVAILABLE = True
+    print("+ Live trading integration loaded")
+except ImportError:
+    LIVE_TRADING_AVAILABLE = False
+    print("- Live trading integration not available")
 from agents.exit_strategy_agent import exit_strategy_agent, ExitSignal
 from agents.learning_engine import learning_engine
 from agents.advanced_ml_engine import advanced_ml_engine
+from agents.enhanced_technical_analysis import enhanced_technical_analysis
+from agents.enhanced_options_pricing import enhanced_options_pricing
+from agents.economic_data_agent import economic_data_agent
+from agents.cboe_data_agent import cboe_data_agent
+from agents.advanced_technical_analysis import advanced_technical_analysis
+from agents.ml_prediction_engine import ml_prediction_engine
+from agents.advanced_risk_management import advanced_risk_manager
+from agents.trading_dashboard import trading_dashboard
 
 # Create logs directory
 os.makedirs('logs', exist_ok=True)
@@ -64,6 +84,28 @@ class TomorrowReadyOptionsBot:
         self.exit_agent = exit_strategy_agent
         self.learning_engine = learning_engine
         self.advanced_ml = advanced_ml_engine
+        self.technical_analysis = enhanced_technical_analysis
+        self.options_pricing = enhanced_options_pricing
+        self.economic_data = economic_data_agent
+        self.volatility_intelligence = cboe_data_agent
+        
+        # Advanced AI/ML components
+        self.advanced_technical = advanced_technical_analysis
+        self.ml_predictions = ml_prediction_engine
+        self.advanced_risk = advanced_risk_manager
+        self.dashboard = trading_dashboard
+        
+        # Learning Acceleration Components
+        from agents.transfer_learning_accelerator import transfer_accelerator
+        from agents.realtime_learning_engine import realtime_learner
+        from agents.model_loader import model_loader
+        self.transfer_learning = transfer_accelerator
+        self.realtime_learning = realtime_learner
+        self.pre_trained_models = model_loader
+        
+        # Display model loading status
+        print("Pre-trained Models Status:")
+        print(self.pre_trained_models.get_model_info())
         
         # Eastern Time for market operations
         self.et_timezone = pytz.timezone('US/Eastern')
@@ -137,6 +179,16 @@ class TomorrowReadyOptionsBot:
             'exit_at_days_remaining': 7,    # Exit when this many days left
             'use_weekly_options': True,     # Allow weekly options
             'use_monthly_options': True,    # Allow monthly options
+        }
+        
+        # Intelligent exit configuration
+        self.exit_config = {
+            'use_intelligent_analysis': True,  # Use data-driven decisions
+            'urgency_threshold': 0.4,          # Lower threshold for intelligent agent
+            'time_exit_losing': 7,             # Exit losing positions with <= 7 days
+            'time_exit_all': 3,                # Exit all positions with <= 3 days
+            'max_hold_days': 30,               # Maximum days to hold any position
+            'min_confidence_threshold': 0.6,   # Minimum confidence for exit decisions
         }
         
         # Trading plan - initialize with defaults (after tier1_stocks is defined)
@@ -307,7 +359,7 @@ class TomorrowReadyOptionsBot:
             self.log_trade(f"Position loading error: {e}", "WARN")
     
     async def update_market_regime(self):
-        """Update current market regime analysis"""
+        """Update current market regime analysis with economic and volatility intelligence"""
         try:
             # Get VIX
             vix = yf.Ticker('^VIX')
@@ -323,8 +375,36 @@ class TomorrowReadyOptionsBot:
                 sma_10 = spy_hist['Close'].iloc[-10:].mean()
                 self.market_trend = (current_price - sma_10) / sma_10
             
-            # Determine regime
-            if self.vix_level > 30:
+            # Get economic analysis
+            economic_analysis = await self.economic_data.get_comprehensive_economic_analysis()
+            economic_regime = economic_analysis.get('market_regime', 'NEUTRAL')
+            vol_environment = economic_analysis.get('volatility_environment', 'NORMAL')
+            
+            # Get CBOE volatility intelligence
+            vix_data = await self.volatility_intelligence.get_vix_term_structure_analysis()
+            flow_data = await self.volatility_intelligence.get_options_flow_analysis()
+            
+            volatility_regime = vix_data.get('volatility_regime', 'NORMAL')
+            market_sentiment = flow_data.get('market_sentiment', 'NEUTRAL')
+            put_call_ratio = flow_data.get('put_call_ratio', 1.0)
+            vix_backwardation = vix_data.get('backwardation_signal', False)
+            
+            # Enhanced market regime determination
+            if economic_regime == 'CRISIS' or volatility_regime == 'EXTREME_VOLATILITY' or self.vix_level > 35:
+                self.market_regime = 'CRISIS'
+            elif market_sentiment == 'EXTREME_FEAR' and put_call_ratio > 1.4:
+                self.market_regime = 'FEAR_CAPITULATION'
+            elif vix_backwardation and volatility_regime == 'HIGH_VOLATILITY':
+                self.market_regime = 'VOLATILITY_SPIKE'
+            elif economic_regime == 'HAWKISH_FED' or (self.vix_level > 25 and self.market_trend < -0.02):
+                self.market_regime = 'HAWKISH_FED'
+            elif economic_regime == 'DOVISH_FED' and self.market_trend > 0.02:
+                self.market_regime = 'DOVISH_FED'
+            elif market_sentiment == 'EXTREME_GREED' and put_call_ratio < 0.7:
+                self.market_regime = 'COMPLACENCY'
+            elif volatility_regime == 'LOW_VOLATILITY' and market_sentiment == 'COMPLACENT':
+                self.market_regime = 'LOW_VIX_GRIND'
+            elif self.vix_level > 30:
                 self.market_regime = 'HIGH_VIX'
             elif self.market_trend > 0.03:
                 self.market_regime = 'BULL'
@@ -332,6 +412,25 @@ class TomorrowReadyOptionsBot:
                 self.market_regime = 'BEAR'
             else:
                 self.market_regime = 'NEUTRAL'
+            
+            # Log comprehensive intelligence
+            fed_policy = economic_analysis.get('fed_policy', {})
+            inflation_data = economic_analysis.get('inflation_data', {})
+            if fed_policy.get('fed_funds_rate'):
+                self.log_trade(f"Economic regime: {economic_regime}, Fed rate: {fed_policy['fed_funds_rate']:.2f}%, "
+                             f"CPI: {inflation_data.get('cpi_yoy', 0):.1f}%")
+            
+            # Log volatility intelligence
+            self.log_trade(f"Vol regime: {volatility_regime}, Sentiment: {market_sentiment}, "
+                         f"P/C Ratio: {put_call_ratio:.2f}, VIX Backwardation: {vix_backwardation}")
+            
+            # Log special market conditions
+            if vix_backwardation:
+                self.log_trade("ALERT: VIX backwardation detected - volatility selling opportunity")
+            if market_sentiment == 'EXTREME_FEAR':
+                self.log_trade("SIGNAL: Extreme fear - potential contrarian opportunity")
+            elif market_sentiment == 'EXTREME_GREED':
+                self.log_trade("WARNING: Extreme greed - potential correction risk")
                 
         except Exception as e:
             self.log_trade(f"Market regime update error: {e}", "WARN")
@@ -430,8 +529,28 @@ class TomorrowReadyOptionsBot:
             'risk_adjustments': []
         }
         
-        # Adapt strategy preferences to market regime
-        if self.market_regime == 'BULL':
+        # Adapt strategy preferences to enhanced market regime with volatility intelligence
+        if self.market_regime == 'CRISIS':
+            plan['preferred_strategies'] = ['LONG_PUT', 'BEAR_PUT_SPREAD']  # Protective strategies
+            plan['target_new_positions'] = 1
+            plan['risk_adjustments'] = ['reduce_position_size', 'shorter_expiration']
+        elif self.market_regime == 'FEAR_CAPITULATION':
+            plan['preferred_strategies'] = ['CASH_SECURED_PUT', 'BULL_CALL_SPREAD']  # Contrarian opportunity
+            plan['target_new_positions'] = 2
+            plan['risk_adjustments'] = ['wait_for_confirmation']
+        elif self.market_regime == 'VOLATILITY_SPIKE':
+            plan['preferred_strategies'] = ['VOLATILITY_SELLING', 'SPREADS']  # Sell high vol
+            plan['target_new_positions'] = 1
+            plan['risk_adjustments'] = ['avoid_long_options']
+        elif self.market_regime == 'COMPLACENCY':
+            plan['preferred_strategies'] = ['LONG_PUT', 'PROTECTIVE_STRATEGIES']  # Hedge complacency
+            plan['target_new_positions'] = 1
+            plan['risk_adjustments'] = ['buy_protection']
+        elif self.market_regime == 'LOW_VIX_GRIND':
+            plan['preferred_strategies'] = ['BULL_CALL_SPREAD', 'VOLATILITY_BUYING']  # Low vol opportunity
+            plan['target_new_positions'] = 3
+            plan['risk_adjustments'] = ['longer_expiration']
+        elif self.market_regime == 'BULL':
             plan['preferred_strategies'] = ['BULL_CALL_SPREAD', 'LONG_CALL']
             plan['target_new_positions'] = 3
         elif self.market_regime == 'BEAR':
@@ -440,7 +559,7 @@ class TomorrowReadyOptionsBot:
         elif self.market_regime == 'HIGH_VIX':
             plan['preferred_strategies'] = ['CASH_SECURED_PUT', 'SPREADS']
             plan['target_new_positions'] = 1
-        else:  # NEUTRAL
+        else:  # NEUTRAL, HAWKISH_FED, DOVISH_FED
             plan['preferred_strategies'] = ['ALL_SPREADS']
             plan['target_new_positions'] = 2
         
@@ -474,48 +593,109 @@ class TomorrowReadyOptionsBot:
         return self.market_open_time <= current_time <= self.market_close_time
     
     async def get_enhanced_market_data(self, symbol):
-        """Get comprehensive market data for analysis"""
+        """Get comprehensive market data for analysis using enhanced technical analysis"""
         try:
-            ticker = yf.Ticker(symbol)
-            hist = ticker.history(period="30d")
+            # Get comprehensive technical analysis
+            technical_data = await self.technical_analysis.get_comprehensive_analysis(symbol, period="60d")
             
-            if hist.empty:
+            if not technical_data or technical_data['current_price'] == 0:
                 return None
             
-            current_price = float(hist['Close'].iloc[-1])
+            # Get volatility intelligence from CBOE
+            vix_data = await self.volatility_intelligence.get_vix_term_structure_analysis()
+            flow_data = await self.volatility_intelligence.get_options_flow_analysis()
             
-            # Calculate enhanced metrics
-            if len(hist) >= 20:
-                sma_5 = hist['Close'].iloc[-5:].mean()
-                sma_20 = hist['Close'].iloc[-20:].mean()
-                price_momentum = (sma_5 - sma_20) / sma_20
-                
-                returns = hist['Close'].pct_change().dropna()
-                realized_vol = returns.std() * np.sqrt(252) * 100
-                
-                avg_volume = hist['Volume'].iloc[-20:].mean()
-                current_volume = hist['Volume'].iloc[-1]
-                volume_ratio = current_volume / avg_volume if avg_volume > 0 else 1.0
-                
-                high_20 = hist['High'].iloc[-20:].max()
-                low_20 = hist['Low'].iloc[-20:].min()
-                price_position = (current_price - low_20) / (high_20 - low_20) if high_20 > low_20 else 0.5
-                
-                return {
-                    'symbol': symbol,
-                    'current_price': current_price,
-                    'price_momentum': price_momentum,
-                    'realized_vol': realized_vol,
-                    'volume_ratio': volume_ratio,
-                    'price_position': price_position,
-                    'avg_volume': avg_volume,
-                    'timestamp': datetime.now()
-                }
+            # Extract key metrics for compatibility
+            indicators = technical_data.get('technical_indicators', {})
+            signals = technical_data.get('signals', {})
+            volatility = technical_data.get('volatility_analysis', {})
+            momentum = technical_data.get('momentum_analysis', {})
+            support_resistance = technical_data.get('support_resistance', {})
             
-            return None
+            # Enhanced market data structure
+            enhanced_data = {
+                'symbol': symbol,
+                'current_price': technical_data['current_price'],
+                'timestamp': datetime.now(),
+                
+                # Legacy compatibility fields
+                'price_momentum': momentum.get('price_momentum_5d', 0) / 100,  # Convert to decimal
+                'realized_vol': volatility.get('realized_vol_20d', 20.0),
+                'volume_ratio': indicators.get('volume_ratio', 1.0),
+                'price_position': 0.5,  # Default middle position
+                'avg_volume': indicators.get('volume_sma', 1000000),
+                
+                # Enhanced technical analysis data
+                'technical_analysis': technical_data,
+                'overall_signal': signals.get('overall_signal', 'NEUTRAL'),
+                'signal_strength': signals.get('signal_strength', 0.0),
+                'signal_confidence': signals.get('confidence', 0.5),
+                'bullish_factors': signals.get('bullish_factors', []),
+                'bearish_factors': signals.get('bearish_factors', []),
+                
+                # Technical indicators
+                'rsi': indicators.get('rsi', 50),
+                'macd': indicators.get('macd', 0),
+                'macd_signal': indicators.get('macd_signal', 0),
+                'sma_20': indicators.get('sma_20', technical_data['current_price']),
+                'sma_50': indicators.get('sma_50', technical_data['current_price']),
+                'bollinger_upper': indicators.get('bb_upper', technical_data['current_price'] * 1.02),
+                'bollinger_lower': indicators.get('bb_lower', technical_data['current_price'] * 0.98),
+                
+                # Support/Resistance
+                'nearest_support': support_resistance.get('nearest_support'),
+                'nearest_resistance': support_resistance.get('nearest_resistance'),
+                'support_levels': support_resistance.get('support_levels', []),
+                'resistance_levels': support_resistance.get('resistance_levels', []),
+                
+                # Volatility metrics
+                'vol_percentile': volatility.get('vol_percentile', 0.5),
+                'vol_trend': volatility.get('vol_trend', 'STABLE'),
+                'vol_regime': volatility.get('vol_regime', 'NORMAL'),
+                
+                # Momentum metrics
+                'momentum_strength': momentum.get('momentum_strength', 'WEAK'),
+                'price_momentum_20d': momentum.get('price_momentum_20d', 0),
+                'momentum_acceleration': momentum.get('acceleration', 0),
+                
+                # CBOE Volatility Intelligence
+                'vix_data': vix_data,
+                'flow_data': flow_data,
+                'market_volatility_regime': vix_data.get('volatility_regime', 'NORMAL'),
+                'vix_term_structure': vix_data.get('term_structure', 'NORMAL'),
+                'market_sentiment': flow_data.get('market_sentiment', 'NEUTRAL'),
+                'put_call_ratio': flow_data.get('put_call_ratio', 1.0),
+                'volatility_trade_bias': vix_data.get('options_implications', {}).get('volatility_trade_bias', 'NEUTRAL'),
+                'positioning_bias': flow_data.get('options_implications', {}).get('positioning_bias', 'NEUTRAL')
+            }
+            
+            # Calculate price position using support/resistance if available
+            if enhanced_data['nearest_support'] and enhanced_data['nearest_resistance']:
+                support = enhanced_data['nearest_support']
+                resistance = enhanced_data['nearest_resistance']
+                if resistance > support:
+                    enhanced_data['price_position'] = (technical_data['current_price'] - support) / (resistance - support)
+            
+            return enhanced_data
             
         except Exception as e:
-            self.log_trade(f"Market data error for {symbol}: {e}", "WARN")
+            self.log_trade(f"Enhanced market data error for {symbol}: {e}", "WARN")
+            # Fallback to basic data
+            try:
+                ticker = yf.Ticker(symbol)
+                hist = ticker.history(period="5d")
+                if not hist.empty:
+                    return {
+                        'symbol': symbol,
+                        'current_price': float(hist['Close'].iloc[-1]),
+                        'price_momentum': 0.0,
+                        'realized_vol': 20.0,
+                        'volume_ratio': 1.0,
+                        'price_position': 0.5,
+                        'timestamp': datetime.now()
+                    }
+            except:
+                pass
             return None
     
     async def intelligent_position_monitoring(self):
@@ -545,14 +725,64 @@ class TomorrowReadyOptionsBot:
                     position_data, market_data, current_pnl
                 )
                 
-                # Log the decision
+                # Log the decision and current status with enhanced analysis
+                entry_time = position_data.get('entry_time', datetime.now())
+                days_held = (datetime.now() - entry_time).days
+                
+                # Get enhanced analysis for logging
+                enhanced_analysis = await self.perform_enhanced_exit_analysis(
+                    position_data, market_data, current_pnl, exit_decision
+                )
+                
+                self.log_trade(f"MONITORING: {symbol} - P&L: ${current_pnl:.2f} ({enhanced_analysis['pnl_percentage']:+.1f}%), Signal: {exit_decision.signal}")
+                self.log_trade(f"  Days held: {days_held} | Exit signals: {enhanced_analysis['exit_signals']} | Hold signals: {enhanced_analysis['hold_signals']}")
+                
                 if exit_decision.signal != ExitSignal.HOLD:
-                    self.log_trade(f"EXIT SIGNAL: {symbol} - {exit_decision.signal}")
-                    self.log_trade(f"  Reason: {exit_decision.reasoning}")
-                    self.log_trade(f"  Confidence: {exit_decision.confidence:.1%}")
-                    self.log_trade(f"  Urgency: {exit_decision.urgency:.1%}")
+                    self.log_trade(f"  AGENT EXIT SIGNAL: {exit_decision.signal}")
+                    self.log_trade(f"  Agent Reason: {exit_decision.reasoning}")
+                    self.log_trade(f"  Agent Confidence: {exit_decision.confidence:.1%} | Urgency: {exit_decision.urgency:.1%}")
+                
+                if enhanced_analysis['factors']:
+                    self.log_trade(f"  Analysis factors: {'; '.join(enhanced_analysis['factors'][:2])}")  # Show top 2 factors
                     
-                    if exit_decision.urgency >= 0.7:  # High urgency
+                # Enhanced intelligent analysis for exit decisions
+                should_exit = False
+                exit_reason = exit_decision.reasoning
+                
+                # Use intelligent analysis instead of simple thresholds
+                if self.exit_config['use_intelligent_analysis']:
+                    # Primary: Trust the intelligent agent with lower threshold
+                    if (exit_decision.urgency >= self.exit_config['urgency_threshold'] and 
+                        exit_decision.confidence >= self.exit_config['min_confidence_threshold']):
+                        should_exit = True
+                        exit_reason = f"Intelligent agent: {exit_decision.reasoning}"
+                    
+                    # Enhanced analysis override
+                    elif enhanced_analysis['should_exit']:
+                        should_exit = True
+                        exit_reason = enhanced_analysis['reason']
+                        self.log_trade(f"  Enhanced analysis triggered exit: {'; '.join(enhanced_analysis['factors'][:3])}")
+                    
+                    # Check days to expiry for time-based exits
+                    entry_time = position_data.get('entry_time', datetime.now())
+                    days_held = (datetime.now() - entry_time).days
+                    original_dte = position_data['opportunity'].get('days_to_expiry', 30)
+                    days_remaining = max(0, original_dte - days_held)
+                    
+                    # Time-based exits
+                    if days_remaining <= self.exit_config['time_exit_losing'] and current_pnl < 0:
+                        should_exit = True
+                        exit_reason = f"Time decay exit: {days_remaining} days left, losing ${abs(current_pnl):.2f}"
+                    elif days_remaining <= self.exit_config['time_exit_all']:
+                        should_exit = True
+                        exit_reason = f"Expiration exit: only {days_remaining} days remaining"
+                    elif days_held >= self.exit_config['max_hold_days']:
+                        should_exit = True
+                        exit_reason = f"Max hold time reached: {days_held} days (limit: {self.exit_config['max_hold_days']})"
+                    
+                    if should_exit:
+                        # Update the exit decision reason
+                        exit_decision.reasoning = exit_reason
                         positions_to_exit.append({
                             'position_id': position_id,
                             'position_data': position_data,
@@ -591,8 +821,8 @@ class TomorrowReadyOptionsBot:
             entry_price = position_data.get('entry_price', 0)  # Entry price per contract
             quantity = position_data.get('quantity', 1)  # Number of contracts
             
-            # Get current option value (simplified Black-Scholes approximation)
-            current_option_price = self.estimate_current_option_price(position_data, market_data)
+            # Get current option value (professional pricing)
+            current_option_price = await self.estimate_current_option_price(position_data, market_data)
             
             # Calculate P&L based on contract value difference
             # Each contract represents 100 shares, so multiply by 100
@@ -605,15 +835,77 @@ class TomorrowReadyOptionsBot:
             self.log_trade(f"P&L calculation error: {e}", "WARN")
             return 0.0
     
-    def estimate_current_option_price(self, position_data, market_data):
-        """Estimate current option price using simplified Black-Scholes"""
+    async def estimate_current_option_price(self, position_data, market_data):
+        """Estimate current option price using professional options pricing"""
         try:
             opportunity = position_data['opportunity']
             strategy = opportunity['strategy']
             entry_time = position_data['entry_time']
             current_stock_price = market_data['current_price']
             
-            # Get original parameters (simplified)
+            # Get option parameters
+            strike_price = opportunity.get('strike_price', current_stock_price)
+            entry_price = position_data.get('entry_price', 1.0)
+            
+            # Calculate time to expiry
+            days_elapsed = (datetime.now() - entry_time).days
+            original_dte = opportunity.get('days_to_expiry', 30)
+            current_dte = max(1, original_dte - days_elapsed)
+            
+            # Get volatility from enhanced analysis
+            current_vol = market_data.get('realized_vol', 20.0)
+            
+            # Use professional options pricing if we have sufficient data
+            if strike_price > 0 and current_dte > 0:
+                try:
+                    # Determine option type
+                    if 'CALL' in str(strategy):
+                        option_type = 'call'
+                    elif 'PUT' in str(strategy):
+                        option_type = 'put'
+                    else:
+                        # For spreads, estimate the long leg
+                        option_type = 'call'  # Default
+                    
+                    # Get professional pricing analysis
+                    pricing_analysis = await self.options_pricing.get_comprehensive_option_analysis(
+                        underlying_price=current_stock_price,
+                        strike_price=strike_price,
+                        time_to_expiry_days=current_dte,
+                        volatility=current_vol,
+                        option_type=option_type
+                    )
+                    
+                    theoretical_price = pricing_analysis['pricing']['theoretical_price']
+                    
+                    # Log detailed pricing info occasionally
+                    if random.random() < 0.1:  # 10% of the time
+                        greeks = pricing_analysis['greeks']
+                        self.log_trade(f"  Professional pricing: ${theoretical_price:.2f} "
+                                     f"(Delta: {greeks['delta']:.2f}, Theta: {greeks['theta']:.3f}, "
+                                     f"Method: {pricing_analysis['pricing']['pricing_method']})")
+                    
+                    return max(0.01, theoretical_price)
+                    
+                except Exception as pricing_error:
+                    self.log_trade(f"Professional pricing failed, using fallback: {pricing_error}", "WARN")
+            
+            # Fallback to simplified estimation
+            return self._simplified_option_price_estimate(position_data, market_data)
+            
+        except Exception as e:
+            self.log_trade(f"Option price estimation error: {e}", "WARN")
+            return position_data.get('entry_price', 1.0)  # Fallback to entry price
+    
+    def _simplified_option_price_estimate(self, position_data, market_data):
+        """Simplified option price estimation (fallback method)"""
+        try:
+            opportunity = position_data['opportunity']
+            strategy = opportunity['strategy']
+            entry_time = position_data['entry_time']
+            current_stock_price = market_data['current_price']
+            
+            # Get original parameters
             original_stock_price = opportunity.get('stock_price', current_stock_price)
             strike_price = opportunity.get('strike_price', current_stock_price)
             entry_price = position_data.get('entry_price', 1.0)
@@ -622,41 +914,200 @@ class TomorrowReadyOptionsBot:
             days_elapsed = (datetime.now() - entry_time).days
             original_dte = opportunity.get('days_to_expiry', 30)
             current_dte = max(1, original_dte - days_elapsed)
-            time_decay_factor = max(0.1, current_dte / original_dte)  # Time value decreases
+            time_decay_factor = max(0.1, current_dte / original_dte)
             
             # Price movement factor
             if 'CALL' in str(strategy):
-                # For calls: benefit from stock price increase
                 intrinsic_value = max(0, current_stock_price - strike_price)
                 price_movement_factor = current_stock_price / original_stock_price
             elif 'PUT' in str(strategy):
-                # For puts: benefit from stock price decrease  
                 intrinsic_value = max(0, strike_price - current_stock_price)
                 price_movement_factor = original_stock_price / current_stock_price
             else:
-                # For spreads, use average effect
                 intrinsic_value = abs(current_stock_price - strike_price) * 0.5
                 price_movement_factor = 1.0
             
-            # Volatility factor (simplified)
-            volatility_factor = market_data.get('realized_vol', 25) / 25.0  # Normalize to 25% vol
+            # Volatility factor
+            volatility_factor = market_data.get('realized_vol', 25) / 25.0
             
-            # Estimate current option price
-            # Base it on entry price adjusted for time decay, price movement, and vol
+            # Estimate price
             time_value = entry_price * time_decay_factor * volatility_factor
-            estimated_price = intrinsic_value + time_value
-            
-            # Apply price movement factor to time value portion
             estimated_price = intrinsic_value + (time_value * price_movement_factor)
             
-            # Ensure minimum value
-            estimated_price = max(0.01, estimated_price)
-            
-            return estimated_price
+            return max(0.01, estimated_price)
             
         except Exception as e:
-            self.log_trade(f"Option price estimation error: {e}", "WARN")
-            return position_data.get('entry_price', 1.0)  # Fallback to entry price
+            self.log_trade(f"Simplified pricing error: {e}", "WARN")
+            return 1.0
+    
+    async def perform_enhanced_exit_analysis(self, position_data, market_data, current_pnl, exit_decision):
+        """Perform enhanced market analysis to determine if position should be exited"""
+        try:
+            symbol = position_data['opportunity']['symbol']
+            strategy = position_data['opportunity']['strategy']
+            entry_time = position_data.get('entry_time', datetime.now())
+            entry_price = position_data.get('entry_price', 1.0)
+            days_held = (datetime.now() - entry_time).days
+            
+            # Calculate percentage gains/losses
+            current_option_price = await self.estimate_current_option_price(position_data, market_data)
+            pnl_percentage = ((current_option_price - entry_price) / entry_price) * 100 if entry_price > 0 else 0
+            
+            analysis_factors = []
+            exit_signals = 0
+            hold_signals = 0
+            
+            # 1. Enhanced Technical Analysis
+            overall_signal = market_data.get('overall_signal', 'NEUTRAL')
+            signal_strength = market_data.get('signal_strength', 0.0)
+            signal_confidence = market_data.get('signal_confidence', 0.5)
+            
+            # Check if technical signals oppose our position
+            if 'CALL' in str(strategy) and overall_signal == 'BEARISH' and signal_strength > 0.4:
+                exit_signals += int(2 * signal_strength)  # Scale by strength
+                analysis_factors.append(f"Strong bearish technical signal ({signal_strength:.1%} strength) against call")
+            elif 'PUT' in str(strategy) and overall_signal == 'BULLISH' and signal_strength > 0.4:
+                exit_signals += int(2 * signal_strength)
+                analysis_factors.append(f"Strong bullish technical signal ({signal_strength:.1%} strength) against put")
+            elif overall_signal != 'NEUTRAL' and signal_confidence > 0.7:
+                # High confidence signals get attention even if not strongly opposing
+                if ('CALL' in str(strategy) and overall_signal == 'BEARISH') or ('PUT' in str(strategy) and overall_signal == 'BULLISH'):
+                    exit_signals += 1
+                    analysis_factors.append(f"High confidence {overall_signal.lower()} signal")
+            
+            # 2. RSI and Momentum Analysis
+            rsi = market_data.get('rsi', 50)
+            momentum_strength = market_data.get('momentum_strength', 'WEAK')
+            
+            if 'CALL' in str(strategy):
+                if rsi > 75:  # Severely overbought
+                    exit_signals += 2
+                    analysis_factors.append(f"RSI severely overbought ({rsi:.1f}) - call at risk")
+                elif momentum_strength == 'STRONG' and market_data.get('momentum_acceleration', 0) < -5:
+                    exit_signals += 1
+                    analysis_factors.append("Strong negative momentum acceleration against calls")
+            elif 'PUT' in str(strategy):
+                if rsi < 25:  # Severely oversold
+                    exit_signals += 2
+                    analysis_factors.append(f"RSI severely oversold ({rsi:.1f}) - put at risk")
+                elif momentum_strength == 'STRONG' and market_data.get('momentum_acceleration', 0) > 5:
+                    exit_signals += 1
+                    analysis_factors.append("Strong positive momentum acceleration against puts")
+            
+            # 2. Volatility Analysis
+            current_vol = market_data.get('realized_vol', 25)
+            if current_vol < 15 and 'CALL' in str(strategy) or 'PUT' in str(strategy):  # Vol crush hurts long options
+                exit_signals += 1
+                analysis_factors.append(f"Low volatility {current_vol:.1f}% hurting option value")
+            elif current_vol > 35:  # High vol - good for long options, wait
+                hold_signals += 1
+                analysis_factors.append(f"High volatility {current_vol:.1f}% supporting option value")
+            
+            # 3. Enhanced Support/Resistance Analysis
+            nearest_support = market_data.get('nearest_support')
+            nearest_resistance = market_data.get('nearest_resistance')
+            current_price = market_data.get('current_price', 0)
+            
+            if nearest_support and nearest_resistance and current_price > 0:
+                support_distance = (current_price - nearest_support) / nearest_support * 100
+                resistance_distance = (nearest_resistance - current_price) / current_price * 100
+                
+                if 'CALL' in str(strategy):
+                    if support_distance < 2:  # Within 2% of support
+                        exit_signals += 2
+                        analysis_factors.append(f"Price ${current_price:.2f} very close to support ${nearest_support:.2f}")
+                    elif resistance_distance < 1:  # Very close to resistance  
+                        hold_signals += 1
+                        analysis_factors.append(f"Near resistance ${nearest_resistance:.2f} - upside limited but close")
+                elif 'PUT' in str(strategy):
+                    if resistance_distance < 2:  # Within 2% of resistance
+                        exit_signals += 2
+                        analysis_factors.append(f"Price ${current_price:.2f} very close to resistance ${nearest_resistance:.2f}")
+                    elif support_distance < 1:  # Very close to support
+                        hold_signals += 1
+                        analysis_factors.append(f"Near support ${nearest_support:.2f} - downside limited but close")
+            
+            # 4. Volume Analysis
+            volume_ratio = market_data.get('volume_ratio', 1.0)
+            if volume_ratio < 0.5:  # Low volume - potential reversal
+                exit_signals += 1
+                analysis_factors.append(f"Low volume {volume_ratio:.1f}x - weak conviction")
+            elif volume_ratio > 2.0:  # High volume - strong move
+                hold_signals += 1
+                analysis_factors.append(f"High volume {volume_ratio:.1f}x - strong move continues")
+            
+            # 5. Time Decay vs Performance Analysis
+            if days_held >= 14:  # After 2 weeks
+                if pnl_percentage < 5:  # Less than 5% gain after 2+ weeks
+                    exit_signals += 2
+                    analysis_factors.append(f"Poor performance {pnl_percentage:.1f}% after {days_held} days")
+                elif pnl_percentage > 25:  # Good gains, protect them
+                    if current_vol < 20:  # Low vol environment
+                        exit_signals += 1
+                        analysis_factors.append(f"Protecting {pnl_percentage:.1f}% gains in low vol environment")
+            
+            # 6. Market Regime Analysis
+            if hasattr(self, 'market_regime'):
+                if self.market_regime == 'HIGH_VIX' and pnl_percentage > 15:  # Take profits in volatile markets
+                    exit_signals += 1
+                    analysis_factors.append("Taking profits in high VIX environment")
+                elif self.market_regime in ['BULL', 'BEAR'] and 'SPREAD' not in str(strategy):
+                    # Trending markets - let winners run more
+                    hold_signals += 1
+                    analysis_factors.append(f"Trending {self.market_regime} market - letting position run")
+            
+            # 7. Options Greeks Analysis (simplified)
+            original_dte = position_data['opportunity'].get('days_to_expiry', 30)
+            current_dte = max(1, original_dte - days_held)
+            theta_pressure = 1 - (current_dte / original_dte)  # Higher = more time decay
+            
+            if theta_pressure > 0.6 and pnl_percentage < 0:  # Significant time decay on losing position
+                exit_signals += 2
+                analysis_factors.append(f"High time decay pressure {theta_pressure:.1%} on losing position")
+            
+            # Decision Logic
+            net_signal_strength = exit_signals - hold_signals
+            should_exit = False
+            confidence = 0.5
+            
+            if net_signal_strength >= 3:  # Strong exit signal
+                should_exit = True
+                confidence = min(0.95, 0.6 + (net_signal_strength * 0.1))
+                reason = f"Strong exit signal (score: +{net_signal_strength}) - {analysis_factors[0]}"
+            elif net_signal_strength >= 2:  # Moderate exit signal
+                should_exit = True
+                confidence = 0.7
+                reason = f"Moderate exit signal (score: +{net_signal_strength}) - Multiple factors align"
+            elif net_signal_strength <= -2:  # Strong hold signal
+                should_exit = False
+                reason = f"Strong hold signal (score: {net_signal_strength}) - Favorable conditions continue"
+            else:  # Neutral - defer to original exit agent
+                should_exit = False
+                reason = "Neutral signals - deferring to exit agent analysis"
+            
+            return {
+                'should_exit': should_exit,
+                'reason': reason,
+                'confidence': confidence,
+                'factors': analysis_factors,
+                'exit_signals': exit_signals,
+                'hold_signals': hold_signals,
+                'pnl_percentage': pnl_percentage,
+                'days_held': days_held
+            }
+            
+        except Exception as e:
+            self.log_trade(f"Enhanced analysis error: {e}", "WARN")
+            return {
+                'should_exit': False,
+                'reason': 'Analysis error - holding position',
+                'confidence': 0.5,
+                'factors': ['analysis_error'],
+                'exit_signals': 0,
+                'hold_signals': 0,
+                'pnl_percentage': 0,
+                'days_held': 0
+            }
     
     async def execute_intelligent_exit(self, exit_info):
         """Execute exit based on intelligent agent decision"""

@@ -1,0 +1,48 @@
+{
+    "trading": {
+        "mode": "paper",
+        "account_value": 100000.0,
+        "symbols": [
+            "SPY",
+            "QQQ",
+            "AAPL"
+        ]
+    },
+    "risk_management": {
+        "max_portfolio_risk": 0.02,
+        "max_position_size": 0.05,
+        "max_daily_trades": 50,
+        "stop_loss_pct": 0.02,
+        "take_profit_pct": 0.06
+    },
+    "data_sources": {
+        "yahoo_finance": {
+            "enabled": true,
+            "note": "Free but 15-minute delayed data"
+        },
+        "finnhub": {
+            "enabled": true,
+            "api_key": "d32sc4pr01qtm631ej60d32sc4pr01qtm631ej6g",
+            "note": "Free tier: 60 calls/minute. Get key at https://finnhub.io"
+        },
+        "twelvedata": {
+            "enabled": false,
+            "api_key": "your_twelvedata_api_key_here",
+            "note": "Free tier: 800 calls/day. Get key at https://twelvedata.com"
+        },
+        "polygon": {
+            "enabled": false,
+            "api_key": "your_polygon_api_key_here",
+            "note": "Paid service. Get key at https://polygon.io"
+        }
+    },
+    "brokers": {
+        "alpaca": {
+            "enabled": true,
+            "api_key": "PKCIXCXF8EVKEVHJCBRZ",
+            "secret_key": "myC1VlwzVvHRz3hw1WnSPfRaZX4RcD92ZjDpDnkO",
+            "base_url": "https://paper-api.alpaca.markets",
+            "note": "Free paper trading. Get keys at https://alpaca.markets"
+        }
+    }
+}
