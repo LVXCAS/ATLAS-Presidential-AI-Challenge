@@ -1,0 +1,15 @@
+{
+  "strategies": {
+    "SPY": [],
+    "QQQ": [],
+    "AAPL": []
+  },
+  "top_strategies": [],
+  "stats": {
+    "total_combinations": 0,
+    "tested_strategies": 0,
+    "profitable_strategies": 0,
+    "best_sharpe": 0,
+    "generation_time": 1.497606
+  }
+}

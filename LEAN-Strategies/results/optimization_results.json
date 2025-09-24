@@ -1,0 +1,28 @@
+{
+  "target_metric": "sharpe_ratio",
+  "original_sharpe": 0.753,
+  "optimized_sharpe": 0.841,
+  "improvement": 0.088,
+  "best_parameters": {
+    "adaptive_momentum_aapl": {
+      "fast_period": 10,
+      "slow_period": 45,
+      "regime_threshold": 1.2
+    },
+    "breakout_momentum_spy": {
+      "breakout_period": 18,
+      "volume_threshold": 1.8,
+      "atr_multiplier": 2.2
+    },
+    "mean_reversion_qqq": {
+      "lookback_period": 25,
+      "threshold_multiplier": 2.2
+    }
+  },
+  "performance_improvement": {
+    "total_return": 0.247,
+    "annual_return": 0.0494,
+    "max_drawdown": 0.071,
+    "win_rate": 0.634
+  }
+}

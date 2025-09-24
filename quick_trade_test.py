@@ -7,7 +7,7 @@ import asyncio
 import sys
 sys.path.append('.')
 
-from tomorrow_ready_options_bot import TomorrowReadyOptionsBot
+from OPTIONS_BOT import TomorrowReadyOptionsBot
 
 async def quick_trade_test():
     """Test if bot can find and execute trades"""

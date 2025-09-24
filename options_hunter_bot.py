@@ -39,6 +39,16 @@ from agents.options_trading_agent import OptionsTrader, OptionsStrategy
 from agents.options_broker import OptionsBroker
 from agents.risk_management import RiskManager, RiskLevel
 
+# Advanced AI/ML components
+from agents.enhanced_technical_analysis import enhanced_technical_analysis
+from agents.enhanced_options_pricing import enhanced_options_pricing
+from agents.economic_data_agent import economic_data_agent
+from agents.cboe_data_agent import cboe_data_agent
+from agents.advanced_technical_analysis import advanced_technical_analysis
+from agents.ml_prediction_engine import ml_prediction_engine
+from agents.advanced_risk_management import advanced_risk_manager
+from agents.trading_dashboard import trading_dashboard
+
 # Create logs directory
 os.makedirs('logs', exist_ok=True)
 
@@ -50,6 +60,16 @@ class OptionsHunterBot:
         self.options_trader = None
         self.options_broker = None
         self.risk_manager = RiskManager(RiskLevel.MODERATE)
+        
+        # Advanced AI/ML Intelligence Components
+        self.technical_analysis = enhanced_technical_analysis
+        self.options_pricing = enhanced_options_pricing
+        self.economic_data = economic_data_agent
+        self.volatility_intelligence = cboe_data_agent
+        self.advanced_technical = advanced_technical_analysis
+        self.ml_predictions = ml_prediction_engine
+        self.advanced_risk = advanced_risk_manager
+        self.dashboard = trading_dashboard
         
         # Trading state
         self.trade_count = 0
@@ -183,20 +203,161 @@ class OptionsHunterBot:
             self.log_trade(f"Market condition calculation error for {symbol}: {e}")
             return None
     
-    async def find_best_options_opportunity(self, symbol):
-        """Find the best options trading opportunity for a symbol"""
+    async def get_enhanced_market_intelligence(self, symbol):
+        """Get comprehensive market intelligence from all advanced systems"""
         try:
-            # Get current price and market data
-            ticker = yf.Ticker(symbol)
-            hist = ticker.history(period="10d")
+            # Get current market data
+            stock_data = yf.download(symbol, period="30d", interval="1d")
+            if stock_data.empty:
+                return None
             
-            if hist.empty:
+            current_price = float(stock_data['Close'].iloc[-1])
+            
+            # Get enhanced technical analysis with advanced indicators
+            technical_analysis = await self.technical_analysis.get_comprehensive_analysis(symbol, period="60d")
+            
+            # Get ML predictions for price and volatility
+            ml_price_pred = await self.ml_predictions.get_price_prediction(symbol, horizon_days=5)
+            ml_vol_pred = await self.ml_predictions.get_volatility_prediction(symbol, horizon_days=10)
+            
+            # Get economic and volatility intelligence
+            economic_data = await self.economic_data.get_comprehensive_economic_analysis()
+            vix_data = await self.volatility_intelligence.get_vix_term_structure_analysis()
+            
+            # Get professional options pricing
+            options_pricing = await self.options_pricing.get_comprehensive_pricing_analysis(symbol)
+            
+            # Create comprehensive intelligence analysis
+            intelligence_analysis = {
+                'overall_confidence': 0.0,
+                'signal_strength': 0.0,
+                'market_regime': 'NEUTRAL',
+                'volatility_regime': 'NORMAL',
+                'economic_regime': economic_data.get('market_regime', 'NEUTRAL'),
+                'recommendation': 'HOLD',
+                'risk_level': 'MEDIUM',
+                'position_sizing_factor': 1.0
+            }
+            
+            # Technical analysis contribution
+            if technical_analysis and technical_analysis.get('signals'):
+                tech_signals = technical_analysis['signals']
+                intelligence_analysis['signal_strength'] += tech_signals.get('signal_strength', 0) * 0.3
+                
+                # Add volatility regime
+                vol_analysis = technical_analysis.get('volatility_analysis', {})
+                intelligence_analysis['volatility_regime'] = vol_analysis.get('vol_regime', 'NORMAL')
+                
+                # Market regime from technical
+                regime_detection = technical_analysis.get('regime_detection', {})
+                tech_trend = regime_detection.get('trend', 'NEUTRAL')
+                if tech_trend != 'NEUTRAL':
+                    intelligence_analysis['market_regime'] = tech_trend
+            
+            # ML predictions contribution
+            if ml_price_pred and ml_vol_pred:
+                ml_signals = ml_price_pred.get('trading_signals', {})
+                model_confidence = ml_price_pred.get('model_confidence', 0)
+                
+                intelligence_analysis['signal_strength'] += model_confidence * 0.4
+                
+                # Get ML signal direction
+                ml_signal = ml_signals.get('ml_signal', 'HOLD')
+                if ml_signal != 'HOLD':
+                    intelligence_analysis['recommendation'] = ml_signal
+                
+                # Volatility regime from ML
+                ml_vol_regime = ml_vol_pred.get('volatility_regime_prediction', 'NORMAL')
+                if ml_vol_regime == 'HIGH_VOL':
+                    intelligence_analysis['volatility_regime'] = 'HIGH'
+                elif ml_vol_regime == 'LOW_VOL':
+                    intelligence_analysis['volatility_regime'] = 'LOW'
+            
+            # Economic conditions contribution  
+            if economic_data.get('market_regime') == 'CRISIS':
+                intelligence_analysis['risk_level'] = 'HIGH'
+                intelligence_analysis['position_sizing_factor'] = 0.5  # Reduce position sizes
+            elif economic_data.get('market_regime') == 'EXPANSION':
+                intelligence_analysis['risk_level'] = 'LOW'
+                intelligence_analysis['position_sizing_factor'] = 1.2  # Increase position sizes
+            
+            # VIX conditions contribution
+            if vix_data.get('volatility_regime') == 'HIGH_VOL':
+                intelligence_analysis['volatility_regime'] = 'HIGH'
+                if intelligence_analysis['risk_level'] == 'MEDIUM':
+                    intelligence_analysis['risk_level'] = 'HIGH'
+            
+            # Options pricing contribution
+            if options_pricing and options_pricing.get('implied_volatility_analysis'):
+                iv_analysis = options_pricing['implied_volatility_analysis']
+                iv_regime = iv_analysis.get('iv_regime', 'NORMAL')
+                
+                if iv_regime == 'HIGH_IV' and intelligence_analysis['volatility_regime'] != 'HIGH':
+                    intelligence_analysis['volatility_regime'] = 'ELEVATED'
+            
+            # Calculate overall confidence
+            base_confidence = intelligence_analysis['signal_strength'] / 100.0
+            
+            # Adjust confidence based on regime consistency
+            if (intelligence_analysis['market_regime'] != 'NEUTRAL' and 
+                intelligence_analysis['recommendation'] != 'HOLD'):
+                base_confidence *= 1.2  # Boost confidence when signals align
+            
+            # Adjust for risk conditions
+            if intelligence_analysis['risk_level'] == 'HIGH':
+                base_confidence *= 0.8  # Reduce confidence in high risk conditions
+            elif intelligence_analysis['risk_level'] == 'LOW':
+                base_confidence *= 1.1  # Boost confidence in low risk conditions
+            
+            intelligence_analysis['overall_confidence'] = min(base_confidence, 0.95)  # Cap at 95%
+            
+            return {
+                'current_price': current_price,
+                'intelligence_analysis': intelligence_analysis,
+                'technical_analysis': technical_analysis,
+                'ml_predictions': {
+                    'price_prediction': ml_price_pred,
+                    'volatility_prediction': ml_vol_pred
+                },
+                'economic_intelligence': economic_data,
+                'volatility_intelligence': vix_data,
+                'options_pricing': options_pricing
+            }
+            
+        except Exception as e:
+            self.log_trade(f"Enhanced market intelligence error for {symbol}: {e}")
+            # Fallback to basic market analysis
+            basic_conditions = await self.get_market_conditions(symbol)
+            if basic_conditions:
+                return {
+                    'current_price': stock_data['Close'].iloc[-1],
+                    'intelligence_analysis': {
+                        'overall_confidence': 0.3,  # Lower confidence for basic analysis
+                        'signal_strength': 30.0,
+                        'market_regime': 'NEUTRAL',
+                        'volatility_regime': 'NORMAL',
+                        'recommendation': 'HOLD',
+                        'risk_level': 'MEDIUM',
+                        'position_sizing_factor': 1.0
+                    }
+                }
+            return None
+    
+    async def find_best_options_opportunity(self, symbol):
+        """Find the best options trading opportunity for a symbol using advanced intelligence"""
+        try:
+            # Get comprehensive market intelligence
+            market_data = await self.get_enhanced_market_intelligence(symbol)
+            
+            if not market_data:
                 return None
                 
-            current_price = float(hist['Close'].iloc[-1])
-            conditions = self.calculate_market_conditions(symbol, current_price, hist)
+            current_price = market_data['current_price']
             
-            if not conditions:
+            # Use advanced conditions from multiple intelligence sources
+            conditions = market_data['intelligence_analysis']
+            
+            if not conditions or conditions.get('overall_confidence', 0) < 0.3:
                 return None
             
             # Get options chain
@@ -231,30 +392,98 @@ class OptionsHunterBot:
             return None
     
     def select_optimal_strategy(self, conditions):
-        """Select strategy based on Monte Carlo weights and market conditions"""
+        """Select strategy based on advanced intelligence and Monte Carlo weights"""
         
-        # Adjust weights based on market conditions
+        # Start with Monte Carlo optimized weights
         adjusted_weights = self.strategy_weights.copy()
         
-        # Strong bearish signal - increase bear put spread weight
-        if conditions['price_change'] < -0.01 and conditions['rsi'] < 40:
-            adjusted_weights[OptionsStrategy.BEAR_PUT_SPREAD] *= 1.5
+        # Advanced intelligence-based adjustments
+        market_regime = conditions.get('market_regime', 'NEUTRAL')
+        volatility_regime = conditions.get('volatility_regime', 'NORMAL')
+        risk_level = conditions.get('risk_level', 'MEDIUM')
+        recommendation = conditions.get('recommendation', 'HOLD')
+        signal_strength = conditions.get('signal_strength', 0)
+        
+        # Market regime adjustments
+        if market_regime == 'BEARISH' or recommendation == 'SELL':
+            adjusted_weights[OptionsStrategy.BEAR_PUT_SPREAD] *= 2.0
+            adjusted_weights[OptionsStrategy.LONG_PUT] *= 1.5
+            adjusted_weights[OptionsStrategy.BULL_CALL_SPREAD] *= 0.3
+            adjusted_weights[OptionsStrategy.LONG_CALL] *= 0.2
+            
+        elif market_regime == 'BULLISH' or recommendation == 'BUY':
+            adjusted_weights[OptionsStrategy.BULL_CALL_SPREAD] *= 1.8
+            adjusted_weights[OptionsStrategy.LONG_CALL] *= 1.4
+            adjusted_weights[OptionsStrategy.BEAR_PUT_SPREAD] *= 0.4
+            adjusted_weights[OptionsStrategy.LONG_PUT] *= 0.3
+        
+        # Volatility regime adjustments
+        if volatility_regime in ['HIGH', 'ELEVATED']:
+            # High volatility - favor spreads (limited risk)
+            adjusted_weights[OptionsStrategy.BEAR_PUT_SPREAD] *= 1.4
+            adjusted_weights[OptionsStrategy.BULL_CALL_SPREAD] *= 1.4
+            adjusted_weights[OptionsStrategy.LONG_PUT] *= 0.7
+            adjusted_weights[OptionsStrategy.LONG_CALL] *= 0.7
+            
+        elif volatility_regime == 'LOW':
+            # Low volatility - favor long options (cheaper premiums)
+            adjusted_weights[OptionsStrategy.LONG_PUT] *= 1.3
+            adjusted_weights[OptionsStrategy.LONG_CALL] *= 1.3
+            adjusted_weights[OptionsStrategy.BEAR_PUT_SPREAD] *= 0.8
+            adjusted_weights[OptionsStrategy.BULL_CALL_SPREAD] *= 0.8
+        
+        # Risk level adjustments
+        if risk_level == 'HIGH':
+            # High risk - strongly favor spreads over long options
+            adjusted_weights[OptionsStrategy.BEAR_PUT_SPREAD] *= 1.6
+            adjusted_weights[OptionsStrategy.BULL_CALL_SPREAD] *= 1.5
+            adjusted_weights[OptionsStrategy.LONG_PUT] *= 0.5
+            adjusted_weights[OptionsStrategy.LONG_CALL] *= 0.5
+            
+        elif risk_level == 'LOW':
+            # Low risk - can take more directional risk
             adjusted_weights[OptionsStrategy.LONG_PUT] *= 1.2
+            adjusted_weights[OptionsStrategy.LONG_CALL] *= 1.2
+        
+        # Signal strength adjustments
+        if signal_strength > 70:
+            # Very strong signals - increase directional plays
+            if recommendation == 'BUY':
+                adjusted_weights[OptionsStrategy.LONG_CALL] *= 1.5
+                adjusted_weights[OptionsStrategy.BULL_CALL_SPREAD] *= 1.3
+            elif recommendation == 'SELL':
+                adjusted_weights[OptionsStrategy.LONG_PUT] *= 1.5
+                adjusted_weights[OptionsStrategy.BEAR_PUT_SPREAD] *= 1.3
+        
+        # Fallback to basic conditions if advanced intelligence unavailable
+        if not any([market_regime != 'NEUTRAL', recommendation != 'HOLD']):
+            # Use basic technical conditions as fallback
+            price_change = conditions.get('price_change', 0)
+            rsi = conditions.get('rsi', 50)
+            volatility = conditions.get('volatility', 20)
             
-        # Strong bullish signal - increase bull call spread weight  
-        elif conditions['price_change'] > 0.01 and conditions['rsi'] > 60:
-            adjusted_weights[OptionsStrategy.BULL_CALL_SPREAD] *= 1.3
-            adjusted_weights[OptionsStrategy.LONG_CALL] *= 1.1
-            
-        # High volatility - favor spreads over long options
-        if conditions['volatility'] > 30:
-            adjusted_weights[OptionsStrategy.BEAR_PUT_SPREAD] *= 1.2
-            adjusted_weights[OptionsStrategy.BULL_CALL_SPREAD] *= 1.2
-            adjusted_weights[OptionsStrategy.LONG_PUT] *= 0.8
-            adjusted_weights[OptionsStrategy.LONG_CALL] *= 0.8
+            # Strong bearish signal
+            if price_change < -0.01 and rsi < 40:
+                adjusted_weights[OptionsStrategy.BEAR_PUT_SPREAD] *= 1.5
+                adjusted_weights[OptionsStrategy.LONG_PUT] *= 1.2
+                
+            # Strong bullish signal
+            elif price_change > 0.01 and rsi > 60:
+                adjusted_weights[OptionsStrategy.BULL_CALL_SPREAD] *= 1.3
+                adjusted_weights[OptionsStrategy.LONG_CALL] *= 1.1
+                
+            # High volatility
+            if volatility > 30:
+                adjusted_weights[OptionsStrategy.BEAR_PUT_SPREAD] *= 1.2
+                adjusted_weights[OptionsStrategy.BULL_CALL_SPREAD] *= 1.2
+                adjusted_weights[OptionsStrategy.LONG_PUT] *= 0.8
+                adjusted_weights[OptionsStrategy.LONG_CALL] *= 0.8
         
         # Normalize weights
         total_weight = sum(adjusted_weights.values())
+        if total_weight <= 0:
+            return OptionsStrategy.BEAR_PUT_SPREAD  # Safe fallback
+            
         normalized_weights = {k: v/total_weight for k, v in adjusted_weights.items()}
         
         # Weighted random selection
@@ -416,20 +645,85 @@ class OptionsHunterBot:
         }
     
     async def execute_options_trade(self, opportunity):
-        """Execute the options trade"""
+        """Execute the options trade with advanced risk management"""
         try:
             symbol = opportunity['symbol']
             strategy = opportunity['strategy']
             contracts = opportunity['contracts']
+            conditions = opportunity.get('conditions', {})
             
-            # Risk management - position sizing
+            # Advanced risk management - position sizing
             account_value = self.risk_manager.account_value
-            max_risk_per_trade = account_value * 0.02  # 2% max risk per trade
+            base_risk_per_trade = account_value * 0.02  # 2% base risk per trade
             
-            # Determine quantity based on max loss
-            max_loss_per_contract = opportunity['max_loss']
-            max_quantity = int(max_risk_per_trade / (max_loss_per_contract * 100))  # Options are $100 multiplier
-            quantity = max(1, min(max_quantity, 5))  # At least 1, max 5 contracts
+            # Apply position sizing factor from intelligence analysis
+            position_sizing_factor = conditions.get('position_sizing_factor', 1.0)
+            risk_level = conditions.get('risk_level', 'MEDIUM')
+            signal_strength = conditions.get('signal_strength', 50)
+            overall_confidence = conditions.get('overall_confidence', 0.5)
+            
+            # Adjust risk based on multiple factors
+            risk_multiplier = 1.0
+            
+            # Risk level adjustments
+            if risk_level == 'HIGH':
+                risk_multiplier *= 0.5  # Reduce position size in high risk conditions
+            elif risk_level == 'LOW':
+                risk_multiplier *= 1.3  # Increase position size in low risk conditions
+            
+            # Signal strength adjustments
+            if signal_strength > 70 and overall_confidence > 0.7:
+                risk_multiplier *= 1.2  # Increase for high confidence signals
+            elif signal_strength < 40 or overall_confidence < 0.4:
+                risk_multiplier *= 0.7  # Reduce for low confidence signals
+            
+            # Apply position sizing factor from intelligence
+            risk_multiplier *= position_sizing_factor
+            
+            # Calculate final risk amount
+            max_risk_per_trade = base_risk_per_trade * risk_multiplier
+            
+            # Use advanced risk management for position sizing if available
+            try:
+                advanced_sizing = await self.advanced_risk.calculate_position_sizing(
+                    signal_strength=signal_strength / 100.0,
+                    confidence=overall_confidence,
+                    volatility=conditions.get('volatility', 25) / 100.0,
+                    portfolio_value=account_value,
+                    max_position_risk=max_risk_per_trade / account_value
+                )
+                
+                if advanced_sizing and advanced_sizing.get('recommended_size'):
+                    recommended_size = advanced_sizing['recommended_size']
+                    max_loss_per_contract = opportunity['max_loss'] * 100  # Options multiplier
+                    
+                    if max_loss_per_contract > 0:
+                        quantity = max(1, min(int(recommended_size / max_loss_per_contract), 10))
+                    else:
+                        quantity = 1
+                else:
+                    # Fallback to basic calculation
+                    max_loss_per_contract = opportunity['max_loss']
+                    max_quantity = int(max_risk_per_trade / (max_loss_per_contract * 100))
+                    quantity = max(1, min(max_quantity, 5))
+                    
+            except Exception as e:
+                self.log_trade(f"Advanced position sizing failed, using basic: {e}")
+                # Fallback to basic calculation
+                max_loss_per_contract = opportunity['max_loss']
+                max_quantity = int(max_risk_per_trade / (max_loss_per_contract * 100))
+                quantity = max(1, min(max_quantity, 5))
+            
+            # Log risk assessment
+            actual_risk = opportunity['max_loss'] * quantity * 100
+            risk_percentage = (actual_risk / account_value) * 100
+            
+            self.log_trade(f"RISK ASSESSMENT: {symbol}")
+            self.log_trade(f"  Signal Strength: {signal_strength:.1f}%")
+            self.log_trade(f"  Confidence: {overall_confidence:.1%}")
+            self.log_trade(f"  Risk Level: {risk_level}")
+            self.log_trade(f"  Position Size: {quantity} contracts")
+            self.log_trade(f"  Max Risk: ${actual_risk:.2f} ({risk_percentage:.2f}% of account)")
             
             # Execute the strategy
             position = await self.options_trader.execute_options_strategy(
@@ -437,19 +731,34 @@ class OptionsHunterBot:
             )
             
             if position:
-                # Track the position
+                # Track the position with enhanced data
                 self.active_positions[position.symbol] = {
                     'position': position,
                     'opportunity': opportunity,
-                    'entry_time': datetime.now()
+                    'entry_time': datetime.now(),
+                    'risk_assessment': {
+                        'signal_strength': signal_strength,
+                        'confidence': overall_confidence,
+                        'risk_level': risk_level,
+                        'max_risk': actual_risk,
+                        'risk_percentage': risk_percentage
+                    }
                 }
                 
                 # Update performance stats
                 self.performance_stats['total_trades'] += 1
                 
-                # Log successful trade
+                # Log successful trade with enhanced information
                 cost = opportunity['net_debit'] * quantity * 100
-                self.log_trade(f"OPTIONS EXECUTED: {symbol} {strategy} - Qty: {quantity} - Cost: ${cost:.2f} - Max Profit: ${opportunity['max_profit'] * quantity * 100:.2f}")
+                max_profit = opportunity['max_profit'] * quantity * 100
+                
+                self.log_trade(f"OPTIONS EXECUTED: {symbol} {strategy}")
+                self.log_trade(f"  Quantity: {quantity} contracts")
+                self.log_trade(f"  Entry Cost: ${cost:.2f}")
+                self.log_trade(f"  Max Profit: ${max_profit:.2f}")
+                self.log_trade(f"  Max Loss: ${actual_risk:.2f}")
+                self.log_trade(f"  Confidence: {overall_confidence:.1%}")
+                self.log_trade(f"  Reason: {opportunity.get('reason', 'N/A')}")
                 
                 return True
             

@@ -1,0 +1,22 @@
+{
+    "environment": "backtesting",
+    "algorithm-type-name": "HiveTradingAlgorithm",
+    "algorithm-language": "Python",
+    "algorithm-location": "algorithms/main_strategy.py",
+    "data-folder": "./data",
+    "debugging": false,
+    "debugging-method": "LocalCmdline",
+    "log-handler": "ConsoleLogHandler",
+    "messaging-handler": "StreamingMessageHandler",
+    "job-queue-handler": "JobQueue",
+    "api-handler": "LocalDiskApiHandler",
+    "map-file-provider": "LocalDiskMapFileProvider",
+    "factor-file-provider": "LocalDiskFactorFileProvider",
+    "data-provider": "DefaultDataProvider",
+    "alpha-handler": "DefaultAlphaHandler",
+    "object-store": "LocalObjectStore",
+    "data-permission-manager": "DataPermissionManager",
+    "parameters": {
+        "startDate": {
+            "symbol": "TLT",
+            "start_date": 

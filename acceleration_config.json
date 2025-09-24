@@ -1,0 +1,21 @@
+{
+  "setup_date": "2025-09-13T09:05:01.305376",
+  "acceleration_enabled": true,
+  "transfer_learning": true,
+  "realtime_learning": true,
+  "model_update_frequency": 3600,
+  "symbols_for_training": [
+    "SPY",
+    "QQQ",
+    "AAPL",
+    "MSFT",
+    "GOOGL",
+    "AMZN",
+    "TSLA",
+    "NVDA"
+  ],
+  "min_accuracy_threshold": 0.52,
+  "max_position_risk": 0.02,
+  "learning_rate": 0.1,
+  "rebalance_threshold": 0.05
+}

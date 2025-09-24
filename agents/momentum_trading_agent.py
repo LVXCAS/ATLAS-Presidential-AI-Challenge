@@ -945,7 +945,7 @@ class MomentumTradingAgent:
         
         return state
     
-    async def generate_momentum_signal(self, symbol: str, market_data: List[MarketData],
+    async def analyze_momentum(self, symbol: str, market_data: List[MarketData] = None,
                                      sentiment_data: Optional[SentimentData] = None) -> Optional[MomentumSignal]:
         """Main entry point for generating momentum signals"""
         try:
@@ -1051,3 +1051,6 @@ if __name__ == "__main__":
     
     # Run test
     asyncio.run(test_momentum_agent())
+
+# Create singleton instance
+momentum_trading_agent = MomentumTradingAgent()

@@ -1053,4 +1053,7 @@ if __name__ == "__main__":
         print("\nPerformance monitoring demo completed!")
     
     # Run the demo
-    asyncio.run(main()) 
+    asyncio.run(main())
+
+# Create singleton instance
+performance_monitoring_agent = PerformanceMonitoringAgent() 

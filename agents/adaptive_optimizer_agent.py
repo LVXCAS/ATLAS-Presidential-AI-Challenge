@@ -92,6 +92,47 @@ class AdaptiveOptimizerAgent:
             logging.warning(f"Agent {agent.name} does not have a 'get_params' method.")
             return {}
 
+    async def optimize_portfolio_strategies(self, active_positions: Dict, market_regime: str) -> Dict:
+        """
+        Optimize portfolio strategies based on active positions and market regime.
+
+        Args:
+            active_positions: Dictionary of current active positions
+            market_regime: Current market regime (e.g., 'bullish', 'bearish', 'neutral')
+
+        Returns:
+            Dictionary with optimization recommendations
+        """
+        try:
+            recommendations = {
+                'should_rebalance': False,
+                'recommendation': 'No significant changes needed',
+                'confidence': 0.7,
+                'market_regime': market_regime
+            }
+
+            # Basic optimization logic based on market regime
+            position_count = len(active_positions)
+
+            if market_regime == 'high_volatility' and position_count > 5:
+                recommendations.update({
+                    'should_rebalance': True,
+                    'recommendation': 'Reduce position count due to high volatility',
+                    'confidence': 0.8
+                })
+            elif market_regime == 'bullish' and position_count < 3:
+                recommendations.update({
+                    'should_rebalance': True,
+                    'recommendation': 'Increase exposure in bullish market',
+                    'confidence': 0.75
+                })
+
+            return recommendations
+
+        except Exception as e:
+            logging.error(f"Portfolio optimization error: {e}")
+            return {'should_rebalance': False, 'recommendation': 'Error in optimization', 'confidence': 0.5}
+
     def _agent_interface_set_params(self, agent: Any, params: Dict[str, Any]):
         """
         Sets new parameters for an agent.
@@ -161,4 +202,7 @@ if __name__ == '__main__':
 
     # Check if the parameters of the momentum agent were updated
     print(f"Momentum agent new params: {momentum_agent.get_params()}")
+
+# Create singleton instance
+adaptive_optimizer_agent = AdaptiveOptimizerAgent([], None)
 

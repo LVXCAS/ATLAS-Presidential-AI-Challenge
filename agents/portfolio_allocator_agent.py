@@ -583,7 +583,54 @@ class PortfolioAllocatorAgent:
         workflow.set_entry_point("normalize_signals")
         
         return workflow.compile()
-    
+
+    async def get_rebalancing_recommendations(self, current_portfolio: List[str], target_allocation: str = 'moderate_growth') -> Dict[str, Any]:
+        """
+        Get portfolio rebalancing recommendations.
+
+        Args:
+            current_portfolio: List of current symbols in portfolio
+            target_allocation: Target allocation strategy
+
+        Returns:
+            Dictionary with rebalancing recommendations
+        """
+        try:
+            # Simple rebalancing logic based on portfolio size and allocation
+            recommendations = {
+                'should_rebalance': False,
+                'recommendation': 'Portfolio is balanced',
+                'confidence': 0.7,
+                'target_allocation': target_allocation
+            }
+
+            portfolio_size = len(current_portfolio)
+
+            # Check if rebalancing is needed based on portfolio composition
+            if target_allocation == 'moderate_growth':
+                if portfolio_size > 8:
+                    recommendations.update({
+                        'should_rebalance': True,
+                        'recommendation': 'Portfolio too diversified - consolidate top performers',
+                        'confidence': 0.85
+                    })
+                elif portfolio_size < 3:
+                    recommendations.update({
+                        'should_rebalance': True,
+                        'recommendation': 'Portfolio under-diversified - add positions',
+                        'confidence': 0.8
+                    })
+
+            return recommendations
+
+        except Exception as e:
+            logger.error(f"Rebalancing recommendation error: {e}")
+            return {
+                'should_rebalance': False,
+                'recommendation': 'Error in analysis',
+                'confidence': 0.5
+            }
+
     async def process_signals(self, raw_signals: Dict[str, List[Signal]], 
                             market_data: Dict[str, Any]) -> Dict[str, FusedSignal]:
         """Process raw signals through the complete fusion pipeline"""
@@ -924,3 +971,6 @@ async def test_portfolio_allocator():
 
 if __name__ == "__main__":
     asyncio.run(test_portfolio_allocator())
+
+# Create singleton instance
+portfolio_allocator_agent = PortfolioAllocatorAgent()

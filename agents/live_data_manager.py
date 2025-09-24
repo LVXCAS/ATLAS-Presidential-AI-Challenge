@@ -29,7 +29,7 @@ except ImportError:
     ALPACA_AVAILABLE = False
 
 try:
-    import polygon
+    from polygon import RESTClient as PolygonRESTClient
     POLYGON_AVAILABLE = True
 except ImportError:
     POLYGON_AVAILABLE = False
@@ -66,18 +66,18 @@ class LiveDataManager:
         # Check Alpaca
         if ALPACA_AVAILABLE and self.config.get('alpaca_key'):
             print("+ Alpaca API available")
-            if 'alpaca' in self.sources:
-                self.sources['alpaca']['available'] = True
+            self.sources['alpaca'] = {'available': True}
         else:
             print("- Alpaca API: Not configured")
+            self.sources['alpaca'] = {'available': False}
             
         # Check Polygon
         if POLYGON_AVAILABLE and self.config.get('polygon_key'):
             print("+ Polygon API available")
-            if 'polygon' in self.sources:
-                self.sources['polygon']['available'] = True
+            self.sources['polygon'] = {'available': True}
         else:
             print("- Polygon API: Not configured")
+            self.sources['polygon'] = {'available': False}
             
         # Yahoo Finance (free)
         if YFINANCE_AVAILABLE:
@@ -131,7 +131,7 @@ class LiveDataManager:
             if not api_key:
                 return None
                 
-            client = polygon.RESTClient(api_key)
+            client = PolygonRESTClient(api_key)
             return {
                 'client': client,
                 'type': 'rest',
@@ -496,8 +496,8 @@ class LiveDataManager:
         
         return status
 
-# Global instance
-live_data_manager = LiveDataManager()
+# Global instance (initialize immediately for trading bots)
+live_data_manager = None
 
 def setup_live_data(config: Dict = None):
     """Setup live data manager with configuration"""
@@ -505,12 +505,38 @@ def setup_live_data(config: Dict = None):
     live_data_manager = LiveDataManager(config)
     return live_data_manager
 
+# Auto-initialize with environment variable configuration for trading bots
+try:
+    import os
+    from dotenv import load_dotenv
+    load_dotenv()
+    
+    # Load API keys from environment
+    config = {
+        'alpaca_key': os.getenv('ALPACA_API_KEY'),
+        'alpaca_secret': os.getenv('ALPACA_SECRET_KEY'),
+        'alpaca_base_url': os.getenv('ALPACA_BASE_URL', 'https://paper-api.alpaca.markets'),
+        'polygon_key': os.getenv('POLYGON_API_KEY'),
+        'finnhub_key': os.getenv('FINNHUB_API_KEY'),
+        'twelvedata_key': os.getenv('TWELVEDATA_API_KEY'),
+    }
+    
+    live_data_manager = LiveDataManager(config)
+    print("+ Live data manager auto-initialized")
+except Exception as e:
+    print(f"- Live data manager initialization failed: {e}")
+    live_data_manager = None
+
 async def start_live_feed(symbols: List[str], callback: Callable = None):
     """Start live data feed"""
+    if live_data_manager is None:
+        raise RuntimeError("Live data manager not initialized. Call setup_live_data() first.")
     return await live_data_manager.start_live_feed(symbols, callback)
 
 def get_live_price(symbol: str) -> Optional[Dict]:
     """Get latest live price"""
+    if live_data_manager is None:
+        return None
     return live_data_manager.get_latest_price(symbol)
 
 if __name__ == "__main__":

@@ -1,0 +1,150 @@
+{
+  "summary": {
+    "total_tests": 28,
+    "passed_tests": 26,
+    "success_rate": 92.85714285714286,
+    "audit_time": "2025-09-22T22:56:24.354762"
+  },
+  "detailed_results": {
+    "Import profit_target_monitor.ProfitTargetMonitor": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:53:35.504184"
+    },
+    "Import agents.broker_integration.AlpacaBrokerIntegration": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:53:35.504184"
+    },
+    "Import OPTIONS_BOT.TomorrowReadyOptionsBot": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:54:30.730662"
+    },
+    "Import start_real_market_hunter.RealMarketDataHunter": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:18.861916"
+    },
+    "ProfitTargetMonitor creation": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:18.861916"
+    },
+    "5.75% target configuration": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:18.861916"
+    },
+    "Status method completeness": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:18.861916"
+    },
+    "Profit calculation logic": {
+      "passed": true,
+      "details": "All scenarios correct",
+      "timestamp": "2025-09-22T22:56:18.861916"
+    },
+    "OPTIONS_BOT creation": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.318148"
+    },
+    "OPTIONS_BOT profit monitoring attributes": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.318148"
+    },
+    "ProfitTargetMonitor import in OPTIONS_BOT context": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.318148"
+    },
+    "RealMarketDataHunter creation": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.318148"
+    },
+    "Market Hunter profit monitoring attributes": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.318148"
+    },
+    "AlpacaBrokerIntegration creation": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.319177"
+    },
+    "Broker required methods": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.319177"
+    },
+    "ML4T agent compatibility": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.319177"
+    },
+    "FinanceDatabase agent compatibility": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.319177"
+    },
+    "Enhanced ML Ensemble compatibility": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.319177"
+    },
+    "File exists: profit_target_monitor.py": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.319177"
+    },
+    "File not empty: profit_target_monitor.py": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.319177"
+    },
+    "File exists: OPTIONS_BOT.py": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.319177"
+    },
+    "File not empty: OPTIONS_BOT.py": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.320206"
+    },
+    "File exists: start_real_market_hunter.py": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.320206"
+    },
+    "File not empty: start_real_market_hunter.py": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.320206"
+    },
+    "File exists: agents/broker_integration.py": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.320206"
+    },
+    "File not empty: agents/broker_integration.py": {
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-09-22T22:56:24.320206"
+    },
+    "OPTIONS_BOT integration points": {
+      "passed": false,
+      "details": "'charmap' codec can't decode byte 0x9d in position 15272: character maps to <undefined>",
+      "timestamp": "2025-09-22T22:56:24.352786"
+    },
+    "Market Hunter integration points": {
+      "passed": false,
+      "details": "'charmap' codec can't decode byte 0x9d in position 60735: character maps to <undefined>",
+      "timestamp": "2025-09-22T22:56:24.354762"
+    }
+  }
+}

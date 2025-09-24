@@ -302,4 +302,5 @@ multi_strategy_backtest_results.png
 
 # IDE and editor files
 .vscode/settings.json.bak
-.claude/
+.claude/Finance/
+FinanceDatabase/

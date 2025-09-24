@@ -1,0 +1,185 @@
+{
+  "deployed_strategies": {
+    "breakout_momentum_SPY": {
+      "name": "breakout_momentum_SPY",
+      "symbol": "SPY",
+      "template": "breakout_confirmation",
+      "parameters": {
+        "breakout_period": 20,
+        "volume_threshold": 1.5,
+        "confirmation_period": 3,
+        "atr_multiplier": 2.0
+      },
+      "performance": {
+        "total_return": 0.12,
+        "annual_return": 0.08,
+        "annual_volatility": 0.15,
+        "sharpe_ratio": 0.85,
+        "max_drawdown": 0.08,
+        "calmar_ratio": 1.0,
+        "win_rate": 0.65,
+        "total_trades": 45
+      },
+      "regime_suitability": 0.75,
+      "deployed_at": "2025-09-13T11:57:04.395657",
+      "status": "active",
+      "position_size": 0.05
+    },
+    "mean_reversion_QQQ": {
+      "name": "mean_reversion_QQQ",
+      "symbol": "QQQ",
+      "template": "mean_reversion_ml",
+      "parameters": {
+        "lookback_period": 30,
+        "threshold_multiplier": 2.0,
+        "volatility_window": 10,
+        "ml_confidence_threshold": 0.7
+      },
+      "performance": {
+        "total_return": 0.15,
+        "annual_return": 0.11,
+        "annual_volatility": 0.18,
+        "sharpe_ratio": 0.72,
+        "max_drawdown": 0.12,
+        "calmar_ratio": 0.92,
+        "win_rate": 0.58,
+        "total_trades": 38
+      },
+      "regime_suitability": 0.68,
+      "deployed_at": "2025-09-13T11:57:04.399546",
+      "status": "active",
+      "position_size": 0.05
+    },
+    "adaptive_momentum_AAPL": {
+      "name": "adaptive_momentum_AAPL",
+      "symbol": "AAPL",
+      "template": "adaptive_momentum",
+      "parameters": {
+        "fast_period": 12,
+        "slow_period": 50,
+        "volatility_lookback": 20,
+        "regime_threshold": 1.0
+      },
+      "performance": {
+        "total_return": 0.18,
+        "annual_return": 0.13,
+        "annual_volatility": 0.22,
+        "sharpe_ratio": 0.69,
+        "max_drawdown": 0.14,
+        "calmar_ratio": 0.93,
+        "win_rate": 0.62,
+        "total_trades": 52
+      },
+      "regime_suitability": 0.82,
+      "deployed_at": "2025-09-13T11:57:04.410574",
+      "status": "active",
+      "position_size": 0.05
+    }
+  },
+  "deployment_history": [
+    {
+      "timestamp": "2025-09-13T11:57:04.414578",
+      "deployed_count": 3,
+      "total_evaluated": 3,
+      "strategies": [
+        {
+          "success": true,
+          "strategy_name": "breakout_momentum_SPY",
+          "config": {
+            "name": "breakout_momentum_SPY",
+            "symbol": "SPY",
+            "template": "breakout_confirmation",
+            "parameters": {
+              "breakout_period": 20,
+              "volume_threshold": 1.5,
+              "confirmation_period": 3,
+              "atr_multiplier": 2.0
+            },
+            "performance": {
+              "total_return": 0.12,
+              "annual_return": 0.08,
+              "annual_volatility": 0.15,
+              "sharpe_ratio": 0.85,
+              "max_drawdown": 0.08,
+              "calmar_ratio": 1.0,
+              "win_rate": 0.65,
+              "total_trades": 45
+            },
+            "regime_suitability": 0.75,
+            "deployed_at": "2025-09-13T11:57:04.395657",
+            "status": "active",
+            "position_size": 0.05
+          },
+          "file_path": "deployed_strategies/breakout_momentum_spy.py"
+        },
+        {
+          "success": true,
+          "strategy_name": "mean_reversion_QQQ",
+          "config": {
+            "name": "mean_reversion_QQQ",
+            "symbol": "QQQ",
+            "template": "mean_reversion_ml",
+            "parameters": {
+              "lookback_period": 30,
+              "threshold_multiplier": 2.0,
+              "volatility_window": 10,
+              "ml_confidence_threshold": 0.7
+            },
+            "performance": {
+              "total_return": 0.15,
+              "annual_return": 0.11,
+              "annual_volatility": 0.18,
+              "sharpe_ratio": 0.72,
+              "max_drawdown": 0.12,
+              "calmar_ratio": 0.92,
+              "win_rate": 0.58,
+              "total_trades": 38
+            },
+            "regime_suitability": 0.68,
+            "deployed_at": "2025-09-13T11:57:04.399546",
+            "status": "active",
+            "position_size": 0.05
+          },
+          "file_path": "deployed_strategies/mean_reversion_qqq.py"
+        },
+        {
+          "success": true,
+          "strategy_name": "adaptive_momentum_AAPL",
+          "config": {
+            "name": "adaptive_momentum_AAPL",
+            "symbol": "AAPL",
+            "template": "adaptive_momentum",
+            "parameters": {
+              "fast_period": 12,
+              "slow_period": 50,
+              "volatility_lookback": 20,
+              "regime_threshold": 1.0
+            },
+            "performance": {
+              "total_return": 0.18,
+              "annual_return": 0.13,
+              "annual_volatility": 0.22,
+              "sharpe_ratio": 0.69,
+              "max_drawdown": 0.14,
+              "calmar_ratio": 0.93,
+              "win_rate": 0.62,
+              "total_trades": 52
+            },
+            "regime_suitability": 0.82,
+            "deployed_at": "2025-09-13T11:57:04.410574",
+            "status": "active",
+            "position_size": 0.05
+          },
+          "file_path": "deployed_strategies/adaptive_momentum_aapl.py"
+        }
+      ]
+    }
+  ],
+  "risk_limits": {
+    "max_position_size": 0.1,
+    "max_daily_loss": 0.02,
+    "max_drawdown": 0.15,
+    "min_sharpe_ratio": 0.3
+  },
+  "last_update": "2025-09-13T11:57:04.414578"
+}

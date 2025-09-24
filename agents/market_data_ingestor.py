@@ -759,7 +759,7 @@ class MarketDataIngestorAgent:
             for symbol_data in state.validated_data.values():
                 all_data.extend(symbol_data)
             
-            if all_data:
+            if len(all_data) > 0:
                 records_inserted = await self.db_manager.bulk_insert_market_data(all_data)
                 state.ingestion_stats['records_stored'] = records_inserted
                 state.ingestion_stats['storage_success'] = True

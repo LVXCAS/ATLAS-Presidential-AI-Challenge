@@ -99,7 +99,7 @@ class ExitStrategyAgent:
             )
             
             # Weighted decision making
-            decision = self._make_weighted_decision(factors, position_data, current_pnl)
+            decision = self._make_weighted_decision(factors, position_data, current_pnl, market_data)
             
             symbol = position_data.get('opportunity', {}).get('symbol', 'UNKNOWN')
             logger.info(f"Exit analysis for {symbol}: {decision.signal} ({decision.confidence:.1%} confidence)")
@@ -287,8 +287,8 @@ class ExitStrategyAgent:
         except:
             return 0.0
     
-    def _make_weighted_decision(self, factors: Dict[str, float], position_data: Dict, 
-                              current_pnl: float) -> ExitDecision:
+    def _make_weighted_decision(self, factors: Dict[str, float], position_data: Dict,
+                              current_pnl: float, market_data: Dict) -> ExitDecision:
         """Make final weighted decision based on all factors"""
         
         # Factor weights (tunable parameters)
@@ -364,11 +364,20 @@ class ExitStrategyAgent:
             )
         
         else:
-            # Normal hold
+            # Normal hold - calculate dynamic confidence based on signal strength
+            hold_confidence = self._calculate_dynamic_confidence(
+                position_data, market_data, {
+                    'exit_pressure': exit_score,
+                    'momentum': market_data.get('momentum_score', 0),
+                    'volatility': market_data.get('volatility', 0),
+                    'time_decay': self._get_days_to_expiry(position_data) / 30.0
+                }
+            )
+
             return ExitDecision(
                 signal=ExitSignal.HOLD,
                 reason=ExitReason.RISK_MANAGEMENT,
-                confidence=0.8,
+                confidence=hold_confidence,
                 urgency=0.0,
                 target_exit_pct=0.0,
                 expected_pnl_impact=0.0,
@@ -412,6 +421,47 @@ class ExitStrategyAgent:
             
         except Exception as e:
             logger.error(f"Parameter update error: {e}")
+
+    def _calculate_dynamic_confidence(self, position_data: Dict, market_data: Dict, signal_factors: Dict) -> float:
+        """Calculate confidence based on actual signal convergence and market conditions"""
+        try:
+            # Base confidence from signal clarity
+            base_confidence = 0.5
+
+            # Factor 1: Exit pressure (inverse relationship)
+            exit_pressure = signal_factors.get('exit_pressure', 0)
+            pressure_confidence = max(0.1, 1.0 - exit_pressure)
+
+            # Factor 2: Momentum alignment
+            momentum = abs(signal_factors.get('momentum', 0))
+            momentum_confidence = min(0.9, 0.4 + momentum * 0.3)
+
+            # Factor 3: Volatility penalty (high vol = lower confidence)
+            volatility = signal_factors.get('volatility', 0.2)
+            vol_penalty = min(0.3, volatility * 0.5)
+
+            # Factor 4: Time decay for options
+            time_decay = signal_factors.get('time_decay', 0)
+            time_confidence = max(0.7, 1.0 - time_decay * 0.4)
+
+            # Factor 5: Market data quality
+            data_quality = 0.9 if market_data and len(market_data) > 3 else 0.6
+
+            # Weighted combination
+            confidence = (
+                base_confidence * 0.2 +
+                pressure_confidence * 0.3 +
+                momentum_confidence * 0.25 +
+                time_confidence * 0.15 +
+                data_quality * 0.1
+            ) - vol_penalty
+
+            # Clamp to reasonable range
+            return max(0.3, min(0.95, confidence))
+
+        except Exception as e:
+            logger.warning(f"Dynamic confidence calculation failed: {e}")
+            return 0.65  # Conservative fallback
 
 # Singleton instance
 exit_strategy_agent = ExitStrategyAgent()

@@ -97,10 +97,10 @@ class OptionsTrader:
         self.options_broker = OptionsBroker(broker, paper_trading=True)
         self.positions: Dict[str, OptionsPosition] = {}
         self.option_chains: Dict[str, List[OptionsContract]] = {}
-        self.min_volume = 50  # Minimum volume for liquidity
-        self.min_open_interest = 100  # Minimum open interest
-        self.max_spread_ratio = 0.10  # Maximum 10% bid-ask spread
-        self.min_days_to_expiry = 14  # Only trade options with > 2 weeks to expiry
+        self.min_volume = 5  # Minimum volume for liquidity (lowered from 50)
+        self.min_open_interest = 10  # Minimum open interest (lowered from 100)
+        self.max_spread_ratio = 0.20  # Maximum 20% bid-ask spread (increased from 10%)
+        self.min_days_to_expiry = 7  # Only trade options with > 1 week to expiry (lowered from 14)
         
     async def get_options_chain(self, symbol: str, expiration: Optional[datetime] = None) -> List[OptionsContract]:
         """Get options chain for a symbol"""
@@ -112,6 +112,8 @@ class OptionsTrader:
             if not expirations:
                 logger.warning(f"No options available for {symbol}")
                 return []
+
+            logger.info(f"Found {len(expirations)} expiration dates for {symbol}: {expirations[:3]}...")
             
             # Filter expirations to only those > 2 weeks out
             valid_expirations = []
@@ -126,6 +128,8 @@ class OptionsTrader:
             if not valid_expirations:
                 logger.warning(f"No options with > {self.min_days_to_expiry} days to expiry for {symbol}")
                 return []
+
+            logger.info(f"Found {len(valid_expirations)} valid expirations for {symbol}")
             
             # Use specified expiration or first valid expiration
             if expiration:
@@ -142,13 +146,17 @@ class OptionsTrader:
             opt_chain = ticker.option_chain(target_exp)
             calls = opt_chain.calls
             puts = opt_chain.puts
-            
+
+            logger.info(f"Retrieved {len(calls)} calls and {len(puts)} puts for {symbol} exp {target_exp}")
+
             contracts = []
             exp_date = datetime.strptime(target_exp, '%Y-%m-%d')
-            
+
             # Process calls
+            calls_filtered = 0
             for _, row in calls.iterrows():
                 if row['volume'] >= self.min_volume and row['openInterest'] >= self.min_open_interest:
+                    calls_filtered += 1
                     contract = OptionsContract(
                         symbol=f"{symbol}{exp_date.strftime('%y%m%d')}C{int(row['strike']*1000):08d}",
                         underlying=symbol,
@@ -276,86 +284,34 @@ class OptionsTrader:
         # Separate calls and puts
         calls = [c for c in contracts if c.option_type == 'call']
         puts = [c for c in contracts if c.option_type == 'put']
-        
-        if not calls or not puts:
+
+        logger.info(f"Available for {symbol}: {len(calls)} calls, {len(puts)} puts")
+
+        if not calls and not puts:
+            logger.warning(f"No calls or puts available for {symbol}")
             return None
         
-        # OPTIMIZED STRATEGY SELECTION - PRIORITIZE PROFITABLE STRATEGIES
-        # Based on Monte Carlo results: Bull Call Spreads (71.7% win rate) and Bear Put Spreads (86.4% win rate)
+        # LEVEL 1 OPTIONS STRATEGY SELECTION - SIMPLE CALLS/PUTS ONLY
+        # Modified for accounts with basic options permissions (no spreads)
         
-        # 1. BULL CALL SPREAD - Primary bullish strategy (MOST PROFITABLE)
-        # Triggers: Any bullish conditions (expanded from narrow range)
-        if price_change > 0.005 and rsi < 75:  # Bullish signal (0.5% move, expanded from 1-3%)
-            # Find calls for spread - Buy lower strike, sell higher strike
-            long_strike_target = price * 1.02    # 2% OTM long call
-            short_strike_target = price * 1.08   # 8% OTM short call
+        # 1. LONG CALL - Primary bullish strategy (Level 1 compatible)
+        # Triggers: Bullish conditions
+        if price_change > 0.005 and rsi < 75:  # Bullish signal (0.5% move)
+            # Find suitable calls for long position
+            target_strike = price * 1.02    # 2% OTM target
             
-            # Find suitable calls
-            long_calls = [c for c in calls if price * 0.98 <= c.strike <= price * 1.05]  # Near ATM to slightly OTM
-            short_calls = [c for c in calls if price * 1.05 < c.strike <= price * 1.12]   # Further OTM
-            
-            if long_calls and short_calls:
-                # Select best long call (good delta, close to target)
-                if quantlib_pricer:
-                    # Prefer calls with delta 0.3-0.6 for good directional exposure
-                    good_long_calls = [c for c in long_calls if 0.3 <= abs(c.delta) <= 0.6]
-                    if good_long_calls:
-                        long_call = max(good_long_calls, key=lambda c: c.delta * c.gamma)
-                    else:
-                        long_call = min(long_calls, key=lambda c: abs(c.strike - long_strike_target))
-                else:
-                    long_call = min(long_calls, key=lambda c: abs(c.strike - long_strike_target))
-                
-                # Select short call (prefer higher strike for more premium)
-                short_call = min(short_calls, key=lambda c: abs(c.strike - short_strike_target))
-                
-                # Ensure proper spread structure
-                if long_call.strike < short_call.strike:
-                    return OptionsStrategy.BULL_CALL_SPREAD, [long_call, short_call]
-        
-        # 2. BEAR PUT SPREAD - Primary bearish strategy (HIGHEST WIN RATE 86.4%)
-        # Triggers: Any bearish conditions (expanded from narrow range)
-        if price_change < -0.005 and rsi > 25:  # Bearish signal (-0.5% move, expanded)
-            # Find puts for spread - Buy higher strike, sell lower strike
-            long_strike_target = price * 0.98    # 2% OTM put (higher strike)
-            short_strike_target = price * 0.92   # 8% OTM put (lower strike)
-            
-            # Find suitable puts
-            long_puts = [p for p in puts if price * 0.95 <= p.strike <= price * 1.02]  # Near ATM to slightly OTM
-            short_puts = [p for p in puts if price * 0.88 < p.strike <= price * 0.95]   # Further OTM
-            
-            if long_puts and short_puts:
-                # Select best long put (good delta magnitude)
-                if quantlib_pricer:
-                    # Prefer puts with delta -0.6 to -0.3 for good directional exposure  
-                    good_long_puts = [p for p in long_puts if -0.6 <= p.delta <= -0.3]
-                    if good_long_puts:
-                        long_put = max(good_long_puts, key=lambda p: abs(p.delta) * p.gamma)
-                    else:
-                        long_put = min(long_puts, key=lambda p: abs(p.strike - long_strike_target))
-                else:
-                    long_put = min(long_puts, key=lambda p: abs(p.strike - long_strike_target))
-                
-                # Select short put (prefer lower strike for more credit)
-                short_put = min(short_puts, key=lambda p: abs(p.strike - short_strike_target))
-                
-                # Ensure proper spread structure
-                if long_put.strike > short_put.strike:
-                    return OptionsStrategy.BEAR_PUT_SPREAD, [long_put, short_put]
-        
-        # 3. LONG CALL - Only for EXTREME bullish conditions (Monte Carlo: 32% win rate - USE SPARINGLY)
-        # Restrict to very strong signals only
-        if price_change > 0.06 and rsi < 60 and volatility > 25:  # 6%+ move, strong conditions only
-            # Find slightly OTM call with good delta
-            target_strike = price * 1.03
-            suitable_calls = [c for c in calls if price * 1.01 <= c.strike <= price * 1.06]
+            # Find calls near money with good liquidity
+            suitable_calls = [c for c in calls if 
+                             price * 0.98 <= c.strike <= price * 1.08 and  # ATM to 8% OTM
+                             c.volume >= 10]  # Decent volume
             
             if suitable_calls:
+                # Select best call
                 if quantlib_pricer:
-                    # Prefer calls with delta 0.4-0.7 (strong directional exposure)
-                    good_delta_calls = [c for c in suitable_calls if 0.4 <= abs(c.delta) <= 0.7]
-                    if good_delta_calls:
-                        best_call = max(good_delta_calls, key=lambda c: c.delta * c.gamma)
+                    # Prefer calls with delta 0.3-0.6 for good directional exposure
+                    good_calls = [c for c in suitable_calls if 0.25 <= abs(c.delta) <= 0.65]
+                    if good_calls:
+                        best_call = max(good_calls, key=lambda c: c.delta * c.gamma)
                     else:
                         best_call = min(suitable_calls, key=lambda c: abs(c.strike - target_strike))
                 else:
@@ -363,19 +319,24 @@ class OptionsTrader:
                 
                 return OptionsStrategy.LONG_CALL, [best_call]
         
-        # 4. LONG PUT - Only for EXTREME bearish conditions (Monte Carlo: 35% win rate - USE SPARINGLY)  
-        # Restrict to very strong signals only
-        if price_change < -0.06 and rsi > 40 and volatility > 25:  # -6%+ move, strong conditions only
-            # Find slightly OTM put with good delta
-            target_strike = price * 0.97
-            suitable_puts = [p for p in puts if price * 0.94 <= p.strike <= price * 0.99]
+        # 2. LONG PUT - Primary bearish strategy (Level 1 compatible)
+        # Triggers: Bearish conditions
+        if price_change < -0.005 and rsi > 25:  # Bearish signal (-0.5% move)
+            # Find suitable puts for long position
+            target_strike = price * 0.98    # 2% OTM target
+            
+            # Find puts near money with good liquidity
+            suitable_puts = [p for p in puts if 
+                            price * 0.92 <= p.strike <= price * 1.02 and  # 8% OTM to 2% ITM
+                            p.volume >= 10]  # Decent volume
             
             if suitable_puts:
+                # Select best put
                 if quantlib_pricer:
-                    # Prefer puts with delta -0.7 to -0.4 (strong directional exposure)
-                    good_delta_puts = [p for p in suitable_puts if -0.7 <= p.delta <= -0.4]
-                    if good_delta_puts:
-                        best_put = max(good_delta_puts, key=lambda p: abs(p.delta) * p.gamma)
+                    # Prefer puts with delta -0.65 to -0.25 for good directional exposure
+                    good_puts = [p for p in suitable_puts if -0.65 <= p.delta <= -0.25]
+                    if good_puts:
+                        best_put = max(good_puts, key=lambda p: abs(p.delta) * p.gamma)
                     else:
                         best_put = min(suitable_puts, key=lambda p: abs(p.strike - target_strike))
                 else:
@@ -383,40 +344,58 @@ class OptionsTrader:
                 
                 return OptionsStrategy.LONG_PUT, [best_put]
         
-        # 5. STRADDLE - ELIMINATED (Monte Carlo: 56% win rate but -$535 average loss)
-        # Straddles are removed from strategy selection due to poor profitability
         
-        # 6. Fallback Bull Call Spread for weak bullish signals
+        # 3. Fallback LONG CALL for any bullish signals
         if price_change > 0 and rsi < 80:  # Any positive movement
-            # Try to create a bull call spread with available contracts
-            suitable_long = [c for c in calls if price * 0.99 <= c.strike <= price * 1.03]
-            suitable_short = [c for c in calls if price * 1.03 < c.strike <= price * 1.10]
+            # Find any suitable call
+            suitable_calls = [c for c in calls if 
+                             price * 0.95 <= c.strike <= price * 1.10 and
+                             c.volume >= 5]  # Lower volume requirement for fallback
             
-            if suitable_long and suitable_short:
-                long_call = min(suitable_long, key=lambda c: abs(c.strike - price * 1.01))
-                short_call = min(suitable_short, key=lambda c: abs(c.strike - price * 1.06))
-                
-                if long_call.strike < short_call.strike:
-                    return OptionsStrategy.BULL_CALL_SPREAD, [long_call, short_call]
+            if suitable_calls:
+                best_call = min(suitable_calls, key=lambda c: abs(c.strike - price * 1.03))
+                return OptionsStrategy.LONG_CALL, [best_call]
         
-        # 7. Fallback Bear Put Spread for weak bearish signals  
+        # 4. Fallback LONG PUT for any bearish signals  
         if price_change < 0 and rsi > 20:  # Any negative movement
-            # Try to create a bear put spread with available contracts
-            suitable_long = [p for p in puts if price * 0.97 <= p.strike <= price * 1.01]
-            suitable_short = [p for p in puts if price * 0.90 <= p.strike < price * 0.97]
+            # Find any suitable put
+            suitable_puts = [p for p in puts if 
+                            price * 0.90 <= p.strike <= price * 1.05 and
+                            p.volume >= 5]  # Lower volume requirement for fallback
             
-            if suitable_long and suitable_short:
-                long_put = min(suitable_long, key=lambda p: abs(p.strike - price * 0.99))
-                short_put = min(suitable_short, key=lambda p: abs(p.strike - price * 0.94))
-                
-                if long_put.strike > short_put.strike:
-                    return OptionsStrategy.BEAR_PUT_SPREAD, [long_put, short_put]
+            if suitable_puts:
+                best_put = min(suitable_puts, key=lambda p: abs(p.strike - price * 0.97))
+                return OptionsStrategy.LONG_PUT, [best_put]
         
+        # EMERGENCY FALLBACK - Try any available options with minimal criteria
+        logger.info(f"No strategy found with strict criteria for {symbol}, trying relaxed fallback")
+
+        # If we have any calls, try a long call
+        if calls:
+            # Find any call with minimal volume
+            any_calls = [c for c in calls if c.volume >= 1]  # Just need some volume
+            if any_calls:
+                # Pick closest to ATM
+                best_call = min(any_calls, key=lambda c: abs(c.strike - price))
+                logger.info(f"Fallback LONG_CALL selected for {symbol}: strike {best_call.strike}")
+                return OptionsStrategy.LONG_CALL, [best_call]
+
+        # If we have any puts, try a long put
+        if puts:
+            # Find any put with minimal volume
+            any_puts = [p for p in puts if p.volume >= 1]  # Just need some volume
+            if any_puts:
+                # Pick closest to ATM
+                best_put = min(any_puts, key=lambda p: abs(p.strike - price))
+                logger.info(f"Fallback LONG_PUT selected for {symbol}: strike {best_put.strike}")
+                return OptionsStrategy.LONG_PUT, [best_put]
+
         # No suitable strategy found
+        logger.warning(f"No suitable options strategy found for {symbol} even with fallback")
         return None
     
     async def execute_options_strategy(self, strategy: OptionsStrategy, contracts: List[OptionsContract], 
-                                     quantity: int = 1) -> Optional[OptionsPosition]:
+                                     quantity: int = 1, confidence: float = 0.5) -> Optional[OptionsPosition]:
         """Execute an options trading strategy with REAL options orders"""
         
         if not contracts:
@@ -435,10 +414,16 @@ class OptionsTrader:
                 # Buy call option with smart pricing
                 contract = contracts[0]
                 
+                # Get current underlying price
+                import yfinance as yf
+                underlying_ticker = yf.Ticker(underlying)
+                underlying_hist = underlying_ticker.history(period="1d")
+                current_underlying_price = float(underlying_hist['Close'].iloc[-1]) if not underlying_hist.empty else 100.0
+                
                 # Get smart pricing recommendation
                 contract_data = {
                     'symbol': contract.symbol,
-                    'underlying_price': price,  # Use current underlying price
+                    'underlying_price': current_underlying_price,
                     'bid': contract.bid,
                     'ask': contract.ask,
                     'volume': contract.volume,
@@ -453,11 +438,15 @@ class OptionsTrader:
                 
                 pricing_context = smart_pricing_agent.analyze_pricing_context(contract_data)
                 smart_price = smart_pricing_agent.determine_optimal_entry_price(
-                    pricing_context, OrderSide.BUY, strategy_confidence=0.7
+                    pricing_context, OrderSide.BUY, strategy_confidence=confidence
                 )
                 
-                # Create optimized order
-                order_type = OptionsOrderType.LIMIT if smart_price.order_type == 'LIMIT' else OptionsOrderType.MARKET
+                # Use MARKET orders for high-confidence trades (75%+) for immediate execution
+                if confidence >= 0.75:
+                    order_type = OptionsOrderType.MARKET
+                    logger.info(f"High confidence ({confidence:.1%}) - using MARKET order for immediate execution")
+                else:
+                    order_type = OptionsOrderType.LIMIT if smart_price.order_type == 'LIMIT' else OptionsOrderType.MARKET
                 
                 order_request = OptionsOrderRequest(
                     symbol=contract.symbol,
@@ -465,7 +454,7 @@ class OptionsTrader:
                     qty=quantity,
                     side=OrderSide.BUY,
                     type=order_type,
-                    limit_price=smart_price.limit_price if order_type == OptionsOrderType.LIMIT else None,
+                    limit_price=round(smart_price.limit_price, 2) if order_type == OptionsOrderType.LIMIT and smart_price.limit_price else None,
                     option_type='call',
                     strike=contract.strike,
                     expiration=contract.expiration,
@@ -484,15 +473,50 @@ class OptionsTrader:
                               f"Filled: ${order_response.avg_fill_price:.2f}")
                 
             elif strategy == OptionsStrategy.LONG_PUT:
-                # Buy put option
+                # Buy put option with confidence-based order type
                 contract = contracts[0]
+                
+                # Get current underlying price for smart pricing
+                import yfinance as yf
+                underlying_ticker = yf.Ticker(underlying)
+                underlying_hist = underlying_ticker.history(period="1d")
+                current_underlying_price = float(underlying_hist['Close'].iloc[-1]) if not underlying_hist.empty else 100.0
+                
+                # Get smart pricing recommendation
+                contract_data = {
+                    'symbol': contract.symbol,
+                    'underlying_price': current_underlying_price,
+                    'bid': contract.bid,
+                    'ask': contract.ask,
+                    'volume': contract.volume,
+                    'open_interest': contract.open_interest,
+                    'expiration': contract.expiration,
+                    'implied_volatility': contract.implied_volatility,
+                    'delta': contract.delta,
+                    'gamma': contract.gamma,
+                    'theta': contract.theta,
+                    'vega': contract.vega
+                }
+                
+                pricing_context = smart_pricing_agent.analyze_pricing_context(contract_data)
+                smart_price = smart_pricing_agent.determine_optimal_entry_price(
+                    pricing_context, OrderSide.BUY, strategy_confidence=confidence
+                )
+                
+                # Use MARKET orders for high-confidence trades (75%+) for immediate execution
+                if confidence >= 0.75:
+                    order_type = OptionsOrderType.MARKET
+                    logger.info(f"High confidence ({confidence:.1%}) - using MARKET order for immediate execution")
+                else:
+                    order_type = OptionsOrderType.LIMIT if smart_price.order_type == 'LIMIT' else OptionsOrderType.MARKET
                 
                 order_request = OptionsOrderRequest(
                     symbol=contract.symbol,
                     underlying=underlying,
                     qty=quantity,
                     side=OrderSide.BUY,
-                    type=OptionsOrderType.MARKET,
+                    type=order_type,
+                    limit_price=round(smart_price.limit_price, 2) if order_type == OptionsOrderType.LIMIT and smart_price.limit_price else None,
                     option_type='put',
                     strike=contract.strike,
                     expiration=contract.expiration,

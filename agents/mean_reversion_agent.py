@@ -1279,7 +1279,7 @@ class MeanReversionTradingAgent:
         
         return state
     
-    async def generate_signal(self, symbol: str, market_data: List[MarketData],
+    async def find_mean_reversion_opportunity(self, symbol: str, market_data: List[MarketData] = None,
                             sentiment_data: Optional[SentimentData] = None,
                             pairs_data: Optional[Dict[str, List[MarketData]]] = None) -> Optional[MeanReversionSignal]:
         """
@@ -1416,3 +1416,6 @@ if __name__ == "__main__":
         print(f"Take Profit Targets: {signal.take_profit_targets}")
     else:
         print("Failed to generate signal")
+
+# Create singleton instance
+mean_reversion_agent = MeanReversionTradingAgent()

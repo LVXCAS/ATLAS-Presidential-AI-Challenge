@@ -1,0 +1,62 @@
+[
+  {
+    "timestamp": "2025-09-23T10:56:10.330463",
+    "date": "2025-09-23",
+    "event_type": "profit_target",
+    "initial_equity": 100000,
+    "final_equity": 105750,
+    "daily_profit_pct": 5.75,
+    "profit_target_pct": 5.75,
+    "loss_limit_pct": -4.9,
+    "pnl_amount": 5750,
+    "reason": "Daily profit target 5.75% reached (5.75%)"
+  },
+  {
+    "timestamp": "2025-09-23T10:56:10.334018",
+    "date": "2025-09-23",
+    "event_type": "loss_limit",
+    "initial_equity": 100000,
+    "final_equity": 95100,
+    "daily_profit_pct": -4.9,
+    "profit_target_pct": 5.75,
+    "loss_limit_pct": -4.9,
+    "pnl_amount": -4900,
+    "reason": "Daily loss limit -4.9% reached (-4.9%)"
+  },
+  {
+    "timestamp": "2025-09-23T12:23:23.345541",
+    "date": "2025-09-23",
+    "event_type": "profit_target",
+    "initial_equity": 100000,
+    "final_equity": 105750,
+    "daily_profit_pct": 5.75,
+    "profit_target_pct": 5.75,
+    "loss_limit_pct": -4.9,
+    "pnl_amount": 5750,
+    "reason": "Daily profit target 5.75% reached (5.75%)"
+  },
+  {
+    "timestamp": "2025-09-23T12:23:23.368635",
+    "date": "2025-09-23",
+    "event_type": "loss_limit",
+    "initial_equity": 100000,
+    "final_equity": 95100,
+    "daily_profit_pct": -4.9,
+    "profit_target_pct": 5.75,
+    "loss_limit_pct": -4.9,
+    "pnl_amount": -4900,
+    "reason": "Daily loss limit -4.9% reached (-4.9%)"
+  },
+  {
+    "timestamp": "2025-09-23T12:58:09.141314",
+    "date": "2025-09-23",
+    "event_type": "loss_limit",
+    "initial_equity": 109844.08,
+    "final_equity": 93002.39,
+    "daily_profit_pct": -15.33236019638018,
+    "profit_target_pct": 5.75,
+    "loss_limit_pct": -4.9,
+    "pnl_amount": -16841.690000000002,
+    "reason": "Daily loss limit -4.9% reached (-15.33%)"
+  }
+]

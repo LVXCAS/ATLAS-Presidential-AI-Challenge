@@ -1,0 +1,9 @@
+{
+  "setup_complete": true,
+  "historical_training_complete": true,
+  "models_available": 6,
+  "average_accuracy": 0.6291666666666667,
+  "total_data_points": 9970,
+  "acceleration_ready": true,
+  "last_update": "2025-09-13T09:35:13.858076"
+}

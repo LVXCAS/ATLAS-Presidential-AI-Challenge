@@ -14,7 +14,7 @@ async def test_tomorrow_ready_bot():
     print("=" * 50)
     
     try:
-        from tomorrow_ready_options_bot import TomorrowReadyOptionsBot
+        from OPTIONS_BOT import TomorrowReadyOptionsBot
         from agents.exit_strategy_agent import ExitDecision, ExitSignal, ExitReason
         
         # Initialize bot

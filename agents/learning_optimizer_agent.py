@@ -1,4 +1,5 @@
-\"\"\"
+#!/usr/bin/env python3
+"""
 Learning Optimizer Agent for the LangGraph Adaptive Multi-Strategy AI Trading System.
 
 This agent implements continuous model retraining, A/B testing frameworks, hyperparameter optimization,
@@ -295,7 +296,7 @@ class LearningOptimizerAgent:
                 logger.warning(f\"Error collecting data for {symbol}: {e}\")
                 continue
                 
-        if all_data:
+        if len(all_data) > 0:
             return pd.concat(all_data, ignore_index=True)
         else:
             return pd.DataFrame()

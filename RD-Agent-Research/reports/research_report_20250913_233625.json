@@ -1,0 +1,55 @@
+{
+  "report_id": "research_report_20250913_233625",
+  "timestamp": "2025-09-13T23:36:25.851654",
+  "executive_summary": {
+    "factors_discovered": 5,
+    "models_researched": 12,
+    "best_sharpe_improvement": 1.94,
+    "implementation_priority": "High"
+  },
+  "factor_analysis": {
+    "total_factors": 15,
+    "avg_ic_score": 0.085,
+    "top_factor": {
+      "name": "Adaptive_Volume_Momentum",
+      "description": "Volume-weighted momentum with regime adaptation",
+      "formula": "(price_change * volume_ratio) / volatility_adjustment",
+      "ic_score": 0.087,
+      "sharpe_potential": 1.23,
+      "complexity": "medium"
+    },
+    "diversification_potential": 0.78
+  },
+  "model_analysis": {
+    "best_model": {
+      "name": "Adaptive_Neural_Ensemble",
+      "description": "Neural network with adaptive architecture",
+      "architecture": "Multi-layer perceptron with regime-aware layers",
+      "sharpe_ratio": 1.87,
+      "max_drawdown": 0.089,
+      "win_rate": 0.634,
+      "complexity_score": 0.72
+    },
+    "average_sharpe": 1.7999999999999998,
+    "risk_adjusted_performance": "Superior to current strategies"
+  },
+  "implementation_plan": {
+    "phase_1": "Deploy Gradient Boosted Regime Model (2 weeks)",
+    "phase_2": "Implement top 3 discovered factors (3 weeks)",
+    "phase_3": "Research Transformer architecture (4 weeks)",
+    "phase_4": "Full ensemble deployment (2 weeks)"
+  },
+  "expected_improvements": {
+    "sharpe_ratio": "+0.4 to +0.7 improvement",
+    "max_drawdown": "-15% to -25% reduction",
+    "win_rate": "+3% to +7% improvement",
+    "annual_return": "+8% to +15% enhancement"
+  },
+  "next_steps": [
+    "Validate discovered factors with out-of-sample data",
+    "Implement A/B testing framework for model comparison",
+    "Set up automated model retraining pipeline",
+    "Develop risk monitoring for new strategies",
+    "Create performance tracking dashboard"
+  ]
+}

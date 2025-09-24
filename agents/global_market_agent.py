@@ -26,6 +26,40 @@ class GlobalMarketAgent:
         # Placeholder for crypto trading logic
         return {'status': 'success', 'trade_id': 'crypto-456'}
 
+    async def get_market_context(self):
+        """
+        Get global market context and stress levels.
+
+        Returns:
+            Dictionary with market context information
+        """
+        try:
+            # Basic market context analysis
+            context = {
+                'stress_level': 'normal',
+                'global_sentiment': 'neutral',
+                'volatility_regime': 'moderate',
+                'correlation_breakdown': False,
+                'flight_to_safety': False
+            }
+
+            # Simplified stress detection logic
+            # In a real implementation, this would analyze:
+            # - VIX levels
+            # - Currency volatility
+            # - Credit spreads
+            # - Cross-asset correlations
+
+            return context
+
+        except Exception as e:
+            print(f"Error getting market context: {e}")
+            return {
+                'stress_level': 'unknown',
+                'global_sentiment': 'unknown',
+                'volatility_regime': 'unknown'
+            }
+
 if __name__ == '__main__':
     agent = GlobalMarketAgent(api_key="YOUR_GLOBAL_MARKET_API_KEY")
 
@@ -40,3 +74,6 @@ if __name__ == '__main__':
     crypto_trade = agent.trade_crypto("BTC/USD", "SELL")
     print("Forex Trade:", forex_trade)
     print("Crypto Trade:", crypto_trade)
+
+# Create singleton instance
+global_market_agent = GlobalMarketAgent(api_key="placeholder")

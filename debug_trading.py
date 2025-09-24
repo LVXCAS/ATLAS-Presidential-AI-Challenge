@@ -7,7 +7,7 @@ import asyncio
 import sys
 sys.path.append('.')
 
-from tomorrow_ready_options_bot import TomorrowReadyOptionsBot
+from OPTIONS_BOT import TomorrowReadyOptionsBot
 
 async def debug_trading():
     """Debug the trading logic"""
