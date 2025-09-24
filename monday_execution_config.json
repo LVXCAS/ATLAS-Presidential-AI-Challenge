@@ -1,0 +1,23 @@
+{
+  "timestamp": "2025-09-19T17:14:36.144996",
+  "execution_type": "AUTOMATED_MONDAY_DEPLOYMENT",
+  "trigger_time": "MARKET_OPEN_9_30_AM",
+  "systems_to_activate": [
+    "real_options_trader.py",
+    "quantum_execution_engine.py",
+    "mctx_simple_optimizer.py"
+  ],
+  "deployment_parameters": {
+    "cash_to_deploy": 600000,
+    "max_contracts": 300,
+    "strategy_focus": "LONG_CALLS",
+    "execution_speed": "AGGRESSIVE",
+    "monitoring": "CONTINUOUS"
+  },
+  "safety_parameters": {
+    "max_loss_per_trade": 10000,
+    "portfolio_stop_loss": 0.05,
+    "time_stop": "2_HOURS",
+    "manual_override": "ENABLED"
+  }
+}

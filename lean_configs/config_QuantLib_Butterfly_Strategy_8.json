@@ -1,0 +1,18 @@
+{
+  "environment": "backtesting",
+  "algorithm-type-name": "QuantLib_Butterfly_Strategy_8_LEAN",
+  "algorithm-language": "Python",
+  "data-folder": "../Data",
+  "debugging": false,
+  "debugging-method": "LocalCmdline",
+  "log-handler": "ConsoleLogHandler",
+  "messaging-handler": "MessagingHandler",
+  "job-queue-handler": "JobQueue",
+  "api-handler": "LocalDiskApiHandler",
+  "map-file-provider": "LocalDiskMapFileProvider",
+  "factor-file-provider": "LocalDiskFactorFileProvider",
+  "data-provider": "DefaultDataProvider",
+  "alpha-handler": "DefaultAlphaHandler",
+  "object-store": "LocalObjectStore",
+  "data-channel-provider": "DataChannelProvider"
+}

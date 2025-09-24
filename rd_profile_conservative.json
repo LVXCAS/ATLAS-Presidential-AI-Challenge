@@ -1,0 +1,16 @@
+{
+  "name": "Conservative",
+  "created_date": "2025-09-13T23:00:15.410118",
+  "modifications": {
+    "risk": {
+      "max_portfolio_volatility": 0.12,
+      "max_drawdown_limit": 0.08,
+      "min_sharpe_ratio": 1.8
+    },
+    "deployment": {
+      "quality_score_threshold": 85.0,
+      "max_auto_allocation": 0.01
+    }
+  },
+  "base_config": "default"
+}

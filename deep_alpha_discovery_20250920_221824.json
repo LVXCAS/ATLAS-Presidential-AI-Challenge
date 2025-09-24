@@ -1,0 +1,117 @@
+{
+  "discovery_date": "2025-09-20T22:18:24.171507",
+  "strategies_created": 5,
+  "universe_size": 48,
+  "intraday_data_symbols": 47,
+  "strategies": [
+    {
+      "name": "High_Frequency_Arbitrage_20x",
+      "annual_return_pct": -100.0,
+      "total_return_pct": -78.84857952849109,
+      "leverage": 20.0,
+      "trades": 1185,
+      "frequency": "Minute-by-minute",
+      "strategy_type": "High-Frequency Arbitrage"
+    },
+    {
+      "name": "Volatility_Surface_25x",
+      "annual_return_pct": NaN,
+      "total_return_pct": -617178509135.1582,
+      "leverage": 25.0,
+      "trades": 22,
+      "strategy_type": "Volatility Surface Arbitrage"
+    },
+    {
+      "name": "Multi_Asset_Momentum_Cascade_60x",
+      "annual_return_pct": 94718.13943587655,
+      "total_return_pct": 55862.844485725655,
+      "leverage": 60.0,
+      "trades": 48,
+      "strategy_type": "Multi-Asset Momentum Cascade"
+    },
+    {
+      "name": "Statistical_Arbitrage_30x",
+      "annual_return_pct": -99.99999999994552,
+      "total_return_pct": -99.99950403389762,
+      "leverage": 30.0,
+      "trades": 109,
+      "strategy_type": "Statistical Arbitrage"
+    },
+    {
+      "name": "Event_Driven_Momentum_40x",
+      "annual_return_pct": 2.163786457614264e+228,
+      "total_return_pct": 391301.468511103,
+      "leverage": 40.0,
+      "trades": 4,
+      "strategy_type": "Event-Driven Momentum"
+    }
+  ],
+  "validation_results": {
+    "High_Frequency_Arbitrage_20x": {
+      "mean_return": -58.867034912109375,
+      "median_return": -61.909645080566406,
+      "probability_profit": 0.007799999788403511,
+      "probability_2000_percent": 0.0,
+      "probability_1000_percent": 0.0,
+      "probability_500_percent": 0.0,
+      "probability_bankruptcy": 9.999999747378752e-05,
+      "best_case": 118.28739929199219,
+      "worst_case": -91.39459991455078,
+      "sharpe_estimate": -3.4450812339782715,
+      "leverage_used": 20.0
+    },
+    "Volatility_Surface_25x": {
+      "mean_return": NaN,
+      "median_return": NaN,
+      "probability_profit": 0.0,
+      "probability_2000_percent": 0.0,
+      "probability_1000_percent": 0.0,
+      "probability_500_percent": 0.0,
+      "probability_bankruptcy": 0.0,
+      "best_case": NaN,
+      "worst_case": NaN,
+      "sharpe_estimate": 0,
+      "leverage_used": 25.0
+    },
+    "Multi_Asset_Momentum_Cascade_60x": {
+      "mean_return": Infinity,
+      "median_return": Infinity,
+      "probability_profit": 1.0,
+      "probability_2000_percent": 1.0,
+      "probability_1000_percent": 1.0,
+      "probability_500_percent": 1.0,
+      "probability_bankruptcy": 0.0,
+      "best_case": Infinity,
+      "worst_case": Infinity,
+      "sharpe_estimate": 0,
+      "leverage_used": 60.0
+    },
+    "Statistical_Arbitrage_30x": {
+      "mean_return": -58.87727355957031,
+      "median_return": -62.64983367919922,
+      "probability_profit": 0.014499999582767487,
+      "probability_2000_percent": 0.0,
+      "probability_1000_percent": 0.0,
+      "probability_500_percent": 0.0,
+      "probability_bankruptcy": 0.0015999999595806003,
+      "best_case": 163.02590942382812,
+      "worst_case": -92.935546875,
+      "sharpe_estimate": -3.0499138832092285,
+      "leverage_used": 30.0
+    },
+    "Event_Driven_Momentum_40x": {
+      "mean_return": Infinity,
+      "median_return": Infinity,
+      "probability_profit": 1.0,
+      "probability_2000_percent": 1.0,
+      "probability_1000_percent": 1.0,
+      "probability_500_percent": 1.0,
+      "probability_bankruptcy": 0.0,
+      "best_case": Infinity,
+      "worst_case": Infinity,
+      "sharpe_estimate": 0,
+      "leverage_used": 40.0
+    }
+  },
+  "gpu_used": true
+}

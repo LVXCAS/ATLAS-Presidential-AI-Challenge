@@ -1,0 +1,15 @@
+[
+  {
+    "name": "HighSharpe_MeanReversion_1",
+    "type": "mean_reversion",
+    "factors": [
+      "rsi_divergence",
+      "bollinger_position",
+      "z_score_reversion"
+    ],
+    "expected_sharpe": 2.5401131023318393,
+    "max_drawdown": 0.08,
+    "win_rate": 0.72,
+    "rebalance_frequency": "daily",
+    "strategy_id": 1,
+    "reversion_period": 

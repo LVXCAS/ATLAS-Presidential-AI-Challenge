@@ -1,0 +1,70 @@
+{
+  "report_timestamp": "2025-09-20 14:23:04.290838",
+  "report_period": "Last 1 Hour",
+  "trading_performance": {
+    "avg_execution_latency": 0.7113309201055097,
+    "avg_order_success_rate": 0.9413152270970658,
+    "total_daily_pnl": -48.364688738175914,
+    "avg_orders_per_minute": 17.0
+  },
+  "system_performance": {
+    "avg_cpu_usage": 55.47737049947503,
+    "avg_memory_usage": 54.8771428011394,
+    "avg_network_latency": 38.992228526490265
+  },
+  "gpu_performance": {
+    "avg_gpu_utilization": 82.30184546915203,
+    "avg_signals_per_second": 67.0,
+    "avg_processing_throughput": 821.155789935788
+  },
+  "alert_summary": {
+    "total_alerts": 0,
+    "critical_alerts": 0,
+    "warning_alerts": 0,
+    "info_alerts": 0
+  },
+  "system_health": {
+    "market_data_engine": {
+      "status": "ONLINE",
+      "last_update": "2025-09-20 14:23:04.290417",
+      "error_count": 0,
+      "uptime_hours": 0.0
+    },
+    "execution_engine": {
+      "status": "ONLINE",
+      "last_update": "2025-09-20 14:23:04.290442",
+      "error_count": 0,
+      "uptime_hours": 0.0
+    },
+    "risk_override_system": {
+      "status": "ONLINE",
+      "last_update": "2025-09-20 14:23:04.290461",
+      "error_count": 0,
+      "uptime_hours": 0.0
+    },
+    "capital_allocation_engine": {
+      "status": "ONLINE",
+      "last_update": "2025-09-20 14:23:04.290477",
+      "error_count": 0,
+      "uptime_hours": 0.0
+    },
+    "gpu_trading_systems": {
+      "status": "ONLINE",
+      "last_update": "2025-09-20 14:23:04.290491",
+      "error_count": 0,
+      "uptime_hours": 0.0
+    },
+    "autonomous_orchestrator": {
+      "status": "ONLINE",
+      "last_update": "2025-09-20 14:23:04.290504",
+      "error_count": 0,
+      "uptime_hours": 0.0
+    }
+  },
+  "monitoring_status": {
+    "monitoring_active": true,
+    "components_monitored": 6,
+    "total_performance_records": 1,
+    "total_alerts_generated": 0
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "strategy_id": "options_strategies_call_spread_1757901644_4303",
+  "deployment_timestamp": "2025-09-14T19:00:50.401769",
+  "validation_score": 0.9462653893930743,
+  "expected_performance": {
+    "annual_return": 0.5786332506917989,
+    "sharpe_ratio": 2.8638361510412724,
+    "max_drawdown": 0.1993280039678123
+  },
+  "risk_profile": {
+    "volatility": 0.1775877401028013,
+    "var_95": 0.2899924313860107,
+    "cvar_95": 0.37699016080181397,
+    "leverage_risk": 1.2436216135675504,
+    "liquidity_risk": 0.1842309794891403,
+    "correlation_risk": 0.7033027527101336,
+    "tail_risk": 0.12275095102176277,
+    "risk_adjusted_return": 3.277952991113807
+  },
+  "execution_costs": {
+    "commission_cost": 0.006212596785424815,
+    "spread_cost": 0.005923391408151674,
+    "slippage_cost": 0.002423124661950004,
+    "total_cost_percentage": 1.4559112855526493,
+    "net_expected_return": 0.5675651509995924,
+    "cost_efficiency": 39.983498282599705
+  },
+  "deployment_status": "ready_for_paper_trading"
+}

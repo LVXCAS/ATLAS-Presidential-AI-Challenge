@@ -1,0 +1,9 @@
+{
+  "algorithm-type-name": "SimpleTestAlgorithm",
+  "algorithm-language": "Python",
+  "algorithm-location": "lean_simple_test_algorithm.py",
+  "data-folder": "./data",
+  "debugging": false,
+  "debugging-method": "Local",
+  "log-handler": "ConsoleLogHandler"
+}

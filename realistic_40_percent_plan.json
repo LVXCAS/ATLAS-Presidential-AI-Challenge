@@ -1,0 +1,16 @@
+{
+  "timestamp": "2025-09-18T21:45:43.725892",
+  "target_monthly_roi": 0.4,
+  "target_monthly_profit": 206000.0,
+  "projected_monthly_income": 245660.2309012413,
+  "total_positions": 4,
+  "deployment_phases": [
+    {
+      "phase": 2,
+      "description": "Aggressive Growth",
+      "positions": 4,
+      "capital": 437539.9893760681,
+      "monthly_income": 245660.2309012413
+    }
+  ]
+}

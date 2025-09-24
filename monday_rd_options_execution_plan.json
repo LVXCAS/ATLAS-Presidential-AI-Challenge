@@ -1,0 +1,76 @@
+{
+  "execution_timestamp": "2025-09-19T18:01:17.507359",
+  "market_open_time": "9:30 AM EST",
+  "execution_window": "9:30-11:00 AM",
+  "phased_deployment": {
+    "phase_1": {
+      "time_window": "9:30-10:00 AM",
+      "symbols": [
+        "GOOGL"
+      ],
+      "allocation_percentage": 60,
+      "execution_style": "AGGRESSIVE",
+      "max_contracts_per_minute": 50
+    },
+    "phase_2": {
+      "time_window": "10:00-10:30 AM",
+      "symbols": [
+        "MSFT",
+        "TSLA"
+      ],
+      "allocation_percentage": 30,
+      "execution_style": "MEASURED",
+      "max_contracts_per_minute": 25
+    },
+    "phase_3": {
+      "time_window": "10:30-11:00 AM",
+      "symbols": "REMAINING",
+      "allocation_percentage": 10,
+      "execution_style": "CONSERVATIVE",
+      "max_contracts_per_minute": 10
+    }
+  },
+  "execution_sequence": [
+    {
+      "sequence_id": 1,
+      "symbol": "GOOGL",
+      "rd_allocation": 136159.13765444575,
+      "options_allocation": 160000.0,
+      "options_strategy": "LONG_CALLS",
+      "target_leverage": 20,
+      "expiration": "WEEKLY",
+      "priority": "HIGH",
+      "expected_return": 1.0854540985883983
+    },
+    {
+      "sequence_id": 2,
+      "symbol": "MSFT",
+      "rd_allocation": 25187.54752351863,
+      "options_allocation": 80000.0,
+      "options_strategy": "CALL_SPREADS",
+      "target_leverage": 12.786655986460572,
+      "expiration": "WEEKLY",
+      "priority": "MEDIUM",
+      "expected_return": 0.3693432564120314
+    },
+    {
+      "sequence_id": 3,
+      "symbol": "TSLA",
+      "rd_allocation": 141066.77607324635,
+      "options_allocation": 160000.0,
+      "options_strategy": "LONG_CALLS",
+      "target_leverage": 16.755307851376863,
+      "expiration": "WEEKLY",
+      "priority": "MEDIUM",
+      "expected_return": 1.5786054633165194
+    }
+  ],
+  "monitoring_parameters": {
+    "real_time_pnl_tracking": true,
+    "automatic_stop_losses": true,
+    "profit_taking_enabled": true,
+    "correlation_monitoring": true,
+    "leverage_monitoring": true,
+    "manual_override_enabled": true
+  }
+}

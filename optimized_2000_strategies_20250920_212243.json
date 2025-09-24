@@ -1,0 +1,18 @@
+[
+  {
+    "strategy_name": "EnhancedPairsTrading",
+    "leverage_used": 10,
+    "total_return": 0.46577678070099937,
+    "annual_return": 0.21161525102754664,
+    "volatility": 0.27005358066648555,
+    "sharpe_ratio": 0.7095453078409291,
+    "max_drawdown": -0.20786826081284496,
+    "win_rate": 0.3273453093812375,
+    "total_trades": 55,
+    "final_value": 146577.67807009994,
+    "initial_capital": 100000,
+    "years_elapsed": 1.992063492063492,
+    "meets_2000_target": "False",
+    "trades_sample": "[{'date': Timestamp('2025-04-16 00:00:00-0400', tz='America/New_York'), 'action': 'EXIT', 'portfolio_value': np.float64(167215.88049859492)}, {'date': Timestamp('2025-04-24 00:00:00-0400', tz='America/New_York'), 'action': 'LONG_SPY_SHORT_QQQ', 'leverage': 10, 'portfolio_value': np.float64(167215.88049859492)}, {'date': Timestamp('2025-06-13 00:00:00-0400', tz='America/New_York'), 'action': 'EXIT', 'portfolio_value': np.float64(141525.76329889754)}, {'date': Timestamp('2025-06-24 00:00:00-0400', tz='America/New_York'), 'action': 'LONG_SPY_SHORT_QQQ', 'leverage': 10, 'portfolio_value': np.float64(141525.76329889754)}, {'date': Timestamp('2025-07-02 00:00:00-0400', tz='America/New_York'), 'action': 'EXIT', 'portfolio_value': np.float64(142802.42976401636)}, {'date': Timestamp('2025-07-15 00:00:00-0400', tz='America/New_York'), 'action': 'LONG_SPY_SHORT_QQQ', 'leverage': 10, 'portfolio_value': np.float64(142802.42976401636)}, {'date': Timestamp('2025-07-24 00:00:00-0400', tz='America/New_York'), 'action': 'EXIT', 'portfolio_value': np.float64(146115.88829940386)}, {'date': Timestamp('2025-08-06 00:00:00-0400', tz='America/New_York'), 'action': 'LONG_SPY_SHORT_QQQ', 'leverage': 10, 'portfolio_value': np.float64(146115.88829940386)}, {'date': Timestamp('2025-09-05 00:00:00-0400', tz='America/New_York'), 'action': 'EXIT', 'portfolio_value': np.float64(151039.80031465727)}, {'date': Timestamp('2025-09-15 00:00:00-0400', tz='America/New_York'), 'action': 'LONG_SPY_SHORT_QQQ', 'leverage': 10, 'portfolio_value': np.float64(151039.80031465727)}]"
+  }
+]

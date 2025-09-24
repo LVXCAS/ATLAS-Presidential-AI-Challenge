@@ -1,0 +1,38 @@
+{
+  "timestamp": "20250921_1844",
+  "account_size": 100000,
+  "total_signals": 1,
+  "total_risk_allocated": 0.025,
+  "max_loss_potential": 2500.0,
+  "signals": [
+    {
+      "priority": 1,
+      "symbol": "META",
+      "strategy": "VOLATILITY_BREAKOUT_STRADDLE",
+      "type": "VOLATILITY",
+      "confidence": "HIGH",
+      "edge_score": 74.92082659051924,
+      "current_price": 778.3800048828125,
+      "position_size": 2500.0,
+      "risk_amount": 2500.0,
+      "risk_percentage": 2.5,
+      "target_dte": 30,
+      "details": {
+        "symbol": "META",
+        "current_price": 778.3800048828125,
+        "scan_date": "2025-09-19 00:00:00-04:00",
+        "vol_contraction": 47.971899915927196,
+        "range_compression": 38.7891227043774,
+        "recent_vol": 17.654151920572293,
+        "historical_vol": 33.93195579320549,
+        "volume_surge": 1.3021746128961336,
+        "rsi": 72.78884571082443,
+        "breakout_potential": 1.9220382800526805,
+        "edge_score": 74.92082659051924,
+        "strategy": "VOLATILITY_BREAKOUT_STRADDLE",
+        "confidence": "HIGH"
+      },
+      "timestamp": "2025-09-21T18:44:51.589529"
+    }
+  ]
+}

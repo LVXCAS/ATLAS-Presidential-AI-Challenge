@@ -1,0 +1,126 @@
+{
+  "report_timestamp": "2025-09-21T20:24:53.059019",
+  "empire_uptime_hours": 1.7805555555555556e-07,
+  "total_capital": 500000.0,
+  "empire_metrics": {
+    "total_signals_generated": 0,
+    "total_orders_executed": 0,
+    "total_profit_loss": 0.0,
+    "risk_overrides_triggered": 0,
+    "rebalances_executed": 0,
+    "uptime_hours": 1.7805555555555556e-07
+  },
+  "trading_performance": {
+    "autonomous_active": false,
+    "trading_enabled": true,
+    "risk_override_active": false,
+    "market_regime": "VOLATILE",
+    "signals_generated": 32,
+    "orders_executed": 26,
+    "active_signals": 29,
+    "runtime": "0:00:30.008959",
+    "latest_symbols_tracked": 34
+  },
+  "risk_management": {
+    "monitoring_active": false,
+    "total_alerts": 1,
+    "active_overrides": 0,
+    "critical_alerts": 0,
+    "recent_alerts": 1,
+    "override_history": 0,
+    "emergency_notifications_configured": 2
+  },
+  "capital_allocation": {
+    "total_capital": 500000.0,
+    "total_allocated": 0.0,
+    "available_capital": 500000.0,
+    "emergency_reserve": 25000.0,
+    "allocation_method": "sharpe_optimization",
+    "last_rebalance": "2025-09-21T20:24:23.050155",
+    "allocations": {
+      "GPU_AI_AGENT": {
+        "target_weight": 1.0,
+        "current_weight": 0.0,
+        "target_capital": 500000.0,
+        "current_capital": 0.0,
+        "last_rebalance": "2025-09-21T20:24:23.050690"
+      },
+      "GPU_PATTERN_RECOGNITION": {
+        "target_weight": 0.5,
+        "current_weight": 0.0,
+        "target_capital": 250000.0,
+        "current_capital": 0.0,
+        "last_rebalance": "2025-09-21T20:24:23.050737"
+      },
+      "GPU_MOMENTUM_SCANNER": {
+        "target_weight": 0.3333333333333333,
+        "current_weight": 0.0,
+        "target_capital": 166666.66666666666,
+        "current_capital": 0.0,
+        "last_rebalance": "2025-09-21T20:24:23.050766"
+      },
+      "GPU_OPTIONS_ENGINE": {
+        "target_weight": 0.25,
+        "current_weight": 0.0,
+        "target_capital": 125000.0,
+        "current_capital": 0.0,
+        "last_rebalance": "2025-09-21T20:24:23.050793"
+      },
+      "RD_ENHANCED_SIGNALS": {
+        "target_weight": 0.2,
+        "current_weight": 0.0,
+        "target_capital": 100000.0,
+        "current_capital": 0.0,
+        "last_rebalance": "2025-09-21T20:24:23.050819"
+      }
+    },
+    "portfolio_value": 0.0,
+    "total_rebalances": 0
+  },
+  "monitoring_status": {
+    "monitoring_active": false,
+    "components_monitored": 9,
+    "total_alerts": 0,
+    "recent_alerts": 0,
+    "performance_records": 1,
+    "dashboard_last_updated": "2025-09-21T20:24:23.052918",
+    "system_health_summary": {
+      "trading_orchestrator": {
+        "status": "ONLINE",
+        "last_update": "2025-09-21T20:24:23.050860"
+      },
+      "risk_system": {
+        "status": "ONLINE",
+        "last_update": "2025-09-21T20:24:23.050878"
+      },
+      "capital_allocator": {
+        "status": "ONLINE",
+        "last_update": "2025-09-21T20:24:23.050892"
+      },
+      "market_data_engine": {
+        "status": "ONLINE",
+        "last_update": "2025-09-21T20:24:23.051269"
+      },
+      "execution_engine": {
+        "status": "ONLINE",
+        "last_update": "2025-09-21T20:24:23.051285"
+      },
+      "risk_override_system": {
+        "status": "ONLINE",
+        "last_update": "2025-09-21T20:24:23.051299"
+      },
+      "capital_allocation_engine": {
+        "status": "ONLINE",
+        "last_update": "2025-09-21T20:24:23.051312"
+      },
+      "gpu_trading_systems": {
+        "status": "ONLINE",
+        "last_update": "2025-09-21T20:24:23.051324"
+      },
+      "autonomous_orchestrator": {
+        "status": "ONLINE",
+        "last_update": "2025-09-21T20:24:23.051523"
+      }
+    }
+  }
+}

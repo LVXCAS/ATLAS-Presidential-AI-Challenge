@@ -1,0 +1,29 @@
+{
+  "strategy_id": "momentum_strategies_breakout_long_1757901561_2846",
+  "deployment_timestamp": "2025-09-14T18:59:23.320873",
+  "validation_score": 0.7904867143920176,
+  "expected_performance": {
+    "annual_return": 0.361670505345606,
+    "sharpe_ratio": 1.6073233163828962,
+    "max_drawdown": 0.11402705504030974
+  },
+  "risk_profile": {
+    "volatility": 0.19675263538813123,
+    "var_95": 0.05066249280038737,
+    "cvar_95": 0.06586124064050358,
+    "leverage_risk": 1.0,
+    "liquidity_risk": 0.03545432650759964,
+    "correlation_risk": 0.71911544318384,
+    "tail_risk": 0.09455801101728464,
+    "risk_adjusted_return": 1.9024933377662068
+  },
+  "execution_costs": {
+    "commission_cost": 0.0010448880959159686,
+    "spread_cost": 0.0026992179552884554,
+    "slippage_cost": 0.001159536182319522,
+    "total_cost_percentage": 0.49036422335239466,
+    "net_expected_return": 0.3694169357803393,
+    "cost_efficiency": 76.33521374271672
+  },
+  "deployment_status": "ready_for_paper_trading"
+}

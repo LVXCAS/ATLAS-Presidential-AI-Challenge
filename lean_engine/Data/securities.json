@@ -1,0 +1,72 @@
+[
+  {
+    "Symbol": "SPY",
+    "ID": "SPY",
+    "Market": "usa",
+    "SecurityType": "Equity",
+    "DatabaseType": "TradeBar"
+  },
+  {
+    "Symbol": "QQQ",
+    "ID": "QQQ",
+    "Market": "usa",
+    "SecurityType": "Equity",
+    "DatabaseType": "TradeBar"
+  },
+  {
+    "Symbol": "AAPL",
+    "ID": "AAPL",
+    "Market": "usa",
+    "SecurityType": "Equity",
+    "DatabaseType": "TradeBar"
+  },
+  {
+    "Symbol": "MSFT",
+    "ID": "MSFT",
+    "Market": "usa",
+    "SecurityType": "Equity",
+    "DatabaseType": "TradeBar"
+  },
+  {
+    "Symbol": "GOOGL",
+    "ID": "GOOGL",
+    "Market": "usa",
+    "SecurityType": "Equity",
+    "DatabaseType": "TradeBar"
+  },
+  {
+    "Symbol": "AMZN",
+    "ID": "AMZN",
+    "Market": "usa",
+    "SecurityType": "Equity",
+    "DatabaseType": "TradeBar"
+  },
+  {
+    "Symbol": "TSLA",
+    "ID": "TSLA",
+    "Market": "usa",
+    "SecurityType": "Equity",
+    "DatabaseType": "TradeBar"
+  },
+  {
+    "Symbol": "NVDA",
+    "ID": "NVDA",
+    "Market": "usa",
+    "SecurityType": "Equity",
+    "DatabaseType": "TradeBar"
+  },
+  {
+    "Symbol": "META",
+    "ID": "META",
+    "Market": "usa",
+    "SecurityType": "Equity",
+    "DatabaseType": "TradeBar"
+  },
+  {
+    "Symbol": "NFLX",
+    "ID": "NFLX",
+    "Market": "usa",
+    "SecurityType": "Equity",
+    "DatabaseType": "TradeBar"
+  }
+]

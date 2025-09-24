@@ -1,0 +1,48 @@
+
+FINAL EDGE STRATEGY - EXECUTION CHECKLIST
+=========================================
+Date: 2025-09-21
+Signals: 1
+
+BACKTESTED PERFORMANCE REMINDER:
+- Win Rate: 76.1%
+- Average Return: 46.1% 
+- Monthly Success: 85.7%
+
+PRE-MARKET CHECKLIST:
+[ ] Market sentiment check (VIX < 35)
+[ ] No major news on target symbols
+[ ] Options chains liquid with tight spreads
+[ ] Account funding verified
+[ ] Risk limits confirmed
+
+EXECUTION PLAN:
+
+[ ] SIGNAL 1: META STRADDLE
+    Current Price: $778.38
+    Strike: $778.38 (ATM)
+    DTE: 30 days
+    Max Risk: $2,500
+    Confidence: HIGH
+    
+    Entry Rules:
+    - Buy ATM call + ATM put
+    - Target vol expansion on breakout
+    - Exit on 75% profit or 25% loss
+    
+
+POST-TRADE CHECKLIST:
+[ ] All orders filled at acceptable prices
+[ ] Stop losses set (25-30% max loss)
+[ ] Profit targets set (50-75% gains)
+[ ] Position tracking enabled
+[ ] Risk journal updated
+
+RISK MANAGEMENT:
+- Never risk more than 2.5% per trade
+- Never exceed 10% total portfolio risk
+- Cut losses quickly, let winners run
+- Review positions daily
+
+TARGET: 20%+ MONTHLY RETURNS
+Based on 76% win rate backtested strategy

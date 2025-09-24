@@ -1,0 +1,29 @@
+{
+  "strategy_id": "volatility_strategies_vix_contrarian_1757901581_2496",
+  "deployment_timestamp": "2025-09-14T18:59:51.331478",
+  "validation_score": 0.7933397308076643,
+  "expected_performance": {
+    "annual_return": 0.23634438815692843,
+    "sharpe_ratio": 1.425483495687529,
+    "max_drawdown": 0.18372548010555106
+  },
+  "risk_profile": {
+    "volatility": 0.17604440680655897,
+    "var_95": 0.04734607667211399,
+    "cvar_95": 0.06154989967374819,
+    "leverage_risk": 1.0,
+    "liquidity_risk": 0.013177739343379216,
+    "correlation_risk": 0.7009361239925813,
+    "tail_risk": 0.12295612385021018,
+    "risk_adjusted_return": 1.9139439416506927
+  },
+  "execution_costs": {
+    "commission_cost": 0.0019576178640716016,
+    "spread_cost": 0.00231768095337968,
+    "slippage_cost": 0.0008255069162613131,
+    "total_cost_percentage": 0.5100805733712594,
+    "net_expected_return": 0.33183832013519093,
+    "cost_efficiency": 66.0560592696135
+  },
+  "deployment_status": "ready_for_paper_trading"
+}

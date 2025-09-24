@@ -1,0 +1,21 @@
+{
+    "algorithm-type-name": "GPUValidationAlgorithm",
+    "algorithm-language": "Python",
+    "algorithm-location": "lean_algorithms/GPU_Validation_Algorithm_LEAN.py",
+    "data-folder": "./lean_engine/Data",
+    "results-destination-folder": "./lean_backtests/results",
+    "live-mode": false,
+    "setup-handler": "ConsoleSetupHandler",
+    "result-handler": "BacktestingResultHandler",
+    "data-queue-handler": "SubscriptionManager",
+    "history-provider": "SubscriptionManager",
+    "start-date": "2024-01-01",
+    "end-date": "2024-12-31",
+    "cash": 100000,
+    "python-additional-paths": ["."],
+    "debug-mode": true,
+    "log-level": "Debug",
+    "show-missing-data-logs": true,
+    "maximum-data-points-per-chart-series": 4000,
+    "maximum-chart-series": 10
+}

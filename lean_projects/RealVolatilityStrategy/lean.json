@@ -1,0 +1,6 @@
+{
+  "environment": "backtesting",
+  "algorithm-type-name": "RealVolatilityStrategy",
+  "algorithm-language": "Python",
+  "algorithm-location": "main.py"
+}

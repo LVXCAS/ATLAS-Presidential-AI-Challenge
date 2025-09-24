@@ -1,0 +1,84 @@
+{
+  "timestamp": "2025-09-15T07:44:07.149419",
+  "market_analysis": {
+    "SPY": {
+      "price": 660.8400268554688,
+      "change_pct": 0.5401039034216515,
+      "momentum_score": 0.02875992346700329,
+      "volatility": 0.6099281314586288,
+      "volume": "426293",
+      "signal": "NEUTRAL"
+    },
+    "QQQ": {
+      "price": 590.3699951171875,
+      "change_pct": 0.673580765005477,
+      "momentum_score": -0.010161671889641344,
+      "volatility": 0.6716068695467173,
+      "volume": "316722",
+      "signal": "NEUTRAL"
+    },
+    "IWM": {
+      "price": 239.7100067138672,
+      "change_pct": 0.5663727555205389,
+      "momentum_score": -0.025022962641141344,
+      "volatility": 2.6692367919669584,
+      "volume": "174646",
+      "signal": "NEUTRAL"
+    },
+    "TSLA": {
+      "price": 417.2074890136719,
+      "change_pct": 6.321991718412656,
+      "momentum_score": -0.4070103100293765,
+      "volatility": 7.828460396906317,
+      "volume": "1055153",
+      "signal": "NEUTRAL"
+    },
+    "NVDA": {
+      "price": 175.20989990234375,
+      "change_pct": -1.2623821270348223,
+      "momentum_score": -0.3668339489170891,
+      "volatility": 2.8043325359474194,
+      "volume": "1116919",
+      "signal": "NEUTRAL"
+    },
+    "AAPL": {
+      "price": 236.50999450683594,
+      "change_pct": 1.1742541117594874,
+      "momentum_score": 0.48865619772535673,
+      "volatility": 1.7756560918836934,
+      "volume": "529054",
+      "signal": "NEUTRAL"
+    },
+    "MSFT": {
+      "price": 511.8949890136719,
+      "change_pct": 0.25361983836202917,
+      "momentum_score": 0.2968345382588389,
+      "volatility": 2.2157671845625955,
+      "volume": "133460",
+      "signal": "NEUTRAL"
+    },
+    "AMZN": {
+      "price": 231.75,
+      "change_pct": 1.765250229605475,
+      "momentum_score": 0.00863257792680372,
+      "volatility": 1.355623255656097,
+      "volume": "272922",
+      "signal": "NEUTRAL"
+    }
+  },
+  "strategies_deployed": 0,
+  "total_capital_deployed": 0,
+  "expected_profit": 0,
+  "expected_portfolio_return": 0,
+  "buying_power_used": 0.0,
+  "compound_monthly_contribution": 0.0,
+  "execution_results": [],
+  "risk_metrics": {
+    "portfolio_beta": 0,
+    "estimated_volatility": 0.25,
+    "value_at_risk_95": 0.0,
+    "max_position_concentration": 0,
+    "number_of_positions": 0,
+    "risk_diversification": "NO_POSITIONS"
+  }
+}

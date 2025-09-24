@@ -1,0 +1,66 @@
+name: Project Board Automation
+
+on:
+  issues:
+    types: [opened, labeled, assigned, closed]
+  pull_request:
+    types: [opened, closed, merged]
+
+jobs:
+  update-project-board:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Add new issues to Backlog
+      if: github.event.action == 'opened' && github.event.issue
+      uses: actions/add-to-project@v0.4.0
+      with:
+        project-url: https://github.com/users/P00kieBear11/projects/1
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Move to Analysis when needs-research label added
+      if: contains(github.event.label.name, 'needs-research')
+      uses: actions/add-to-project@v0.4.0
+      with:
+        project-url: https://github.com/users/P00kieBear11/projects/1
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Auto-assign component labels
+      if: github.event.action == 'opened'
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const issue = context.payload.issue;
+          const labels = [];
+
+          // Auto-assign labels based on title/body content
+          if (issue.title.includes('frontend') || issue.body.includes('/frontend/')) {
+            labels.push('frontend');
+          }
+          if (issue.title.includes('backend') || issue.body.includes('/backend/')) {
+            labels.push('backend');
+          }
+          if (issue.title.includes('agent') || issue.body.includes('/agents/')) {
+            labels.push('agents');
+          }
+          if (issue.title.includes('database') || issue.body.includes('database')) {
+            labels.push('database');
+          }
+          if (issue.title.includes('strategy') || issue.body.includes('strategy')) {
+            labels.push('strategy');
+          }
+
+          if (labels.length > 0) {
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: issue.number,
+              labels: labels
+            });
+          }
+
+    - name: Move to Done when issue closed
+      if: github.event.action == 'closed'
+      uses: actions/add-to-project@v0.4.0
+      with:
+        project-url: https://github.com/users/P00kieBear11/projects/1
+        github-token: ${{ secrets.GITHUB_TOKEN }}

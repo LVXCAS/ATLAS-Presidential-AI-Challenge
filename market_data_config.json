@@ -1,0 +1,22 @@
+{
+  "data_providers": {
+    "primary": "iex_cloud",
+    "backup": "alpha_vantage",
+    "crypto": "polygon"
+  },
+  "api_keys": {
+    "iex_cloud": "YOUR_IEX_API_KEY",
+    "alpha_vantage": "YOUR_ALPHA_VANTAGE_KEY",
+    "polygon": "YOUR_POLYGON_KEY"
+  },
+  "update_intervals": {
+    "quotes": 1.0,
+    "news": 30.0,
+    "fundamentals": 3600.0
+  },
+  "risk_limits": {
+    "max_position_size": 10000,
+    "max_daily_loss": 5000,
+    "max_symbols": 50
+  }
+}

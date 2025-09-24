@@ -1,0 +1,88 @@
+{
+  "report_timestamp": "2025-09-21 20:24:23.052210",
+  "report_period": "Last 1 Hour",
+  "trading_performance": {
+    "avg_execution_latency": 1.2081340340382478,
+    "avg_order_success_rate": 0.9436279481723966,
+    "total_daily_pnl": 1054.7260766100942,
+    "avg_orders_per_minute": 18.0
+  },
+  "system_performance": {
+    "avg_cpu_usage": 25.580867272844444,
+    "avg_memory_usage": 43.70200195520293,
+    "avg_network_latency": 19.109653465357162
+  },
+  "gpu_performance": {
+    "avg_gpu_utilization": 68.41968557739666,
+    "avg_signals_per_second": 138.0,
+    "avg_processing_throughput": 831.6276259874143
+  },
+  "alert_summary": {
+    "total_alerts": 0,
+    "critical_alerts": 0,
+    "warning_alerts": 0,
+    "info_alerts": 0
+  },
+  "system_health": {
+    "trading_orchestrator": {
+      "status": "ONLINE",
+      "last_update": "2025-09-21 20:24:23.050860",
+      "error_count": 0,
+      "uptime_hours": 0.0
+    },
+    "risk_system": {
+      "status": "ONLINE",
+      "last_update": "2025-09-21 20:24:23.050878",
+      "error_count": 0,
+      "uptime_hours": 0.0
+    },
+    "capital_allocator": {
+      "status": "ONLINE",
+      "last_update": "2025-09-21 20:24:23.050892",
+      "error_count": 0,
+      "uptime_hours": 0.0
+    },
+    "market_data_engine": {
+      "status": "ONLINE",
+      "last_update": "2025-09-21 20:24:23.051269",
+      "error_count": 0,
+      "uptime_hours": 0.0
+    },
+    "execution_engine": {
+      "status": "ONLINE",
+      "last_update": "2025-09-21 20:24:23.051285",
+      "error_count": 0,
+      "uptime_hours": 0.0
+    },
+    "risk_override_system": {
+      "status": "ONLINE",
+      "last_update": "2025-09-21 20:24:23.051299",
+      "error_count": 0,
+      "uptime_hours": 0.0
+    },
+    "capital_allocation_engine": {
+      "status": "ONLINE",
+      "last_update": "2025-09-21 20:24:23.051312",
+      "error_count": 0,
+      "uptime_hours": 0.0
+    },
+    "gpu_trading_systems": {
+      "status": "ONLINE",
+      "last_update": "2025-09-21 20:24:23.051324",
+      "error_count": 0,
+      "uptime_hours": 0.0
+    },
+    "autonomous_orchestrator": {
+      "status": "ONLINE",
+      "last_update": "2025-09-21 20:24:23.051523",
+      "error_count": 0,
+      "uptime_hours": 0.0
+    }
+  },
+  "monitoring_status": {
+    "monitoring_active": true,
+    "components_monitored": 9,
+    "total_performance_records": 1,
+    "total_alerts_generated": 0
+  }
+}

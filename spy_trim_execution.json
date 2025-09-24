@@ -1,0 +1,29 @@
+{
+  "timestamp": "2025-09-19T00:19:52.213419",
+  "action": "SELL_SPY_TRIM",
+  "symbol": "SPY",
+  "shares": 297,
+  "estimated_value": 196691,
+  "reason": "REBALANCE_TO_OPTIONS",
+  "status": "QUEUED_FOR_MARKET_OPEN",
+  "target_deployment": [
+    {
+      "ticker": "LCID",
+      "strategy": "cash_secured_put",
+      "allocation": 65563,
+      "return": 11.889
+    },
+    {
+      "ticker": "LYFT",
+      "strategy": "covered_call",
+      "allocation": 65563,
+      "return": 9.628
+    },
+    {
+      "ticker": "SNAP",
+      "strategy": "covered_call",
+      "allocation": 65565,
+      "return": 7.043
+    }
+  ]
+}

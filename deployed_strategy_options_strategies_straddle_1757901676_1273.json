@@ -1,0 +1,29 @@
+{
+  "strategy_id": "options_strategies_straddle_1757901676_1273",
+  "deployment_timestamp": "2025-09-14T19:01:22.411461",
+  "validation_score": 0.7880232632733951,
+  "expected_performance": {
+    "annual_return": 0.4170037038120964,
+    "sharpe_ratio": 1.2034268628572289,
+    "max_drawdown": 0.1411064766814224
+  },
+  "risk_profile": {
+    "volatility": 0.15632822135394278,
+    "var_95": 0.2233666118889528,
+    "cvar_95": 0.29037659545563865,
+    "leverage_risk": 1.9111877945850242,
+    "liquidity_risk": 0.14491424879401146,
+    "correlation_risk": 0.6811009795507489,
+    "tail_risk": 0.07071511985167087,
+    "risk_adjusted_return": 3.0738310194691487
+  },
+  "execution_costs": {
+    "commission_cost": 0.002436743094430071,
+    "spread_cost": 0.005595352031199974,
+    "slippage_cost": 0.0016276163805338468,
+    "total_cost_percentage": 0.965971150616389,
+    "net_expected_return": 0.47086682451002476,
+    "cost_efficiency": 49.74543346450495
+  },
+  "deployment_status": "ready_for_paper_trading"
+}

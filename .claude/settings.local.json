@@ -22,9 +22,36 @@
       "Bash(pip install:*)",
       "Bash(npm create:*)",
       "Bash(npm run build:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(git remote add:*)",
+      "Bash(mkdir:*)",
+      "WebFetch(domain:www.kinnobot.com)",
+      "WebSearch",
+      "Bash(pip uninstall:*)",
+      "Bash(git pull:*)",
+      "Bash(lean:*)",
+      "Bash(start /wait miniconda.exe /InstallationType=JustMe /RegisterPython=0 /S /D=%USERPROFILE%miniconda3)",
+      "Bash(\"/c/Users/lucas/miniconda3/Scripts/conda.exe\" tos accept --all)",
+      "Bash(\"/c/Users/lucas/miniconda3/envs/openbb/python.exe\" -m pip install openbb --no-deps)",
+      "Read(//c/Users/lucas/miniconda3/envs/openbb/**)",
+      "Bash(claude mcp:*)",
+      "Bash(tasklist)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:developer.nvidia.com)",
+      "Bash(cmd /c:*)",
+      "Bash(powershell:*)",
+      "Bash(nvcc:*)",
+      "Bash(conda install:*)",
+      "Bash(nvidia-smi:*)",
+      "Read(//c/Users/lucas/.claude/todos/**)",
+      "Bash(tasklist:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []
-  }
+  },
+  "outputStyle": "Explanatory"
 }

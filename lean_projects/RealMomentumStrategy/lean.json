@@ -1,0 +1,6 @@
+{
+  "environment": "backtesting",
+  "algorithm-type-name": "RealMomentumStrategy",
+  "algorithm-language": "Python",
+  "algorithm-location": "main.py"
+}

@@ -1,0 +1,20 @@
+{
+  "algorithm-type-name": "RealMomentumStrategy",
+  "algorithm-language": "Python",
+  "algorithm-location": "lean_engine/real_momentum_strategy.py",
+  "data-folder": "./lean_engine/Data",
+  "results-destination-folder": "./lean_engine/Results",
+  "live-mode": false,
+  "data-queue-handler": "LocalDataQueueHandler",
+  "setup-handler": "BasicSetupHandler",
+  "result-handler": "BacktestingResultHandler",
+  "history-provider": "LocalHistoryProvider",
+  "cash": 100000,
+  "start-date": "2020-01-01",
+  "end-date": "2024-09-18",
+  "python-additional-paths": [
+    "."
+  ],
+  "debug-mode": true,
+  "log-level": "Debug"
+}

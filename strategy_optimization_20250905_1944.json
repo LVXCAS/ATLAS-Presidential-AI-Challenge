@@ -1,0 +1,146 @@
+{
+  "timestamp": "20250905_1944",
+  "optimization_results": [
+    {
+      "vol_contraction_threshold": 0.6,
+      "range_compression_threshold": 0.7,
+      "min_historical_volatility": 0.25,
+      "min_recent_volatility": 0.12,
+      "target_dte": 42,
+      "total_trades": 191,
+      "win_rate": 40.83769633507853,
+      "avg_return": 10.132904229631345,
+      "score": 45.90414844989421
+    },
+    {
+      "vol_contraction_threshold": 0.6,
+      "range_compression_threshold": 0.7,
+      "min_historical_volatility": 0.2,
+      "min_recent_volatility": 0.12,
+      "target_dte": 42,
+      "total_trades": 191,
+      "win_rate": 40.83769633507853,
+      "avg_return": 10.132900320921566,
+      "score": 45.904146495539315
+    },
+    {
+      "vol_contraction_threshold": 0.6,
+      "range_compression_threshold": 0.7,
+      "min_historical_volatility": 0.3,
+      "min_recent_volatility": 0.12,
+      "target_dte": 28,
+      "total_trades": 189,
+      "win_rate": 41.269841269841265,
+      "avg_return": 8.029395824263089,
+      "score": 45.28453918197281
+    },
+    {
+      "vol_contraction_threshold": 0.6,
+      "range_compression_threshold": 0.7,
+      "min_historical_volatility": 0.25,
+      "min_recent_volatility": 0.12,
+      "target_dte": 28,
+      "total_trades": 191,
+      "win_rate": 40.83769633507853,
+      "avg_return": 7.598015522979173,
+      "score": 44.63670409656812
+    },
+    {
+      "vol_contraction_threshold": 0.6,
+      "range_compression_threshold": 0.7,
+      "min_historical_volatility": 0.2,
+      "min_recent_volatility": 0.12,
+      "target_dte": 28,
+      "total_trades": 191,
+      "win_rate": 40.83769633507853,
+      "avg_return": 7.59801548262711,
+      "score": 44.636704076392085
+    },
+    {
+      "vol_contraction_threshold": 0.6,
+      "range_compression_threshold": 0.7,
+      "min_historical_volatility": 0.3,
+      "min_recent_volatility": 0.12,
+      "target_dte": 35,
+      "total_trades": 189,
+      "win_rate": 39.682539682539684,
+      "avg_return": 8.45052436616316,
+      "score": 43.907801865621266
+    },
+    {
+      "vol_contraction_threshold": 0.6,
+      "range_compression_threshold": 0.7,
+      "min_historical_volatility": 0.25,
+      "min_recent_volatility": 0.15,
+      "target_dte": 42,
+      "total_trades": 164,
+      "win_rate": 39.02439024390244,
+      "avg_return": 9.473616153179197,
+      "score": 43.761198320492035
+    },
+    {
+      "vol_contraction_threshold": 0.6,
+      "range_compression_threshold": 0.7,
+      "min_historical_volatility": 0.2,
+      "min_recent_volatility": 0.15,
+      "target_dte": 42,
+      "total_trades": 164,
+      "win_rate": 39.02439024390244,
+      "avg_return": 9.473616116117713,
+      "score": 43.761198301961294
+    },
+    {
+      "vol_contraction_threshold": 0.6,
+      "range_compression_threshold": 0.7,
+      "min_historical_volatility": 0.2,
+      "min_recent_volatility": 0.12,
+      "target_dte": 35,
+      "total_trades": 191,
+      "win_rate": 39.26701570680628,
+      "avg_return": 8.062286973314382,
+      "score": 43.298159193463476
+    },
+    {
+      "vol_contraction_threshold": 0.6,
+      "range_compression_threshold": 0.7,
+      "min_historical_volatility": 0.25,
+      "min_recent_volatility": 0.12,
+      "target_dte": 35,
+      "total_trades": 191,
+      "win_rate": 39.26701570680628,
+      "avg_return": 8.062286938453415,
+      "score": 43.29815917603299
+    }
+  ],
+  "best_parameters": {
+    "vol_contraction_threshold": 0.6,
+    "range_compression_threshold": 0.7,
+    "min_historical_volatility": 0.25,
+    "min_recent_volatility": 0.12,
+    "target_dte": 42,
+    "total_trades": 191,
+    "win_rate": 40.83769633507853,
+    "avg_return": 10.132904229631345,
+    "score": 45.90414844989421
+  },
+  "ultimate_strategy_performance": {
+    "strategy": "Ultimate Optimized Strategy",
+    "total_trades": 191,
+    "win_rate": 40.83769633507853,
+    "avg_return": 10.132904229631317,
+    "avg_winner": 68.37213068524248,
+    "avg_loser": -30.067623766277272,
+    "best_trade": 116.42094554286986,
+    "worst_trade": -54.93947341577993,
+    "months_20plus": "0",
+    "total_months": 5,
+    "pct_months_20plus": 0.0
+  },
+  "baseline_comparison": {
+    "baseline_win_rate": 76.1,
+    "baseline_avg_return": 46.1,
+    "ultimate_win_rate": 40.83769633507853,
+    "ultimate_avg_return": 10.132904229631317,
+    "improvement": -35.26230366492146
+  }
+}

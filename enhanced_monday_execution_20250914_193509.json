@@ -1,0 +1,170 @@
+{
+  "timestamp": "2025-09-14T19:35:09.851946",
+  "market_data": {
+    "SPY": {
+      "polygon": {
+        "open": 657.6,
+        "high": 659.11,
+        "low": 656.9,
+        "close": 657.41,
+        "volume": 72780135.0,
+        "vwap": 657.88,
+        "timestamp": 1757707200000
+      },
+      "alpha_vantage": {},
+      "enhanced_metrics": {
+        "price_vs_vwap": -0.07144160029185498,
+        "daily_range": 0.3364286801644134,
+        "volume_intensity": 72.780135,
+        "momentum_score": -0.05016727216539674,
+        "volatility_score": 0.3361676883527839
+      }
+    },
+    "QQQ": {
+      "polygon": {
+        "open": 585.04,
+        "high": 587.86,
+        "low": 584.1,
+        "close": 586.66,
+        "volume": 50745886.0,
+        "vwap": 586.2792,
+        "timestamp": 1757707200000
+      },
+      "alpha_vantage": {},
+      "enhanced_metrics": {
+        "price_vs_vwap": 0.06495198874529873,
+        "daily_range": 0.6437253894880923,
+        "volume_intensity": 50.745886,
+        "momentum_score": 0.17092806602586608,
+        "volatility_score": 0.6409163740497036
+      }
+    },
+    "IWM": {
+      "polygon": {
+        "open": 240.2,
+        "high": 240.32,
+        "low": 238.195,
+        "close": 238.34,
+        "volume": 46097640.0,
+        "vwap": 239.0339,
+        "timestamp": 1757707200000
+      },
+      "alpha_vantage": {},
+      "enhanced_metrics": {
+        "price_vs_vwap": -0.29029355250447253,
+        "daily_range": 0.8921261991225782,
+        "volume_intensity": 46.09764,
+        "momentum_score": -0.5323241284587277,
+        "volatility_score": 0.891583452211127
+      }
+    },
+    "TSLA": {
+      "polygon": {
+        "open": 370.94,
+        "high": 396.6899,
+        "low": 370.24,
+        "close": 395.94,
+        "volume": 168156391.0,
+        "vwap": 389.5079,
+        "timestamp": 1757707200000
+      },
+      "alpha_vantage": {},
+      "enhanced_metrics": {
+        "price_vs_vwap": 1.6513400626790853,
+        "daily_range": 7.143987683664643,
+        "volume_intensity": 168.156391,
+        "momentum_score": 4.195487252453467,
+        "volatility_score": 6.680279840379859
+      }
+    },
+    "NVDA": {
+      "polygon": {
+        "open": 177.77,
+        "high": 178.595,
+        "low": 176.45,
+        "close": 177.82,
+        "volume": 124911026.0,
+        "vwap": 177.7448,
+        "timestamp": 1757707200000
+      },
+      "alpha_vantage": {},
+      "enhanced_metrics": {
+        "price_vs_vwap": 0.04230784810581589,
+        "daily_range": 1.2156418248795653,
+        "volume_intensity": 124.911026,
+        "momentum_score": 0.03521703931419484,
+        "volatility_score": 1.2062760094477618
+      }
+    },
+    "AAPL": {
+      "polygon": {},
+      "alpha_vantage": {},
+      "enhanced_metrics": {}
+    },
+    "market_context": {
+      "economic_data": {
+        "DFF": {
+          "value": "4.33",
+          "date": "2025-09-11"
+        },
+        "UNRATE": {
+          "value": "4.3",
+          "date": "2025-08-01"
+        },
+        "CPIAUCSL": {
+          "value": "323.364",
+          "date": "2025-08-01"
+        },
+        "GDP": {
+          "value": "30353.902",
+          "date": "2025-04-01"
+        }
+      },
+      "market_regime": "sideways_consolidation",
+      "volatility_environment": "low_volatility"
+    }
+  },
+  "strategies_generated": 1,
+  "trades_executed": 1,
+  "market_regime": "sideways_consolidation",
+  "volatility_environment": "low_volatility",
+  "economic_context": {
+    "DFF": {
+      "value": "4.33",
+      "date": "2025-09-11"
+    },
+    "UNRATE": {
+      "value": "4.3",
+      "date": "2025-08-01"
+    },
+    "CPIAUCSL": {
+      "value": "323.364",
+      "date": "2025-08-01"
+    },
+    "GDP": {
+      "value": "30353.902",
+      "date": "2025-04-01"
+    }
+  },
+  "execution_results": [
+    {
+      "strategy_id": "iron_condor_1757903709",
+      "symbol": "SPY",
+      "type": "iron_condor",
+      "position_size": 12000,
+      "execution_time": "2025-09-14T19:35:09.851915",
+      "status": "paper_trade_logged",
+      "alpaca_order_id": "demo_1757903709"
+    }
+  ],
+  "performance_projections": {
+    "total_position_value": 12000,
+    "expected_monthly_return": 0.4,
+    "projected_monthly_profit": 4800.0,
+    "compound_projection": {
+      "month_1_target": 17000.4,
+      "annual_target": 600000.0,
+      "probability_success": 0.85
+    }
+  }
+}

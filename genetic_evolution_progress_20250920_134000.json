@@ -1,0 +1,80 @@
+{
+  "generation": 1,
+  "best_strategies": [
+    {
+      "strategy_id": "gen0_strategy_5",
+      "fitness_score": 1.7555416404570563,
+      "sharpe_ratio": 1.7595034887383803,
+      "total_return": 0.030180558562278748,
+      "generation": 0,
+      "parameters": {
+        "sma_short_period": 14,
+        "sma_long_period": 24,
+        "rsi_overbought": 71.51269711500484,
+        "rsi_oversold": 18.246744943375166,
+        "volume_threshold": 2.2605474214070975
+      }
+    },
+    {
+      "strategy_id": "gen0_strategy_110",
+      "fitness_score": 1.7225904954291333,
+      "sharpe_ratio": 1.7209956237740267,
+      "total_return": 0.015948716551065445,
+      "generation": 0,
+      "parameters": {
+        "sma_short_period": 12,
+        "sma_long_period": 21,
+        "rsi_overbought": 81.96365194484066,
+        "rsi_oversold": 24.913258068935704,
+        "volume_threshold": 1.761906012747846
+      }
+    },
+    {
+      "strategy_id": "gen0_strategy_164",
+      "fitness_score": 1.6344272715196562,
+      "sharpe_ratio": 1.6353196130291177,
+      "total_return": 0.01656617596745491,
+      "generation": 0,
+      "parameters": {
+        "sma_short_period": 11,
+        "sma_long_period": 22,
+        "rsi_overbought": 78.67146944608989,
+        "rsi_oversold": 18.389381975130853,
+        "volume_threshold": 1.3189666581275528
+      }
+    },
+    {
+      "strategy_id": "gen0_strategy_126",
+      "fitness_score": 1.5904080827491798,
+      "sharpe_ratio": 1.5889521842615595,
+      "total_return": 0.015022852458059788,
+      "generation": 0,
+      "parameters": {
+        "sma_short_period": 7,
+        "sma_long_period": 33,
+        "rsi_overbought": 76.8804704441555,
+        "rsi_oversold": 25.38072531161552,
+        "volume_threshold": 1.9346330820651867
+      }
+    },
+    {
+      "strategy_id": "gen0_strategy_168",
+      "fitness_score": 1.5904080827491798,
+      "sharpe_ratio": 1.5889521842615595,
+      "total_return": 0.015022852458059788,
+      "generation": 0,
+      "parameters": {
+        "sma_short_period": 5,
+        "sma_long_period": 45,
+        "rsi_overbought": 76.88627920788907,
+        "rsi_oversold": 20.104748954212198,
+        "volume_threshold": 2.413046355006665
+      }
+    }
+  ],
+  "evolution_stats": {
+    "population_size": 200,
+    "mutation_rate": 0.15,
+    "crossover_rate": 0.8
+  }
+}

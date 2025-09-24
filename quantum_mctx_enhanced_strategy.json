@@ -1,0 +1,29 @@
+{
+  "timestamp": "2025-09-19T10:44:25.396084",
+  "optimization_method": "QUANTUM_MCTX_ENSEMBLE",
+  "component_strategies": {
+    "mctx_primary": {
+      "strategy": "LONG_CALLS",
+      "allocation": 0.6000000000000001,
+      "expected_return": 0.18981529780170667,
+      "confidence": 0.95
+    },
+    "rd_secondary": {
+      "total_allocation": 0.35,
+      "regime": "transitional",
+      "strategies_count": 2
+    }
+  },
+  "combined_allocation": {
+    "options_focus": 0.7200000000000001,
+    "diversification": 0.175,
+    "total_deployed": 0.895
+  },
+  "recommendations": {
+    "primary_action": "LONG_CALLS",
+    "intensity": "MAXIMUM",
+    "expected_monthly_roi": 0.28472294670256,
+    "risk_management": "ACTIVE_MONITORING_REQUIRED",
+    "execution_priority": "IMMEDIATE"
+  }
+}

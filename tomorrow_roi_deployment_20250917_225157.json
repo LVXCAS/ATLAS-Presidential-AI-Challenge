@@ -1,0 +1,51 @@
+{
+  "roi_projection": {
+    "total_projected_roi": 0.3874313347154226,
+    "target_achieved": "False",
+    "optimization_breakdown": {
+      "covered_calls": 0.020431334715422612,
+      "position_sizing": 0.0,
+      "regime_optimization": 0
+    }
+  },
+  "covered_call_plan": [
+    {
+      "symbol": "IWM",
+      "shares_to_cover": 1907,
+      "position_value": 455563.23,
+      "estimated_monthly_income": 9209.83499101675,
+      "premium_rate": 0.02021637038401179,
+      "strategy": "weekly_otm_calls"
+    },
+    {
+      "symbol": "SOXL",
+      "shares_to_cover": 337,
+      "position_value": 10268.39,
+      "estimated_monthly_income": 305.78948054580394,
+      "premium_rate": 0.0297796909297177,
+      "strategy": "weekly_otm_calls"
+    },
+    {
+      "symbol": "TQQQ",
+      "shares_to_cover": 253,
+      "position_value": 24877.49,
+      "estimated_monthly_income": 562.0780510360416,
+      "premium_rate": 0.02259384089938501,
+      "strategy": "weekly_otm_calls"
+    }
+  ],
+  "sizing_plan": [],
+  "regime_strategy": null,
+  "action_plan": {
+    "deployment_date": "2025-09-18",
+    "daily_target": 0.017610515214337392,
+    "monthly_target": 0.3874313347154226,
+    "action_items": 14,
+    "risk_limits": {
+      "max_daily_loss": -0.02,
+      "max_intraday_loss": -0.05,
+      "vix_limit": 25
+    }
+  },
+  "deployment_timestamp": "2025-09-17T22:51:57.275725"
+}

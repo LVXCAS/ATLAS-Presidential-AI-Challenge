@@ -1,0 +1,15 @@
+{
+  "timestamp": "2025-09-17T17:11:08.613853",
+  "system_ready": false,
+  "market_status": "afterhours",
+  "validation_results": {
+    "System Resources": true,
+    "Market Data Access": false,
+    "Python Environment": true,
+    "Trading System Files": true,
+    "Configuration": true,
+    "Basic Trading Setup": true
+  },
+  "python_version": "3.13.3 (tags/v3.13.3:6280bb5, Apr  8 2025, 14:47:33) [MSC v.1943 64 bit (AMD64)]",
+  "platform": "win32"
+}

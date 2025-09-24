@@ -1,0 +1,263 @@
+# HiveTrading System Configuration
+# Production-ready configuration for live trading operations
+
+environment: development
+debug: true
+version: "1.0.0"
+timezone: "UTC"
+
+# Database Configuration
+database:
+  host: "localhost"
+  port: 5432
+  database: "trading_system"
+  username: "trader"
+  password: ""  # Set via environment variable TRADING_DATABASE_PASSWORD
+  pool_size: 10
+  max_overflow: 20
+  ssl_mode: "prefer"
+  timeout: 30
+
+# Redis Configuration
+redis:
+  host: "localhost"
+  port: 6379
+  database: 0
+  password: null
+  ssl: false
+  pool_size: 10
+  timeout: 5
+
+# Trading Configuration
+trading:
+  initial_capital: 100000.0
+  enable_paper_trading: true
+  max_leverage: 2.0
+  max_position_size: 0.1  # 10% of portfolio
+  max_daily_loss: 0.02    # 2% daily loss limit
+  commission_rate: 0.001
+  slippage_rate: 0.0005
+  risk_free_rate: 0.02
+
+  # Risk Management
+  risk_management:
+    enable_stop_loss: true
+    default_stop_loss: 0.02  # 2%
+    enable_take_profit: true
+    default_take_profit: 0.06  # 6%
+    max_positions: 10
+    max_correlation: 0.7
+
+  # Position Sizing
+  position_sizing:
+    method: "kelly"  # kelly, fixed, percent_volatility
+    kelly_fraction: 0.25
+    min_position_size: 0.01  # 1%
+    max_single_position: 0.2  # 20%
+
+# Broker Configurations
+brokers:
+  alpaca:
+    name: "alpaca"
+    api_key: ""  # Set via environment variable TRADING_ALPACA_API_KEY
+    api_secret: ""  # Set via environment variable TRADING_ALPACA_API_SECRET
+    sandbox: true
+    rate_limit: 200
+    timeout: 30
+    retry_attempts: 3
+    enabled: true
+
+  interactive_brokers:
+    name: "interactive_brokers"
+    port: 7497  # 7497 for paper trading, 7496 for live
+    client_id: 1
+    timeout: 30
+    enabled: false
+
+  # Add other brokers as needed
+  binance:
+    name: "binance"
+    api_key: ""
+    api_secret: ""
+    sandbox: true
+    enabled: false
+
+# Market Data Configuration
+market_data:
+  primary_provider: "yahoo_finance"
+
+  providers:
+    yahoo_finance:
+      enabled: true
+      rate_limit: 2000
+      timeout: 10
+
+    alpha_vantage:
+      enabled: false
+      api_key: ""  # Set via environment variable TRADING_ALPHA_VANTAGE_KEY
+      rate_limit: 5
+      timeout: 30
+
+    polygon:
+      enabled: false
+      api_key: ""  # Set via environment variable TRADING_POLYGON_KEY
+
+  # Data quality settings
+  quality_checks:
+    enable_validation: true
+    max_price_change: 0.2  # 20% max price change
+    min_volume: 1000
+    stale_data_threshold: 300  # 5 minutes
+
+# Security Configuration
+security:
+  jwt_secret_key: ""  # Auto-generated if empty
+  jwt_expiration_hours: 24
+  password_min_length: 12
+  max_login_attempts: 5
+  lockout_duration_minutes: 30
+  encryption_key: ""  # Auto-generated if empty
+
+  # CORS settings
+  cors_origins:
+    - "http://localhost:3000"
+    - "http://localhost:8501"
+    - "http://127.0.0.1:3000"
+    - "http://127.0.0.1:8501"
+
+  # SSL settings (for production)
+  ssl:
+    cert_path: ""
+    key_path: ""
+    enabled: false
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "json"
+  file_path: "logs/trading_system.log"
+  max_file_size_mb: 100
+  backup_count: 5
+  enable_console: true
+  enable_file: true
+  enable_remote: false
+
+  # Log rotation
+  rotation:
+    when: "midnight"
+    interval: 1
+    backup_count: 30
+
+# Monitoring Configuration
+monitoring:
+  enable_prometheus: true
+  prometheus_port: 9090
+  enable_grafana: false
+  grafana_port: 3000
+  metrics_interval_seconds: 60
+  health_check_interval_seconds: 30
+  enable_profiling: false
+
+  # System resource thresholds
+  thresholds:
+    cpu_warning: 80
+    cpu_critical: 90
+    memory_warning: 80
+    memory_critical: 90
+    disk_warning: 85
+    disk_critical: 95
+
+# Alert Configuration
+alerts:
+  enable_email: false
+  enable_slack: false
+  enable_console: true
+  alert_frequency_seconds: 300
+
+  # Email settings
+  email:
+    smtp_host: ""
+    smtp_port: 587
+    username: ""
+    password: ""
+    from_address: ""
+    to_addresses: []
+
+  # Slack settings
+  slack:
+    webhook_url: ""
+    channel: "#trading-alerts"
+
+  # Alert thresholds
+  thresholds:
+    max_drawdown: 0.05  # 5%
+    daily_loss: 0.02    # 2%
+    position_concentration: 0.25  # 25%
+    system_latency: 1000  # milliseconds
+
+# Strategy Configuration
+strategies:
+  # Default strategy parameters
+  default:
+    lookback_period: 20
+    rebalance_frequency: "daily"
+    min_trade_size: 100
+
+  # Momentum strategies
+  momentum:
+    enabled: true
+    lookback_period: 14
+    momentum_threshold: 0.02
+    max_positions: 5
+
+  # Mean reversion strategies
+  mean_reversion:
+    enabled: true
+    lookback_period: 20
+    deviation_threshold: 2.0
+    max_positions: 3
+
+  # Pairs trading
+  pairs_trading:
+    enabled: false
+    correlation_threshold: 0.8
+    spread_threshold: 2.0
+
+# Backtesting Configuration
+backtesting:
+  initial_capital: 1000000.0
+  commission_rate: 0.001
+  slippage_rate: 0.0005
+  enable_realistic_execution: true
+  enable_market_impact: false
+
+  # Performance metrics
+  benchmark: "SPY"
+  risk_free_rate: 0.02
+
+# Development/Testing Settings
+development:
+  enable_debug_logging: true
+  enable_simulation_mode: true
+  mock_broker_responses: false
+  fast_simulation: false
+
+  # Test data
+  test_symbols: ["AAPL", "GOOGL", "MSFT", "TSLA", "SPY"]
+  test_start_date: "2024-01-01"
+  test_end_date: "2024-12-31"
+
+# Production Overrides
+production:
+  debug: false
+  trading:
+    enable_paper_trading: false
+    initial_capital: 1000000.0
+  security:
+    cors_origins:
+      - "https://yourdomain.com"
+    ssl:
+      enabled: true
+  logging:
+    level: "WARNING"
+    enable_console: false

@@ -1,0 +1,97 @@
+{
+  "deployment_date": "2025-09-20T21:43:47.333706",
+  "current_balance": 992234,
+  "proven_baseline": 146.5,
+  "target_annual": 2000.0,
+  "strategies": [
+    {
+      "name": "Enhanced_Pairs_Trading_4x",
+      "annual_return_pct": -7.058125337118348,
+      "total_return_pct": -12.557825015115142,
+      "final_value": 867630.9905395224,
+      "leverage": 4.0,
+      "trades": 26,
+      "base_strategy": "Your proven pairs trading",
+      "enhancement": "4x leverage with smart risk management"
+    },
+    {
+      "name": "Momentum_Overlay_6x",
+      "annual_return_pct": 34.57057079192636,
+      "total_return_pct": 34.57057079192636,
+      "final_value": 1335254.9573915626,
+      "leverage": 6.0,
+      "trades": 12,
+      "strategy_type": "Monthly momentum with 6x leverage"
+    },
+    {
+      "name": "Tech_Rotation_8x",
+      "annual_return_pct": 79.1095477196883,
+      "total_return_pct": 71.25689477048054,
+      "final_value": 1699269.13725693,
+      "leverage": 8.0,
+      "trades": 48,
+      "strategy_type": "Weekly tech rotation with 8x effective leverage"
+    },
+    {
+      "name": "Combined_Portfolio",
+      "annual_return_pct": 56.840059255807326,
+      "leverage": 7.0,
+      "components": [
+        "Tech_Rotation_8x",
+        "Momentum_Overlay_6x"
+      ],
+      "strategy_type": "Diversified combination of top 2 strategies"
+    }
+  ],
+  "monte_carlo_results": {
+    "Enhanced_Pairs_Trading_4x": {
+      "mean_return": -7.061069488525391,
+      "median_return": -17.22957992553711,
+      "probability_profit": 0.3495999872684479,
+      "probability_2000_percent": 0.0,
+      "probability_1000_percent": 0.0,
+      "probability_500_percent": 0.00019999999494757503,
+      "best_case": 579.570556640625,
+      "worst_case": -86.807861328125,
+      "percentile_10": -54.76443099975586,
+      "percentile_90": 52.92477035522461
+    },
+    "Momentum_Overlay_6x": {
+      "mean_return": 40.85038757324219,
+      "median_return": 18.349302291870117,
+      "probability_profit": 0.616599977016449,
+      "probability_2000_percent": 0.0,
+      "probability_1000_percent": 0.00019999999494757503,
+      "probability_500_percent": 0.0017999999690800905,
+      "best_case": 1456.294677734375,
+      "worst_case": -87.53150177001953,
+      "percentile_10": -43.50730514526367,
+      "percentile_90": 150.83656311035156
+    },
+    "Tech_Rotation_8x": {
+      "mean_return": 119.6355209350586,
+      "median_return": 74.5838394165039,
+      "probability_profit": 0.7978000044822693,
+      "probability_2000_percent": 0.00019999999494757503,
+      "probability_1000_percent": 0.002199999988079071,
+      "probability_500_percent": 0.03519999980926514,
+      "best_case": 3301.471435546875,
+      "worst_case": -87.05298614501953,
+      "percentile_10": -25.62173843383789,
+      "percentile_90": 314.6720275878906
+    },
+    "Combined_Portfolio": {
+      "mean_return": 75.8991928100586,
+      "median_return": 43.74214553833008,
+      "probability_profit": 0.7203999757766724,
+      "probability_2000_percent": 0.00019999999494757503,
+      "probability_1000_percent": 0.0005999999702908099,
+      "probability_500_percent": 0.01119999960064888,
+      "best_case": 2217.68017578125,
+      "worst_case": -87.37342071533203,
+      "percentile_10": -35.28084182739258,
+      "percentile_90": 223.16714477539062
+    }
+  },
+  "gpu_used": true
+}

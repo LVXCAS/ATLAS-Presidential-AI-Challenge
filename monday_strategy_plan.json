@@ -1,0 +1,87 @@
+{
+  "timestamp": "2025-09-19T11:42:56.790656",
+  "preparation_type": "WEEKEND_ANALYSIS",
+  "market_open": "Monday September 22, 2025",
+  "available_cash": 987397,
+  "current_positions": {
+    "INTC_calls": {
+      "contracts": 200,
+      "strike": 32.0,
+      "unrealized_pl": -650
+    },
+    "INTC_puts": {
+      "contracts": 170,
+      "strike": 29.0,
+      "unrealized_pl": -1530
+    },
+    "LYFT_calls": {
+      "contracts": 50,
+      "strike": 23.0,
+      "unrealized_pl": -100
+    },
+    "LYFT_puts": {
+      "contracts": 110,
+      "strike": 21.0,
+      "unrealized_pl": -440
+    },
+    "SNAP_calls": {
+      "contracts": 50,
+      "strike": 9.0,
+      "unrealized_pl": -50
+    },
+    "SNAP_puts": {
+      "contracts": 150,
+      "strike": 8.0,
+      "unrealized_pl": -800
+    },
+    "RIVN_puts": {
+      "contracts": 100,
+      "strike": 14.0,
+      "unrealized_pl": -850
+    }
+  },
+  "roi_analysis": {
+    "current_portfolio": 989335,
+    "target_portfolio": 1400000.0,
+    "needed_gain": 410665.0,
+    "gain_percentage": 41.50919557076218,
+    "daily_gain_needed": 8.301839114152436
+  },
+  "mctx_guidance": {
+    "strategy": "LONG_CALLS",
+    "intensity": 1.5,
+    "allocation": 0.6000000000000001,
+    "allocation_amount": 595922.7960000001,
+    "monte_carlo_results": {
+      "mean_return": 0.19906048058549305,
+      "std_return": 0.25792198147279677,
+      "sharpe_ratio": 0.7717856362951683,
+      "success_rate": 0.787,
+      "worst_case": -0.21664346378887003,
+      "best_case": 0.6317103856572898
+    },
+    "expected_portfolio_return": 0.11943628835129586,
+    "risk_adjusted_return": 0.46128292264689097,
+    "score": 0.07254503968812526
+  },
+  "monday_recommendations": {
+    "primary_strategy": "AGGRESSIVE_DEPLOYMENT",
+    "cash_deployment": 600000,
+    "target_leverage": "MAXIMUM",
+    "focus_stocks": [
+      "INTC",
+      "LYFT",
+      "SNAP",
+      "RIVN"
+    ],
+    "strategy_type": "LONG_CALLS",
+    "risk_level": "HIGH",
+    "expected_trades": 10,
+    "monitoring": "CONTINUOUS"
+  },
+  "success_criteria": {
+    "daily_gain_target": "8.3%",
+    "weekly_target": "35%+",
+    "exit_strategy": "DYNAMIC_BASED_ON_MOMENTUM"
+  }
+}

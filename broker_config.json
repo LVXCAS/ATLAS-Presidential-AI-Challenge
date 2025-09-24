@@ -1,0 +1,36 @@
+{
+  "brokers": {
+    "alpaca": {
+      "enabled": true,
+      "paper_trading": true,
+      "api_key": "PK7OKM844S8B2S63910D",
+      "secret_key": "RKyeOAuRvoNg3zp8N95KAgiqpid33qp95gOGWFgN",
+      "base_url": "https://paper-api.alpaca.markets"
+    },
+    "interactive_brokers": {
+      "enabled": false,
+      "host": "127.0.0.1",
+      "port": 7497,
+      "client_id": 1
+    },
+    "crypto_exchange": {
+      "enabled": true,
+      "exchange": "binance",
+      "api_key": "YOUR_BINANCE_API_KEY",
+      "secret": "YOUR_BINANCE_SECRET",
+      "sandbox": true
+    }
+  },
+  "risk_limits": {
+    "max_daily_loss": 5000,
+    "max_position_size": 10000,
+    "max_order_value": 50000,
+    "position_size_percent": 2.0
+  },
+  "execution_settings": {
+    "default_order_type": "limit",
+    "limit_offset_percent": 0.1,
+    "max_slippage_percent": 0.5,
+    "order_timeout_seconds": 300
+  }
+}

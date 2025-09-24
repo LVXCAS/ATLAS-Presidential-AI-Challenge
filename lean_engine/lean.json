@@ -1,0 +1,38 @@
+{
+    "engine": {
+        "data-folder": "./Data",
+        "results-destination-folder": "./Results",
+        "plugin-directory": "../",
+        "composer-dll-directory": ".",
+        "log-level": "trace",
+        "debugging": false,
+        "debugging-method": "LocalCmdline",
+        "job-queue-handler": "LocalQueueHandler",
+        "api-handler": "LocalDiskApiHandler",
+        "messaging-handler": "LocalMessagingHandler",
+        "setup-handler": "ConsoleSetupHandler",
+        "real-time-handler": "LocalTimeHandler",
+        "history-provider": "LocalDiskHistoryProvider",
+        "data-feed-handler": "LocalDiskDataFeed",
+        "data-queue-handler": "LocalDataQueueHandler",
+        "data-channel-provider": "LocalDataChannelProvider",
+        "object-store": "LocalObjectStore",
+        "map-file-provider": "LocalDiskMapFileProvider",
+        "factor-file-provider": "LocalDiskFactorFileProvider",
+        "data-provider": "DefaultDataProvider",
+        "alpha-handler": "DefaultAlphaHandler",
+        "result-handler": "LocalDiskResultHandler",
+        "transaction-handler": "BacktestingTransactionHandler",
+        "brokerage": "DefaultBrokerage",
+        "data-permission-manager": "DataPermissionManager"
+    },
+    "environments": {
+        "backtesting": {
+            "live-mode": false
+        }
+    },
+    "algorithm": {
+        "language": "Python",
+        "location": "HiveTest/main.py"
+    }
+}

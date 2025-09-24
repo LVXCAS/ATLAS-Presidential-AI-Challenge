@@ -1,0 +1,29 @@
+[
+  {
+    "strategy_id": "RD_Qlib_Factor_Strategy_1_20250913",
+    "strategy_name": "Qlib_Factor_Strategy_1",
+    "deployment_date": "2025-09-13T22:53:45.969617",
+    "source": "R&D_ENGINE",
+    "recommendation": "MONITOR",
+    "suggested_allocation": 0.01,
+    "overall_score": 53.597123054629755
+  },
+  {
+    "strategy_id": "RD_Qlib_Factor_Strategy_2_20250913",
+    "strategy_name": "Qlib_Factor_Strategy_2",
+    "deployment_date": "2025-09-13T22:53:45.970595",
+    "source": "R&D_ENGINE",
+    "recommendation": "MONITOR",
+    "suggested_allocation": 0.01,
+    "overall_score": 46.725292838153216
+  },
+  {
+    "strategy_id": "RD_Mean_Reversion_Strategy_20250914",
+    "strategy_name": "Mean_Reversion_Strategy",
+    "deployment_date": "2025-09-14T17:08:14.771690",
+    "source": "R&D_ENGINE",
+    "recommendation": "CONDITIONAL",
+    "suggested_allocation": 0.03398227348990585,
+    "overall_score": 67.9645469798117
+  }
+]
