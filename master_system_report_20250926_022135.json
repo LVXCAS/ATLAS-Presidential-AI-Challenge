@@ -1,0 +1,511 @@
+{
+  "report_timestamp": "2025-09-26T02:21:35.647803",
+  "system_status": "active",
+  "target_monthly_return": 0.35,
+  "current_monthly_return": 0.0142,
+  "progress_to_target": 4.057142857142858,
+  "system_metrics": {
+    "cycles_completed": 503,
+    "total_opportunities_found": 0,
+    "total_strategies_generated": 0,
+    "total_trades_executed": 0,
+    "current_win_rate": 0.0,
+    "system_uptime_hours": 42.00510301333333,
+    "performance_trajectory": [
+      {
+        "timestamp": "2025-09-25T18:31:34.418419",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 409
+      },
+      {
+        "timestamp": "2025-09-25T18:36:34.429012",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 410
+      },
+      {
+        "timestamp": "2025-09-25T18:41:34.437900",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 411
+      },
+      {
+        "timestamp": "2025-09-25T18:46:34.452123",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 412
+      },
+      {
+        "timestamp": "2025-09-25T18:51:34.468117",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 413
+      },
+      {
+        "timestamp": "2025-09-25T18:56:34.479463",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 414
+      },
+      {
+        "timestamp": "2025-09-25T19:01:34.492955",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 415
+      },
+      {
+        "timestamp": "2025-09-25T19:06:34.506308",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 416
+      },
+      {
+        "timestamp": "2025-09-25T19:11:34.518192",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 417
+      },
+      {
+        "timestamp": "2025-09-25T19:16:34.533962",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 418
+      },
+      {
+        "timestamp": "2025-09-25T19:21:34.544364",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 419
+      },
+      {
+        "timestamp": "2025-09-25T19:26:34.550817",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 420
+      },
+      {
+        "timestamp": "2025-09-25T19:31:34.558320",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 421
+      },
+      {
+        "timestamp": "2025-09-25T19:36:34.572248",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 422
+      },
+      {
+        "timestamp": "2025-09-25T19:41:34.578002",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 423
+      },
+      {
+        "timestamp": "2025-09-25T19:46:34.587818",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 424
+      },
+      {
+        "timestamp": "2025-09-25T19:51:34.597803",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 425
+      },
+      {
+        "timestamp": "2025-09-25T19:56:34.610176",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 426
+      },
+      {
+        "timestamp": "2025-09-25T20:01:34.621403",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 427
+      },
+      {
+        "timestamp": "2025-09-25T20:06:34.629637",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 428
+      },
+      {
+        "timestamp": "2025-09-25T20:11:34.639109",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 429
+      },
+      {
+        "timestamp": "2025-09-25T20:16:34.650230",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 430
+      },
+      {
+        "timestamp": "2025-09-25T20:21:34.665306",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 431
+      },
+      {
+        "timestamp": "2025-09-25T20:26:34.685787",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 432
+      },
+      {
+        "timestamp": "2025-09-25T20:31:34.698922",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 433
+      },
+      {
+        "timestamp": "2025-09-25T20:36:34.718199",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 434
+      },
+      {
+        "timestamp": "2025-09-25T20:41:34.726691",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 435
+      },
+      {
+        "timestamp": "2025-09-25T20:46:34.746075",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 436
+      },
+      {
+        "timestamp": "2025-09-25T20:51:34.764264",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 437
+      },
+      {
+        "timestamp": "2025-09-25T20:56:34.778128",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 438
+      },
+      {
+        "timestamp": "2025-09-25T21:01:34.789874",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 439
+      },
+      {
+        "timestamp": "2025-09-25T21:06:34.800885",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 440
+      },
+      {
+        "timestamp": "2025-09-25T21:11:34.808384",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 441
+      },
+      {
+        "timestamp": "2025-09-25T21:16:34.823758",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 442
+      },
+      {
+        "timestamp": "2025-09-25T21:21:34.839435",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 443
+      },
+      {
+        "timestamp": "2025-09-25T21:26:34.845336",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 444
+      },
+      {
+        "timestamp": "2025-09-25T21:31:34.853205",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 445
+      },
+      {
+        "timestamp": "2025-09-25T21:36:34.868115",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 446
+      },
+      {
+        "timestamp": "2025-09-25T21:41:34.882940",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 447
+      },
+      {
+        "timestamp": "2025-09-25T21:46:34.898764",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 448
+      },
+      {
+        "timestamp": "2025-09-25T21:51:34.913439",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 449
+      },
+      {
+        "timestamp": "2025-09-25T21:56:34.928042",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 450
+      },
+      {
+        "timestamp": "2025-09-25T22:01:34.940752",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 451
+      },
+      {
+        "timestamp": "2025-09-25T22:06:34.956843",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 452
+      },
+      {
+        "timestamp": "2025-09-25T22:11:34.975101",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 453
+      },
+      {
+        "timestamp": "2025-09-25T22:16:34.989464",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 454
+      },
+      {
+        "timestamp": "2025-09-25T22:21:35.007814",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 455
+      },
+      {
+        "timestamp": "2025-09-25T22:26:35.030480",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 456
+      },
+      {
+        "timestamp": "2025-09-25T22:31:35.046412",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 457
+      },
+      {
+        "timestamp": "2025-09-25T22:36:35.069481",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 458
+      },
+      {
+        "timestamp": "2025-09-25T22:41:35.088289",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 459
+      },
+      {
+        "timestamp": "2025-09-25T22:46:35.099714",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 460
+      },
+      {
+        "timestamp": "2025-09-25T22:51:35.114087",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 461
+      },
+      {
+        "timestamp": "2025-09-25T22:56:35.128226",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 462
+      },
+      {
+        "timestamp": "2025-09-25T23:01:35.142720",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 463
+      },
+      {
+        "timestamp": "2025-09-25T23:06:35.157253",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 464
+      },
+      {
+        "timestamp": "2025-09-25T23:11:35.171818",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 465
+      },
+      {
+        "timestamp": "2025-09-25T23:16:35.188624",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 466
+      },
+      {
+        "timestamp": "2025-09-25T23:21:35.204610",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 467
+      },
+      {
+        "timestamp": "2025-09-25T23:26:35.218872",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 468
+      },
+      {
+        "timestamp": "2025-09-25T23:31:35.227074",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 469
+      },
+      {
+        "timestamp": "2025-09-25T23:36:35.237749",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 470
+      },
+      {
+        "timestamp": "2025-09-25T23:41:35.249892",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 471
+      },
+      {
+        "timestamp": "2025-09-25T23:46:35.260907",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 472
+      },
+      {
+        "timestamp": "2025-09-25T23:51:35.276040",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 473
+      },
+      {
+        "timestamp": "2025-09-25T23:56:35.290942",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 474
+      },
+      {
+        "timestamp": "2025-09-26T00:01:35.298918",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 475
+      },
+      {
+        "timestamp": "2025-09-26T00:06:35.309739",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 476
+      },
+      {
+        "timestamp": "2025-09-26T00:11:35.321502",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 477
+      },
+      {
+        "timestamp": "2025-09-26T00:16:35.335807",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 478
+      },
+      {
+        "timestamp": "2025-09-26T00:21:35.355284",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 479
+      },
+      {
+        "timestamp": "2025-09-26T00:26:35.364659",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 480
+      },
+      {
+        "timestamp": "2025-09-26T00:31:35.371183",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 481
+      },
+      {
+        "timestamp": "2025-09-26T00:36:35.382854",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 482
+      },
+      {
+        "timestamp": "2025-09-26T00:41:35.396229",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 483
+      },
+      {
+        "timestamp": "2025-09-26T00:46:35.406722",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 484
+      },
+      {
+        "timestamp": "2025-09-26T00:51:35.425541",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 485
+      },
+      {
+        "timestamp": "2025-09-26T00:56:35.434019",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 486
+      },
+      {
+        "timestamp": "2025-09-26T01:01:35.439474",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 487
+      },
+      {
+        "timestamp": "2025-09-26T01:06:35.446594",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 488
+      },
+      {
+        "timestamp": "2025-09-26T01:11:35.464516",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 489
+      },
+      {
+        "timestamp": "2025-09-26T01:16:35.478482",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 490
+      },
+      {
+        "timestamp": "2025-09-26T01:21:35.498299",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 491
+      },
+      {
+        "timestamp": "2025-09-26T01:26:35.514146",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 492
+      },
+      {
+        "timestamp": "2025-09-26T01:31:35.532390",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 493
+      },
+      {
+        "timestamp": "2025-09-26T01:36:35.539068",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 494
+      },
+      {
+        "timestamp": "2025-09-26T01:41:35.551479",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 495
+      },
+      {
+        "timestamp": "2025-09-26T01:46:35.553776",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 496
+      },
+      {
+        "timestamp": "2025-09-26T01:51:35.566122",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 497
+      },
+      {
+        "timestamp": "2025-09-26T01:56:35.577112",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 498
+      },
+      {
+        "timestamp": "2025-09-26T02:01:35.586438",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 499
+      },
+      {
+        "timestamp": "2025-09-26T02:06:35.603473",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 500
+      },
+      {
+        "timestamp": "2025-09-26T02:11:35.609369",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 501
+      },
+      {
+        "timestamp": "2025-09-26T02:16:35.627648",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 502
+      },
+      {
+        "timestamp": "2025-09-26T02:21:35.644384",
+        "monthly_return_estimate": 0.0142,
+        "cycle": 503
+      }
+    ]
+  },
+  "system_config": {
+    "master_cycle_frequency": 300,
+    "performance_evaluation_frequency": 1800,
+    "system_optimization_frequency": 7200,
+    "full_system_report_frequency": 21600,
+    "max_concurrent_components": 4,
+    "emergency_stop_loss_percentage": 0.2,
+    "profit_target_acceleration": true
+  },
+  "performance_summary": {
+    "total_cycles": 503,
+    "total_opportunities": 0,
+    "total_strategies": 0,
+    "total_trades": 0,
+    "uptime_hours": 42.00510301333333,
+    "average_opportunities_per_cycle": 0.0,
+    "average_strategies_per_cycle": 0.0,
+    "average_trades_per_cycle": 0.0
+  }
+}

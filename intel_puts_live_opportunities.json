@@ -1,0 +1,128 @@
+{
+  "scan_number": 247,
+  "timestamp": "2025-09-25T23:28:50.584127",
+  "opportunities": [
+    {
+      "symbol": "META",
+      "score": 119,
+      "price": 748.9099731445312,
+      "daily_change": -1.5447112264138303,
+      "weekly_change": -3.721131579921998,
+      "volume_ratio": 0.8048924206458568,
+      "priority": "HIGH",
+      "catalyst": "AI Earnings Growth",
+      "allocation": "35%",
+      "reasoning": "Top genetic score - AI leader",
+      "timestamp": "23:28:49"
+    },
+    {
+      "symbol": "SPY",
+      "score": 105,
+      "price": 658.0499877929688,
+      "daily_change": -0.4613504621998397,
+      "weekly_change": -0.8512918954565364,
+      "volume_ratio": 1.0999401937113884,
+      "priority": "HIGH",
+      "catalyst": "Fed Rate Decision",
+      "allocation": "28%",
+      "reasoning": "Market catalyst timing",
+      "timestamp": "23:28:50"
+    },
+    {
+      "symbol": "TSLA",
+      "score": 91,
+      "price": 423.3900146484375,
+      "daily_change": -4.381307961359794,
+      "weekly_change": -0.6290028938230108,
+      "volume_ratio": 1.0402147029643647,
+      "priority": "WATCH",
+      "catalyst": "Delivery Numbers",
+      "allocation": "TBD",
+      "reasoning": "Volatility opportunity",
+      "timestamp": "23:28:50"
+    },
+    {
+      "symbol": "AAPL",
+      "score": 83,
+      "price": 256.8699951171875,
+      "daily_change": 1.8072995928489857,
+      "weekly_change": 4.631362573192464,
+      "volume_ratio": 0.6448985930860913,
+      "priority": "MEDIUM",
+      "catalyst": "Product Cycle",
+      "allocation": "20%",
+      "reasoning": "Options potential 269%",
+      "timestamp": "23:28:50"
+    },
+    {
+      "symbol": "GOOGL",
+      "score": 71,
+      "price": 245.7899932861328,
+      "daily_change": -0.5462515605930566,
+      "weekly_change": -3.5058133997231224,
+      "volume_ratio": 0.890648570159771,
+      "priority": "MEDIUM",
+      "catalyst": "Q4 Earnings",
+      "allocation": "10%",
+      "reasoning": "Options potential 267%",
+      "timestamp": "23:28:50"
+    },
+    {
+      "symbol": "NVDA",
+      "score": 34,
+      "price": 177.69000244140625,
+      "daily_change": 0.40684930538323033,
+      "weekly_change": 0.5773500215274422,
+      "volume_ratio": 0.9241529616882095,
+      "priority": "WATCH",
+      "catalyst": "AI Revenue",
+      "allocation": "TBD",
+      "reasoning": "Sector momentum",
+      "timestamp": "23:28:50"
+    }
+  ],
+  "top_3_picks": [
+    {
+      "symbol": "META",
+      "score": 119,
+      "price": 748.9099731445312,
+      "daily_change": -1.5447112264138303,
+      "weekly_change": -3.721131579921998,
+      "volume_ratio": 0.8048924206458568,
+      "priority": "HIGH",
+      "catalyst": "AI Earnings Growth",
+      "allocation": "35%",
+      "reasoning": "Top genetic score - AI leader",
+      "timestamp": "23:28:49"
+    },
+    {
+      "symbol": "SPY",
+      "score": 105,
+      "price": 658.0499877929688,
+      "daily_change": -0.4613504621998397,
+      "weekly_change": -0.8512918954565364,
+      "volume_ratio": 1.0999401937113884,
+      "priority": "HIGH",
+      "catalyst": "Fed Rate Decision",
+      "allocation": "28%",
+      "reasoning": "Market catalyst timing",
+      "timestamp": "23:28:50"
+    },
+    {
+      "symbol": "TSLA",
+      "score": 91,
+      "price": 423.3900146484375,
+      "daily_change": -4.381307961359794,
+      "weekly_change": -0.6290028938230108,
+      "volume_ratio": 1.0402147029643647,
+      "priority": "WATCH",
+      "catalyst": "Delivery Numbers",
+      "allocation": "TBD",
+      "reasoning": "Volatility opportunity",
+      "timestamp": "23:28:50"
+    }
+  ],
+  "high_conviction_count": 0,
+  "ready_for_execution": false,
+  "total_alerts": 0
+}

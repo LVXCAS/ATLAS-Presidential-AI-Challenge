@@ -1,0 +1,22 @@
+{
+  "trades": [
+    {
+      "symbol": "META",
+      "type": "STOCK",
+      "quantity": 432,
+      "allocation_pct": 35.0,
+      "target_amount": 311040,
+      "reasoning": "Highest genetic score (7.20) - AI-optimized quality stock"
+    },
+    {
+      "symbol": "SPY",
+      "type": "STOCK",
+      "quantity": 376,
+      "allocation_pct": 28.0,
+      "target_amount": 248634,
+      "reasoning": "Fed meeting catalyst - 17 days to rate cut decision"
+    }
+  ],
+  "total_value": 559674,
+  "created": "2025-09-25T11:00:58.057303"
+}

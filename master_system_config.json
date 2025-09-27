@@ -1,0 +1,9 @@
+{
+  "master_cycle_frequency": 300,
+  "performance_evaluation_frequency": 1800,
+  "system_optimization_frequency": 7200,
+  "full_system_report_frequency": 21600,
+  "max_concurrent_components": 4,
+  "emergency_stop_loss_percentage": 0.2,
+  "profit_target_acceleration": true
+}

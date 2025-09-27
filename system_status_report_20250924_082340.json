@@ -1,0 +1,49 @@
+{
+  "report_timestamp": "2025-09-24T08:23:40.050137",
+  "total_systems_launched": 5,
+  "active_systems": 3,
+  "system_status": "OPTIMAL",
+  "target_monthly_return": "25-50%",
+  "systems_running": [
+    {
+      "name": "R&D Strategy Generator",
+      "file": "rd_system_summary.py",
+      "pid": 50524,
+      "status": "stopped",
+      "launched_at": "2025-09-24T08:23:12.010463",
+      "uptime_seconds": 28.039691
+    },
+    {
+      "name": "Complete Market Scanner",
+      "file": "complete_market_scanner.py",
+      "pid": 1052,
+      "status": "running",
+      "launched_at": "2025-09-24T08:23:15.017978",
+      "uptime_seconds": 25.032193
+    },
+    {
+      "name": "Continuous Learning Optimizer",
+      "file": "continuous_learning_optimizer.py",
+      "pid": 49716,
+      "status": "running",
+      "launched_at": "2025-09-24T08:23:18.022297",
+      "uptime_seconds": 22.027882
+    },
+    {
+      "name": "Intelligent Rebalancer",
+      "file": "intelligent_rebalancer.py",
+      "pid": 24920,
+      "status": "stopped",
+      "launched_at": "2025-09-24T08:23:26.037583",
+      "uptime_seconds": 14.012602
+    },
+    {
+      "name": "Live Capital Allocator",
+      "file": "live_capital_allocation_engine.py",
+      "pid": 2688,
+      "status": "running",
+      "launched_at": "2025-09-24T08:23:28.046795",
+      "uptime_seconds": 12.003396
+    }
+  ]
+}

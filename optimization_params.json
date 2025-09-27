@@ -1,0 +1,7 @@
+{
+  "strategy_generation_frequency": 2,
+  "market_scan_frequency": 5,
+  "portfolio_rebalancing_frequency": 12,
+  "learning_model_retrain_frequency": 48,
+  "performance_evaluation_window": 168
+}

@@ -48,7 +48,12 @@
       "Read(//c/Users/lucas/.claude/todos/**)",
       "Bash(tasklist:*)",
       "Bash(git checkout:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(wmic process:*)",
+      "Bash(npx:*)",
+      "WebFetch(domain:finance.yahoo.com)",
+      "Bash(touch:*)",
+      "mcp__mcp-simple-timeserver__get_local_time"
     ],
     "deny": [],
     "ask": []
