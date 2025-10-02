@@ -23,6 +23,11 @@ import requests
 from datetime import datetime, timedelta, time as dt_time
 from typing import Dict, List, Optional, Tuple
 import yfinance as yf
+import logging
+# Suppress yfinance error messages about delisted stocks and missing data
+logging.getLogger('yfinance').setLevel(logging.CRITICAL)
+# Also suppress urllib3 logging from yfinance
+logging.getLogger('urllib3').setLevel(logging.WARNING)
 import numpy as np
 import pytz
 
@@ -48,13 +53,37 @@ from agents.broker_integration import AlpacaBrokerIntegration
 from agents.options_trading_agent import OptionsTrader, OptionsStrategy
 from agents.options_broker import OptionsBroker
 from agents.risk_management import RiskManager, RiskLevel
+from ai.ml_ensemble_wrapper import get_ml_ensemble
 
 # Import profit target monitoring
-from profit_target_monitor import ProfitTargetMonitor
+try:
+    from profit_target_monitor import ProfitTargetMonitor
+    PROFIT_MONITOR_AVAILABLE = True
+except ImportError:
+    PROFIT_MONITOR_AVAILABLE = False
+    print("- Profit monitor not available")
 
 # Import advanced quantitative finance capabilities
-from agents.quantitative_finance_engine import quantitative_engine
-from agents.quant_integration import quant_analyzer, analyze_option, analyze_portfolio, predict_returns
+try:
+    from agents.quantitative_finance_engine import quantitative_engine
+    QUANT_ENGINE_AVAILABLE = True
+    print("+ Quantitative engine loaded successfully")
+except ImportError as e:
+    quantitative_engine = None
+    QUANT_ENGINE_AVAILABLE = False
+    print(f"- Quantitative engine not available: {e}")
+except Exception as e:
+    quantitative_engine = None
+    QUANT_ENGINE_AVAILABLE = False
+    print(f"- Quantitative engine load error: {e}")
+
+try:
+    from agents.quant_integration import quant_analyzer, analyze_option, analyze_portfolio, predict_returns
+    QUANT_INTEGRATION_AVAILABLE = True
+except ImportError:
+    quant_analyzer = analyze_option = analyze_portfolio = predict_returns = None
+    QUANT_INTEGRATION_AVAILABLE = False
+    print("- Quant integration not available")
 
 # Live trading integration
 try:
@@ -65,19 +94,137 @@ try:
 except ImportError:
     LIVE_TRADING_AVAILABLE = False
     print("- Live trading integration not available")
-from agents.exit_strategy_agent import exit_strategy_agent, ExitSignal
-from agents.learning_engine import learning_engine
-from agents.advanced_ml_engine import advanced_ml_engine
-from agents.enhanced_technical_analysis_multiapi import enhanced_technical_analysis_multiapi
-from agents.enhanced_options_pricing_engine import enhanced_options_pricing_engine
-from agents.advanced_monte_carlo_engine import advanced_monte_carlo_engine
-from agents.sharpe_enhanced_filters import sharpe_enhanced_filters
-from agents.economic_data_agent import economic_data_agent
-from agents.cboe_data_agent import cboe_data_agent
-from agents.advanced_technical_analysis import advanced_technical_analysis
-from agents.ml_prediction_engine import ml_prediction_engine
-from agents.advanced_risk_management import advanced_risk_manager
-from agents.trading_dashboard import trading_dashboard
+# Import all other agents with error handling
+try:
+    from agents.exit_strategy_agent import exit_strategy_agent, ExitSignal
+    EXIT_STRATEGY_AVAILABLE = True
+except ImportError:
+    exit_strategy_agent = None
+    ExitSignal = None
+    EXIT_STRATEGY_AVAILABLE = False
+    print("- Exit strategy agent not available")
+
+try:
+    from agents.learning_engine import learning_engine
+    LEARNING_ENGINE_AVAILABLE = True
+except ImportError:
+    learning_engine = None
+    LEARNING_ENGINE_AVAILABLE = False
+    print("- Learning engine not available")
+
+try:
+    from agents.advanced_ml_engine import advanced_ml_engine
+    ADVANCED_ML_AVAILABLE = True
+except ImportError:
+    advanced_ml_engine = None
+    ADVANCED_ML_AVAILABLE = False
+    print("- Advanced ML engine not available")
+
+try:
+    from agents.enhanced_technical_analysis_multiapi import enhanced_technical_analysis_multiapi
+    TECHNICAL_ANALYSIS_AVAILABLE = True
+except ImportError:
+    enhanced_technical_analysis_multiapi = None
+    TECHNICAL_ANALYSIS_AVAILABLE = False
+    print("- Enhanced technical analysis not available")
+
+try:
+    from agents.enhanced_options_pricing_engine import enhanced_options_pricing_engine
+    OPTIONS_PRICING_AVAILABLE = True
+except ImportError:
+    enhanced_options_pricing_engine = None
+    OPTIONS_PRICING_AVAILABLE = False
+    print("- Enhanced options pricing not available")
+
+try:
+    from agents.advanced_monte_carlo_engine import advanced_monte_carlo_engine
+    MONTE_CARLO_AVAILABLE = True
+except ImportError:
+    advanced_monte_carlo_engine = None
+    MONTE_CARLO_AVAILABLE = False
+    print("- Advanced Monte Carlo engine not available")
+
+try:
+    from analysis.multitimeframe_analyzer import MultiTimeframeAnalyzer
+    MULTITIMEFRAME_AVAILABLE = True
+    print("+ Multi-timeframe analyzer loaded")
+except ImportError:
+    MultiTimeframeAnalyzer = None
+    MULTITIMEFRAME_AVAILABLE = False
+    print("- Multi-timeframe analyzer not available")
+
+try:
+    from agents.simple_iv_analyzer import get_iv_analyzer
+    IV_ANALYZER_AVAILABLE = True
+    print("+ IV Rank analyzer loaded")
+except ImportError:
+    get_iv_analyzer = None
+    IV_ANALYZER_AVAILABLE = False
+    print("- IV Rank analyzer not available")
+
+try:
+    from agents.enhanced_sentiment_analyzer import EnhancedSentimentAnalyzer
+    SENTIMENT_ANALYZER_AVAILABLE = True
+    print("+ Sentiment analyzer loaded")
+except ImportError:
+    EnhancedSentimentAnalyzer = None
+    SENTIMENT_ANALYZER_AVAILABLE = False
+    print("- Sentiment analyzer not available")
+try:
+    from agents.sharpe_enhanced_filters import sharpe_enhanced_filters
+    SHARPE_FILTERS_AVAILABLE = True
+except ImportError:
+    sharpe_enhanced_filters = None
+    SHARPE_FILTERS_AVAILABLE = False
+    print("- Sharpe enhanced filters not available")
+
+try:
+    from agents.economic_data_agent import economic_data_agent
+    ECONOMIC_DATA_AVAILABLE = True
+except ImportError:
+    economic_data_agent = None
+    ECONOMIC_DATA_AVAILABLE = False
+    print("- Economic data agent not available")
+
+try:
+    from agents.cboe_data_agent import cboe_data_agent
+    CBOE_DATA_AVAILABLE = True
+except ImportError:
+    cboe_data_agent = None
+    CBOE_DATA_AVAILABLE = False
+    print("- CBOE data agent not available")
+
+try:
+    from agents.advanced_technical_analysis import advanced_technical_analysis
+    ADVANCED_TA_AVAILABLE = True
+except ImportError:
+    advanced_technical_analysis = None
+    ADVANCED_TA_AVAILABLE = False
+    print("- Advanced technical analysis not available")
+
+try:
+    from agents.ml_prediction_engine import ml_prediction_engine
+    ML_PREDICTION_AVAILABLE = True
+except ImportError:
+    ml_prediction_engine = None
+    ML_PREDICTION_AVAILABLE = False
+    print("- ML prediction engine not available")
+
+try:
+    from agents.advanced_risk_management import advanced_risk_manager
+    ADVANCED_RISK_AVAILABLE = True
+except ImportError:
+    advanced_risk_manager = None
+    ADVANCED_RISK_AVAILABLE = False
+    print("- Advanced risk management not available")
+
+try:
+    from agents.trading_dashboard import trading_dashboard
+    TRADING_DASHBOARD_AVAILABLE = True
+except ImportError:
+    trading_dashboard = None
+    TRADING_DASHBOARD_AVAILABLE = False
+    print("- Trading dashboard not available")
 
 # Create logs directory
 os.makedirs('logs', exist_ok=True)
@@ -90,39 +237,62 @@ class TomorrowReadyOptionsBot:
         self.options_trader = None
         self.options_broker = None
         self.risk_manager = RiskManager(RiskLevel.MODERATE)
-        self.exit_agent = exit_strategy_agent
-        self.learning_engine = learning_engine
-        self.advanced_ml = advanced_ml_engine
-        self.technical_analysis = enhanced_technical_analysis_multiapi
-        self.options_pricing = enhanced_options_pricing_engine
-        self.monte_carlo_engine = advanced_monte_carlo_engine
-        self.economic_data = economic_data_agent
-        self.volatility_intelligence = cboe_data_agent
-        
+
+        # Initialize components with availability checks
+        self.exit_agent = exit_strategy_agent if EXIT_STRATEGY_AVAILABLE else None
+        self.learning_engine = learning_engine if LEARNING_ENGINE_AVAILABLE else None
+        self.advanced_ml = advanced_ml_engine if ADVANCED_ML_AVAILABLE else None
+        self.technical_analysis = enhanced_technical_analysis_multiapi if TECHNICAL_ANALYSIS_AVAILABLE else None
+        self.options_pricing = enhanced_options_pricing_engine if OPTIONS_PRICING_AVAILABLE else None
+        self.monte_carlo_engine = advanced_monte_carlo_engine if MONTE_CARLO_AVAILABLE else None
+        self.economic_data = economic_data_agent if ECONOMIC_DATA_AVAILABLE else None
+        self.volatility_intelligence = cboe_data_agent if CBOE_DATA_AVAILABLE else None
+
         # Advanced AI/ML components
-        self.advanced_technical = advanced_technical_analysis
-        self.ml_predictions = ml_prediction_engine
-        self.advanced_risk = advanced_risk_manager
-        self.dashboard = trading_dashboard
+        self.advanced_technical = advanced_technical_analysis if ADVANCED_TA_AVAILABLE else None
+        self.ml_predictions = ml_prediction_engine if ML_PREDICTION_AVAILABLE else None
+        self.advanced_risk = advanced_risk_manager if ADVANCED_RISK_AVAILABLE else None
+        self.dashboard = trading_dashboard if TRADING_DASHBOARD_AVAILABLE else None
 
         # Enhanced Sharpe Ratio Optimization System
-        self.sharpe_filters = sharpe_enhanced_filters
+        self.sharpe_filters = sharpe_enhanced_filters if SHARPE_FILTERS_AVAILABLE else None
+        # Multi-timeframe Analysis
+        self.multitimeframe_analyzer = MultiTimeframeAnalyzer() if MULTITIMEFRAME_AVAILABLE else None
+
+        # IV Rank Analyzer
+        self.iv_analyzer = get_iv_analyzer() if IV_ANALYZER_AVAILABLE else None
+
+        # Sentiment Analyzer
+        self.sentiment_analyzer = EnhancedSentimentAnalyzer() if SENTIMENT_ANALYZER_AVAILABLE else None
 
         # Advanced Quantitative Finance Engine
-        self.quant_engine = quantitative_engine
-        self.quant_analyzer = quant_analyzer
+        self.quant_engine = quantitative_engine if QUANT_ENGINE_AVAILABLE else None
+        self.quant_analyzer = quant_analyzer if QUANT_INTEGRATION_AVAILABLE else None
 
-        # Learning Acceleration Components
-        from agents.transfer_learning_accelerator import transfer_accelerator
-        from agents.realtime_learning_engine import realtime_learner
-        from agents.model_loader import model_loader
-        self.transfer_learning = transfer_accelerator
-        self.realtime_learning = realtime_learner
-        self.pre_trained_models = model_loader
-        
-        # Display model loading status
-        print("Pre-trained Models Status:")
-        print(self.pre_trained_models.get_model_info())
+        # Display quantitative engine status
+        if QUANT_ENGINE_AVAILABLE:
+            print("+ Quantitative finance engine ready")
+        else:
+            print("- Quantitative finance engine unavailable")
+
+        # ML Ensemble Integration
+        try:
+            self.ml_ensemble = get_ml_ensemble()
+            if self.ml_ensemble.loaded:
+                print("+ ML Ensemble loaded (RF + XGB models)")
+            else:
+                print("- ML Ensemble models not loaded")
+                self.ml_ensemble = None
+        except Exception as e:
+            print(f"- ML Ensemble unavailable: {e}")
+            self.ml_ensemble = None
+
+        # Learning Acceleration Components with error handling - deferred for performance
+        self.transfer_learning = None
+        self.realtime_learning = None
+        self.pre_trained_models = None
+        self.learning_models_loaded = False
+        print("- Learning models deferred (will load on demand)")
         
         # Eastern Time for market operations
         self.et_timezone = pytz.timezone('US/Eastern')
@@ -164,6 +334,11 @@ class TomorrowReadyOptionsBot:
         # Profit target monitoring (5.75% daily target)
         self.profit_monitor = None
         self.profit_monitoring_task = None
+
+        # Daily trading controls
+        self.daily_loss_limit_hit = False
+        self.trading_stopped_for_day = False
+        self.daily_loss_limit_pct = -4.9  # Stop trading at -4.9% daily loss
         
         # Market regime tracking
         self.market_regime = 'NEUTRAL'
@@ -230,7 +405,113 @@ class TomorrowReadyOptionsBot:
             'risk_limits_set': False,
             'earnings_calendar_updated': False
         }
-    
+
+
+    def load_learning_models(self):
+        """Load machine learning models on demand"""
+        if not self.learning_models_loaded:
+            try:
+                from agents.transfer_learning_accelerator import transfer_accelerator
+                from agents.realtime_learning_engine import realtime_learner
+                from agents.model_loader import model_loader
+
+                self.transfer_learning = transfer_accelerator
+                self.realtime_learning = realtime_learner
+                self.pre_trained_models = model_loader
+                self.learning_models_loaded = True
+
+                self.log_trade("Learning models loaded on demand", "INFO")
+                self.log_trade(f"Models: {self.pre_trained_models.get_model_info()}", "INFO")
+                return True
+            except Exception as e:
+                self.log_trade(f"Failed to load learning models: {e}", "WARN")
+                return False
+        return True
+
+    async def check_daily_loss_limit(self):
+        """Check if daily loss limit has been hit and stop trading if so"""
+        try:
+            if self.trading_stopped_for_day:
+                return True  # Already stopped
+
+            # Get current account value and starting equity
+            if not self.broker:
+                return False
+
+            account_info = await self.broker.get_account_info()
+            if not account_info:
+                self.log_trade("Could not retrieve account info for loss limit check", "WARN")
+                return False
+            current_equity = float(account_info.get('portfolio_value', 0))
+
+            # Load starting equity for the day
+            try:
+                with open('daily_starting_equity.json', 'r') as f:
+                    equity_data = json.load(f)
+                    starting_equity = equity_data.get('starting_equity', current_equity)
+                    # Check if this is for today's date
+                    saved_date = equity_data.get('date', '')
+                    today_date = datetime.now().strftime('%Y-%m-%d')
+                    if saved_date != today_date:
+                        self.log_trade(f"Starting equity file is from {saved_date}, updating for {today_date}", "INFO")
+                        # Update with current equity as new starting point
+                        starting_equity = current_equity
+                        equity_data = {'starting_equity': starting_equity, 'date': today_date}
+                        with open('daily_starting_equity.json', 'w') as f:
+                            json.dump(equity_data, f)
+            except Exception as e:
+                self.log_trade(f"Could not load starting equity file: {e}, using current equity", "WARN")
+                starting_equity = current_equity
+                # Create the file
+                try:
+                    equity_data = {'starting_equity': starting_equity, 'date': datetime.now().strftime('%Y-%m-%d')}
+                    with open('daily_starting_equity.json', 'w') as f:
+                        json.dump(equity_data, f)
+                except:
+                    pass
+
+            # Calculate daily P&L percentage
+            if starting_equity > 0:
+                daily_pnl_pct = ((current_equity - starting_equity) / starting_equity) * 100
+            else:
+                daily_pnl_pct = 0
+
+            # Check if loss limit hit
+            if daily_pnl_pct <= self.daily_loss_limit_pct:
+                if not self.daily_loss_limit_hit:
+                    self.daily_loss_limit_hit = True
+                    self.trading_stopped_for_day = True
+
+                    self.log_trade(f"[CRITICAL] DAILY LOSS LIMIT HIT: {daily_pnl_pct:.2f}% <= {self.daily_loss_limit_pct}%", "CRITICAL")
+                    self.log_trade(f"Current Equity: ${current_equity:,.2f} | Starting Equity: ${starting_equity:,.2f}", "INFO")
+                    self.log_trade("STOPPING ALL TRADING FOR THE DAY", "CRITICAL")
+
+                    # Close all positions immediately
+                    if self.broker:
+                        try:
+                            await self.broker.close_all_positions()
+                            self.log_trade("All positions closed due to daily loss limit", "INFO")
+                        except Exception as e:
+                            self.log_trade(f"Error closing positions: {e}", "ERROR")
+
+                    # Stop profit monitoring
+                    if self.profit_monitoring_task:
+                        self.profit_monitoring_task.cancel()
+
+                return True
+
+            return False
+
+        except Exception as e:
+            self.log_trade(f"Error checking daily loss limit: {e}", "ERROR")
+            return False
+
+    def reset_daily_trading_flags(self):
+        """Reset daily trading flags for a new trading day"""
+        self.daily_loss_limit_hit = False
+        self.trading_stopped_for_day = False
+        self.log_trade("Daily trading flags reset for new trading day", "INFO")
+
     def log_trade(self, message, level='INFO'):
         """Enhanced logging with market context"""
         timestamp = datetime.now(self.et_timezone).strftime('%Y-%m-%d %H:%M:%S ET')
@@ -248,14 +529,32 @@ class TomorrowReadyOptionsBot:
     async def pre_market_preparation(self):
         """Comprehensive pre-market preparation routine"""
         self.log_trade("=== PRE-MARKET PREPARATION STARTED ===", "INFO")
-        
+
         try:
+            # 0. Reset daily trading flags for new day
+            self.reset_daily_trading_flags()
+
             # 1. Initialize all systems
             self.log_trade("Step 1: Initializing trading systems...")
             if await self.initialize_all_systems():
                 self.readiness_status['broker_connected'] = True
                 self.readiness_status['account_validated'] = True
                 self.log_trade("[OK] Systems initialized successfully")
+
+                # Save starting equity for daily loss limit tracking
+                try:
+                    account_info = await self.broker.get_account_info()
+                    if account_info:
+                        starting_equity = float(account_info.get('portfolio_value', 0))
+                        equity_data = {
+                            'starting_equity': starting_equity,
+                            'date': datetime.now().strftime('%Y-%m-%d')
+                        }
+                        with open('daily_starting_equity.json', 'w') as f:
+                            json.dump(equity_data, f)
+                        self.log_trade(f"Starting equity saved: ${starting_equity:,.2f}", "INFO")
+                except Exception as e:
+                    self.log_trade(f"Could not save starting equity: {e}", "WARN")
             else:
                 self.log_trade("[X] System initialization failed", "ERROR")
                 return False
@@ -557,6 +856,20 @@ class TomorrowReadyOptionsBot:
     
     async def generate_daily_trading_plan(self):
         """Generate trading plan based on market conditions"""
+
+        # Check daily loss limit FIRST - if hit, return empty plan
+        loss_limit_hit = await self.check_daily_loss_limit()
+        if loss_limit_hit:
+            self.log_trade("Daily loss limit hit - returning empty trading plan", "WARN")
+            return {
+                'market_regime': self.market_regime,
+                'preferred_strategies': [],
+                'target_new_positions': 0,
+                'focus_symbols': [],
+                'risk_adjustments': ['trading_stopped_for_day'],
+                'message': f'Trading stopped due to daily loss limit of {self.daily_loss_limit_pct}%'
+            }
+
         plan = {
             'market_regime': self.market_regime,
             'preferred_strategies': [],
@@ -736,6 +1049,14 @@ class TomorrowReadyOptionsBot:
     
     async def intelligent_position_monitoring(self):
         """Monitor positions using the intelligent exit strategy agent"""
+
+        # Check daily loss limit - if hit, close all positions and stop
+        loss_limit_hit = await self.check_daily_loss_limit()
+        if loss_limit_hit:
+            self.log_trade("Daily loss limit hit - closing all positions in monitoring", "WARN")
+            self.active_positions.clear()  # Clear all positions as they should be closed
+            return
+
         if not self.active_positions:
             return
         
@@ -770,7 +1091,13 @@ class TomorrowReadyOptionsBot:
                     position_data, market_data, current_pnl, exit_decision
                 )
                 
+                # Add detailed P&L breakdown for debugging
+                quantity = position_data.get('quantity', 1)
+                entry_price = position_data.get('entry_price', 0)
+                total_investment = entry_price * quantity * 100
+
                 self.log_trade(f"MONITORING: {symbol} - P&L: ${current_pnl:.2f} ({enhanced_analysis['pnl_percentage']:+.1f}%), Signal: {exit_decision.signal}")
+                self.log_trade(f"  Position Details: {quantity} contracts @ ${entry_price:.2f} entry = ${total_investment:.2f} invested")
                 self.log_trade(f"  Days held: {days_held} | Exit signals: {enhanced_analysis['exit_signals']} | Hold signals: {enhanced_analysis['hold_signals']}")
                 
                 if exit_decision.signal != ExitSignal.HOLD:
@@ -859,7 +1186,12 @@ class TomorrowReadyOptionsBot:
             
             # Get current option value (professional pricing)
             current_option_price = await self.estimate_current_option_price(position_data, market_data)
-            
+
+            # Validate option price estimation to prevent ridiculous P&L values
+            if current_option_price > entry_price * 50:  # If current price is 50x entry, cap it
+                self.log_trade(f"WARNING: Option price estimation seems too high: ${current_option_price:.2f} vs entry ${entry_price:.2f}", "WARN")
+                current_option_price = min(current_option_price, entry_price * 10)  # Cap at 10x gain
+
             # Calculate P&L based on contract value difference
             # Each contract represents 100 shares, so multiply by 100
             price_per_contract_change = current_option_price - entry_price
@@ -985,9 +1317,16 @@ class TomorrowReadyOptionsBot:
             entry_price = position_data.get('entry_price', 1.0)
             days_held = (datetime.now() - entry_time).days
             
-            # Calculate percentage gains/losses
-            current_option_price = await self.estimate_current_option_price(position_data, market_data)
-            pnl_percentage = ((current_option_price - entry_price) / entry_price) * 100 if entry_price > 0 else 0
+            # Calculate percentage gains/losses based on total investment
+            quantity = position_data.get('quantity', 1)
+            total_investment = entry_price * quantity * 100  # Total cost of position
+
+            # Validate total investment to prevent ridiculous percentage calculations
+            if total_investment < 1.0:  # If investment is less than $1, something is wrong
+                self.log_trade(f"WARNING: Suspicious total investment: ${total_investment:.2f} (entry_price=${entry_price:.4f}, qty={quantity})", "WARN")
+                pnl_percentage = 0  # Don't calculate percentage for invalid data
+            else:
+                pnl_percentage = (current_pnl / total_investment) * 100
             
             analysis_factors = []
             exit_signals = 0
@@ -1446,13 +1785,13 @@ class TomorrowReadyOptionsBot:
         
         self.log_trade(f"Scan complete: Found {len(opportunities)} opportunities from {len(scan_symbols)} symbols")
         
-        # Execute ALL opportunities with 75%+ confidence
+        # Execute ALL opportunities with 85%+ confidence
         if opportunities:
             # Filter opportunities with 75% or higher confidence
-            high_confidence_opportunities = [opp for opp in opportunities if opp.get('confidence', 0) >= 0.75]
+            high_confidence_opportunities = [opp for opp in opportunities if opp.get('confidence', 0) >= 0.85]
             
             if high_confidence_opportunities:
-                self.log_trade(f"Found {len(high_confidence_opportunities)} opportunities with 75%+ confidence")
+                self.log_trade(f"Found opportunities with 85%+ confidence")
                 
                 # Sort by confidence * expected_return for execution order
                 high_confidence_opportunities.sort(key=lambda x: x.get('confidence', 0) * x.get('expected_return', 0), reverse=True)
@@ -1469,7 +1808,7 @@ class TomorrowReadyOptionsBot:
                     else:
                         self.log_trade(f"FAILED to execute: {opportunity['symbol']}")
             else:
-                # If no 75%+ confidence, execute best opportunity if it's above 60%
+                # If no 85%+ confidence, execute best opportunity if it's above 60%
                 best_opportunity = max(opportunities, key=lambda x: x.get('confidence', 0) * x.get('expected_return', 0))
                 if best_opportunity.get('confidence', 0) >= 0.60:
                     self.log_trade(f"Executing best opportunity at {best_opportunity.get('confidence', 0):.1%} confidence")
@@ -1484,7 +1823,10 @@ class TomorrowReadyOptionsBot:
             ticker = yf.Ticker(symbol)
             hist = ticker.history(period="10d")
             if hist.empty or len(hist) < 5:
-                return None
+                # Try with shorter period as fallback
+                hist = ticker.history(period="5d")
+                if hist.empty or len(hist) < 3:
+                    return None
 
             # Calculate basic metrics quickly
             current_price = float(hist["Close"].iloc[-1])
@@ -1589,49 +1931,288 @@ class TomorrowReadyOptionsBot:
                     else:
                         strategy = OptionsStrategy.LONG_CALL  # Default to calls
 
-                # Enhanced confidence calculation with filter bonuses
-                base_confidence = 0.5  # Base confidence
+                # Multi-timeframe Analysis
+                mtf_trend = 'NEUTRAL'
+                mtf_confidence_bonus = 0.0
+                if self.multitimeframe_analyzer:
+                    try:
+                        mtf_data = self.multitimeframe_analyzer.fetch_multitimeframe_data(symbol, period='6mo')
+                        if mtf_data and len(mtf_data) >= 2:
+                            # Analyze daily and weekly timeframes
+                            daily_trend = 'NEUTRAL'
+                            weekly_trend = 'NEUTRAL'
+                            
+                            if '1d' in mtf_data:
+                                daily_df = self.multitimeframe_analyzer.calculate_technical_indicators(mtf_data['1d'], '1d')
+                                if not daily_df.empty and len(daily_df) > 1:
+                                    latest = daily_df.iloc[-1]
+                                    if latest['Close'] > latest['sma_20'] and latest['macd'] > latest['macd_signal']:
+                                        daily_trend = 'BULLISH'
+                                    elif latest['Close'] < latest['sma_20'] and latest['macd'] < latest['macd_signal']:
+                                        daily_trend = 'BEARISH'
+                            
+                            if '1wk' in mtf_data:
+                                weekly_df = self.multitimeframe_analyzer.calculate_technical_indicators(mtf_data['1wk'], '1wk')
+                                if not weekly_df.empty and len(weekly_df) > 1:
+                                    latest = weekly_df.iloc[-1]
+                                    if latest['Close'] > latest['sma_20'] and latest['macd'] > latest['macd_signal']:
+                                        weekly_trend = 'BULLISH'
+                                    elif latest['Close'] < latest['sma_20'] and latest['macd'] < latest['macd_signal']:
+                                        weekly_trend = 'BEARISH'
+                            
+                            # MTF alignment bonus
+                            if daily_trend == weekly_trend:
+                                mtf_trend = daily_trend
+                                if mtf_trend == 'BULLISH' and strategy == OptionsStrategy.LONG_CALL:
+                                    mtf_confidence_bonus = 0.20  # Strong MTF alignment for calls
+                                elif mtf_trend == 'BEARISH' and strategy == OptionsStrategy.LONG_PUT:
+                                    mtf_confidence_bonus = 0.20  # Strong MTF alignment for puts
+                                elif mtf_trend != 'NEUTRAL':
+                                    mtf_confidence_bonus = 0.10  # Aligned but different strategy
+                            elif daily_trend != 'NEUTRAL' or weekly_trend != 'NEUTRAL':
+                                mtf_confidence_bonus = 0.05  # Partial alignment
+                                
+                    except Exception as e:
+                        self.log_trade(f"MTF analysis error for {symbol}: {e}", "WARN")
 
-                # Traditional signal bonuses
-                if volume_ok and momentum_ok:
-                    base_confidence += 0.15  # Both criteria met
-                if vol_ok:
-                    base_confidence += 0.1  # Good volatility
-                if abs(market_data['price_momentum']) > 0.025:
-                    base_confidence += 0.1  # Strong momentum
+                # IV Rank Analysis for Options Buying Environment
+                iv_recommendation = None
+                iv_confidence_adjustment = 0.0
+                if self.iv_analyzer and 'iv_rank' in locals():
+                    try:
+                        # Get current IV from the market data or iv_rank_filter
+                        current_iv = market_data.get('implied_volatility', iv_rank / 100.0)
 
-                # Enhanced filter bonuses
-                try:
-                    if 'ema_trend' in locals():
-                        if ema_trend == 'BULLISH' and strategy == OptionsStrategy.LONG_CALL:
-                            base_confidence += 0.15  # EMA alignment bonus
-                        elif ema_trend == 'BULLISH_CONT' and strategy == OptionsStrategy.LONG_CALL:
-                            base_confidence += 0.10  # Continuation bullish trend
+                        # Analyze IV environment
+                        iv_recommendation = self.iv_analyzer.should_buy_options(symbol, current_iv)
+                        iv_confidence_adjustment = iv_recommendation['confidence_adjustment']
 
-                    if 'rsi_filter' in locals() and rsi_filter.get('signal') == 'NEUTRAL':
-                        base_confidence += 0.05  # RSI in sweet spot
+                        self.log_trade(
+                            f"IV Analysis {symbol}: {iv_recommendation['recommendation']} - "
+                            f"{iv_recommendation['reasoning']} (Adj: {iv_confidence_adjustment:+.0%})"
+                        )
+                    except Exception as e:
+                        self.log_trade(f"IV analysis error for {symbol}: {e}", "WARN")
 
-                    if 'vol_regime' in locals() and vol_regime == 'NORMAL':
-                        base_confidence += 0.05  # Normal volatility regime bonus
-                    elif 'vol_regime' in locals() and vol_regime == 'HIGH_VOL':
-                        base_confidence += 0.08  # High vol can be opportunity
+                # Sentiment Analysis
+                sentiment_score = 0.0
+                sentiment_confidence_adjustment = 0.0
+                if self.sentiment_analyzer:
+                    try:
+                        # Analyze sentiment (async operation with timeout)
+                        sentiment_result = await asyncio.wait_for(
+                            self.sentiment_analyzer.analyze_symbol_sentiment(symbol),
+                            timeout=3.0  # 3 second timeout to avoid blocking
+                        )
 
-                    if 'iv_rank' in locals() and iv_rank >= 50:
-                        base_confidence += 0.08  # High IV rank bonus
+                        composite = sentiment_result.get('composite_sentiment', {})
+                        sentiment_score = composite.get('composite_score', 0.0)
+                        sentiment_confidence = composite.get('confidence', 0.0)
+                        sentiment_label = composite.get('sentiment_label', 'neutral')
 
-                    if 'momentum_filter' in locals() and momentum_filter.get('strength', 'WEAK') == 'STRONG':
-                        base_confidence += 0.12  # Strong momentum confirmation
+                        # Adjust confidence based on sentiment alignment
+                        # Strong sentiment alignment boosts confidence, conflicts reduce it
+                        if sentiment_confidence > 0.6:  # Only consider high-confidence sentiment
+                            if strategy == OptionsStrategy.LONG_CALL:
+                                if sentiment_score > 0.5:  # Very positive sentiment for calls
+                                    sentiment_confidence_adjustment = 0.12
+                                elif sentiment_score < -0.5:  # Very negative sentiment conflicts with call
+                                    sentiment_confidence_adjustment = -0.15
+                            elif strategy == OptionsStrategy.LONG_PUT:
+                                if sentiment_score < -0.5:  # Very negative sentiment for puts
+                                    sentiment_confidence_adjustment = 0.12
+                                elif sentiment_score > 0.5:  # Very positive sentiment conflicts with put
+                                    sentiment_confidence_adjustment = -0.15
 
-                except:
-                    pass  # Fallback if filter variables not available
+                        self.log_trade(
+                            f"Sentiment {symbol}: {sentiment_label} (score: {sentiment_score:+.2f}, "
+                            f"confidence: {sentiment_confidence:.0%}) | Adj: {sentiment_confidence_adjustment:+.0%}"
+                        )
+                    except asyncio.TimeoutError:
+                        self.log_trade(f"Sentiment analysis timeout for {symbol} (skipping)", "WARN")
+                    except Exception as e:
+                        self.log_trade(f"Sentiment analysis error for {symbol}: {e}", "WARN")
 
-                base_confidence = min(0.90, base_confidence)  # Cap at 90% for enhanced system
+                # SELECTIVE CONFIDENCE SCORING - Must earn 85%+ to execute
+                # Start lower - make the signal prove itself
+                base_confidence = 0.30
+
+                # REJECTION CRITERIA - Reject conflicting or weak setups
+                reject_reasons = []
+
+                # 0. IV Rank too low for buying options (CRITICAL)
+                if iv_recommendation and iv_recommendation['recommendation'] == 'AVOID':
+                    reject_reasons.append(iv_recommendation['reasoning'])
+
+                # 1. Extreme RSI conflicts with strategy
+                if 'rsi_filter' in locals() and rsi_filter:
+                    rsi_value = rsi_filter.get('rsi', 50)
+                    if strategy == OptionsStrategy.LONG_CALL and rsi_value > 80:
+                        reject_reasons.append(f"RSI too high ({rsi_value:.0f}) for CALL - overbought")
+                    elif strategy == OptionsStrategy.LONG_PUT and rsi_value < 20:
+                        reject_reasons.append(f"RSI too low ({rsi_value:.0f}) for PUT - oversold")
+
+                # 2. Very low volume
+                volume_ratio = market_data.get('volume_ratio', 0)
+                if volume_ratio < 0.5:
+                    reject_reasons.append(f"Volume too low ({volume_ratio:.2f}x avg)")
+
+                # 3. EMA conflicts with strategy (strong bearish with call)
+                if 'ema_trend' in locals():
+                    if ema_trend == 'BEARISH' and strategy == OptionsStrategy.LONG_CALL:
+                        reject_reasons.append("BEARISH EMA conflicts with CALL strategy")
+                    elif ema_trend == 'BULLISH' and strategy == OptionsStrategy.LONG_PUT:
+                        reject_reasons.append("BULLISH EMA conflicts with PUT strategy")
+
+                # 4. MTF conflicts with strategy
+                if mtf_trend == 'BEARISH' and strategy == OptionsStrategy.LONG_CALL:
+                    reject_reasons.append("BEARISH MTF conflicts with CALL")
+                elif mtf_trend == 'BULLISH' and strategy == OptionsStrategy.LONG_PUT:
+                    reject_reasons.append("BULLISH MTF conflicts with PUT")
+
+                # 5. Weak momentum
+                momentum = market_data.get('price_momentum', 0)
+                if abs(momentum) < 0.005:
+                    reject_reasons.append(f"Momentum too weak ({momentum:.4f})")
+
+                # 6. Extremely negative sentiment conflicts with strategy
+                if sentiment_score < -0.7 and strategy == OptionsStrategy.LONG_CALL:
+                    reject_reasons.append(f"Very negative sentiment ({sentiment_score:.2f}) conflicts with CALL")
+                elif sentiment_score > 0.7 and strategy == OptionsStrategy.LONG_PUT:
+                    reject_reasons.append(f"Very positive sentiment ({sentiment_score:.2f}) conflicts with PUT")
+
+                # If any critical conflicts exist, REJECT the trade by setting confidence to 0
+                if reject_reasons:
+                    self.log_trade(f"REJECTED {symbol} {strategy.value}: {'; '.join(reject_reasons)}")
+                    confidence = 0.0  # Force rejection
+                else:
+                    # SELECTIVE BONUS SYSTEM - Must have strong confirming signals
+
+                    # Volume & momentum confirmation (up to +25%)
+                    if volume_ok and momentum_ok:
+                        if volume_ratio > 1.5:
+                            base_confidence += 0.15  # Strong volume
+                        else:
+                            base_confidence += 0.10  # Good volume
+
+                    # Volatility quality (up to +10%)
+                    if vol_ok:
+                        realized_vol = market_data.get('realized_vol', 20)
+                        if 15 < realized_vol < 50:
+                            base_confidence += 0.10  # Sweet spot volatility
+                        elif realized_vol >= 50:
+                            base_confidence += 0.05  # High vol (risky but opportunity)
+
+                    # Strong momentum (up to +15%)
+                    if abs(momentum) > 0.025:
+                        base_confidence += 0.15  # Very strong momentum
+                    elif abs(momentum) > 0.015:
+                        base_confidence += 0.08  # Strong momentum
+
+                    # EMA alignment (up to +20%)
+                    try:
+                        if 'ema_trend' in locals():
+                            if ema_trend == 'BULLISH' and strategy == OptionsStrategy.LONG_CALL:
+                                base_confidence += 0.20  # Perfect EMA alignment
+                            elif ema_trend == 'BULLISH_CONT' and strategy == OptionsStrategy.LONG_CALL:
+                                base_confidence += 0.12  # Good continuation
+                            elif ema_trend == 'BEARISH' and strategy == OptionsStrategy.LONG_PUT:
+                                base_confidence += 0.20  # Perfect bearish alignment
+                    except:
+                        pass
+
+                    # RSI in optimal zone (up to +8%)
+                    try:
+                        if 'rsi_filter' in locals() and rsi_filter:
+                            rsi_signal = rsi_filter.get('signal', '')
+                            if rsi_signal == 'NEUTRAL':
+                                base_confidence += 0.08  # RSI sweet spot (40-60)
+                            elif rsi_signal == 'OVERSOLD' and strategy == OptionsStrategy.LONG_CALL:
+                                base_confidence += 0.05  # Bounce opportunity
+                            elif rsi_signal == 'OVERBOUGHT' and strategy == OptionsStrategy.LONG_PUT:
+                                base_confidence += 0.05  # Reversal opportunity
+                    except:
+                        pass
+
+                    # Volatility regime (up to +8%)
+                    try:
+                        if 'vol_regime' in locals():
+                            if vol_regime == 'NORMAL':
+                                base_confidence += 0.05  # Stable conditions
+                            elif vol_regime == 'HIGH_VOL':
+                                base_confidence += 0.08  # Opportunity in volatility
+                    except:
+                        pass
+
+                    # IV rank for options pricing (up to +10%)
+                    try:
+                        if 'iv_rank' in locals():
+                            if 50 <= iv_rank <= 70:
+                                base_confidence += 0.10  # Good IV for buying options
+                            elif iv_rank >= 70:
+                                base_confidence += 0.06  # High IV (expensive but volatile)
+                    except:
+                        pass
+
+                    # Momentum filter strength (up to +15%)
+                    try:
+                        if 'momentum_filter' in locals() and momentum_filter:
+                            strength = momentum_filter.get('strength', 'WEAK')
+                            if strength == 'STRONG':
+                                base_confidence += 0.15  # Strong momentum confirmation
+                            elif strength == 'MODERATE':
+                                base_confidence += 0.08  # Moderate confirmation
+                    except:
+                        pass
+
+                    # Multi-timeframe alignment bonus (up to +20%)
+                    if mtf_confidence_bonus > 0:
+                        base_confidence += mtf_confidence_bonus
+
+                    # IV Rank environment adjustment (up to +15% or -20%)
+                    if iv_confidence_adjustment != 0:
+                        base_confidence += iv_confidence_adjustment
+
+                    # Sentiment alignment adjustment (up to +12% or -15%)
+                    if sentiment_confidence_adjustment != 0:
+                        base_confidence += sentiment_confidence_adjustment
+
+                    # Cap at 92% to leave room for ML enhancement
+                    base_confidence = min(0.92, base_confidence)
                 
                 # Apply basic machine learning calibration
                 confidence = self.learning_engine.calibrate_confidence(
                     base_confidence, strategy.value, symbol, market_data
                 )
-                
+
+                # Apply ML Ensemble prediction (60/40 hybrid: learning_engine 60%, ML ensemble 40%)
+                if self.ml_ensemble:
+                    try:
+                        ml_prediction = self._get_ml_prediction(market_data, symbol)
+                        ml_confidence = ml_prediction.get('confidence', 0.5)
+                        ml_direction = ml_prediction.get('prediction', 0)  # 0=down, 1=up
+
+                        # Check if ML prediction aligns with strategy
+                        strategy_is_bullish = strategy == OptionsStrategy.LONG_CALL
+                        ml_is_bullish = ml_direction == 1
+
+                        if strategy_is_bullish == ml_is_bullish:
+                            # ML agrees with strategy - blend confidences
+                            confidence = (confidence * 0.6) + (ml_confidence * 0.4)
+                            self.log_trade(f"ML BOOST: {symbol} - Learning: {confidence*0.6:.1%}, ML: {ml_confidence*0.4:.1%} = {confidence:.1%}")
+                        else:
+                            # ML disagrees - reduce confidence
+                            confidence = confidence * 0.7
+                            self.log_trade(f"ML CONFLICT: {symbol} - Reduced confidence to {confidence:.1%}")
+
+                        # Log ML votes if available
+                        if 'model_votes' in ml_prediction and ml_prediction['model_votes']:
+                            votes = ml_prediction['model_votes']
+                            self.log_trade(f"  ML Votes: RF={votes.get('rf', '?')}, XGB={votes.get('xgb', '?')}")
+
+                    except Exception as e:
+                        self.log_trade(f"ML ensemble integration error: {e}", "WARN")
+
                 # Apply quantitative finance analysis
                 quant_analysis = None
                 try:
@@ -1722,6 +2303,8 @@ class TomorrowReadyOptionsBot:
                 try:
                     if 'ema_trend' in locals() and ema_trend != 'NEUTRAL':
                         filter_info.append(f"EMA: {ema_trend}")
+                        if mtf_trend != "NEUTRAL":
+                            filter_info.append(f"MTF: {mtf_trend}")
                     if 'vol_regime' in locals():
                         filter_info.append(f"Vol: {vol_regime}")
                     if 'iv_rank' in locals():
@@ -1757,6 +2340,12 @@ class TomorrowReadyOptionsBot:
     async def execute_new_position(self, opportunity):
         """Execute a REAL options position"""
         try:
+            # CRITICAL: Check daily loss limit before executing any new trades
+            loss_limit_hit = await self.check_daily_loss_limit()
+            if loss_limit_hit:
+                self.log_trade(f"BLOCKED TRADE: Daily loss limit hit, cannot execute new position for {opportunity['symbol']}", "WARN")
+                return False
+
             symbol = opportunity['symbol']
             
             # Check if options_trader is properly initialized
@@ -2048,6 +2637,74 @@ class TomorrowReadyOptionsBot:
             import traceback
             self.log_trade(f"Traceback: {traceback.format_exc()}", "ERROR")
 
+    def _get_ml_prediction(self, market_data: dict, symbol: str) -> dict:
+        """
+        Get ML ensemble prediction with all 26 required features
+
+        Args:
+            market_data: Market data dict with technical indicators
+            symbol: Stock symbol
+
+        Returns:
+            ML prediction dict with 'prediction', 'confidence', 'model_votes'
+        """
+        if not self.ml_ensemble:
+            return {'prediction': 0, 'confidence': 0.5, 'model_votes': {}}
+
+        try:
+            # Extract the 26 features required by the model
+            features = {
+                # Returns (1d, 3d, 5d, 10d, 20d)
+                'returns_1d': market_data.get('price_momentum', 0.0),
+                'returns_3d': market_data.get('price_momentum', 0.0) * 1.5,  # Estimate
+                'returns_5d': market_data.get('price_momentum', 0.0) * 2.5,
+                'returns_10d': market_data.get('price_momentum', 0.0) * 5.0,
+                'returns_20d': market_data.get('price_momentum', 0.0) * 10.0,
+
+                # Price to SMA ratios
+                'price_to_sma_5': market_data.get('current_price', 100) / market_data.get('sma_20', 100),
+                'price_to_sma_10': market_data.get('current_price', 100) / market_data.get('sma_20', 100),
+                'price_to_sma_20': market_data.get('current_price', 100) / market_data.get('sma_20', 100),
+                'price_to_sma_50': market_data.get('current_price', 100) / market_data.get('sma_50', 100),
+
+                # Technical indicators
+                'rsi': market_data.get('rsi', 50.0),
+                'macd': market_data.get('macd', 0.0),
+                'macd_signal': market_data.get('macd_signal', 0.0),
+                'macd_histogram': market_data.get('macd', 0.0) - market_data.get('macd_signal', 0.0),
+
+                # Bollinger bands
+                'bb_width': abs(market_data.get('bollinger_upper', 105) - market_data.get('bollinger_lower', 95)) / market_data.get('current_price', 100),
+                'bb_position': (market_data.get('current_price', 100) - market_data.get('bollinger_lower', 95)) / (market_data.get('bollinger_upper', 105) - market_data.get('bollinger_lower', 95) + 0.001),
+
+                # Volatility
+                'volatility_5d': market_data.get('volatility', 0.02),
+                'volatility_20d': market_data.get('volatility', 0.02) * 1.2,
+                'volatility_ratio': 0.85,  # Estimate
+
+                # Volume features
+                'volume_ratio': market_data.get('volume_trend', 1.0),
+                'volume_momentum': (market_data.get('volume_trend', 1.0) - 1.0) * 5.0,  # Estimate from 5-day change
+
+                # High/Low features
+                'high_low_ratio': market_data.get('high', market_data.get('current_price', 100)) / market_data.get('low', market_data.get('current_price', 100) * 0.98),
+                'close_to_high': market_data.get('current_price', 100) / market_data.get('high', market_data.get('current_price', 100)),
+                'close_to_low': market_data.get('current_price', 100) / market_data.get('low', market_data.get('current_price', 100) * 0.98),
+
+                # Momentum and trend features
+                'momentum_3d': market_data.get('price_momentum', 0.0) * 1.5,  # Estimate from 1d momentum
+                'momentum_10d': market_data.get('price_momentum', 0.0) * 5.0,  # Estimate from 1d momentum
+                'trend_strength': market_data.get('price_momentum', 0.0) * 0.5,  # Estimate
+            }
+
+            # Get ML prediction
+            ml_result = self.ml_ensemble.predict_direction(features)
+            return ml_result
+
+        except Exception as e:
+            self.log_trade(f"ML prediction error for {symbol}: {e}", "WARN")
+            return {'prediction': 0, 'confidence': 0.5, 'model_votes': {}}
+
     def _calculate_quant_confidence(self, quant_analysis: dict, market_data: dict) -> float:
         """
         Calculate confidence score based on quantitative analysis results
@@ -2155,7 +2812,7 @@ async def main():
                 await bot.profit_monitoring_task
             except asyncio.CancelledError:
                 pass
-        print("✅ Profit monitoring stopped")
+        print("[OK] Profit monitoring stopped")
 
 if __name__ == "__main__":
     asyncio.run(main())

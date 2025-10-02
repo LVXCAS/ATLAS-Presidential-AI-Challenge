@@ -155,6 +155,14 @@ class OptionsTrader:
             # Process calls
             calls_filtered = 0
             for _, row in calls.iterrows():
+                # Validate bid/ask values to prevent division by zero errors
+                bid_val = float(row['bid']) if pd.notnull(row['bid']) and row['bid'] > 0 else 0.0
+                ask_val = float(row['ask']) if pd.notnull(row['ask']) and row['ask'] > 0 else 0.0
+
+                # Skip contracts with invalid pricing data
+                if bid_val <= 0 or ask_val <= 0 or bid_val >= ask_val:
+                    continue
+
                 if row['volume'] >= self.min_volume and row['openInterest'] >= self.min_open_interest:
                     calls_filtered += 1
                     contract = OptionsContract(
@@ -163,8 +171,8 @@ class OptionsTrader:
                         strike=float(row['strike']),
                         expiration=exp_date,
                         option_type='call',
-                        bid=float(row['bid']),
-                        ask=float(row['ask']),
+                        bid=bid_val,
+                        ask=ask_val,
                         volume=int(row['volume']),
                         open_interest=int(row['openInterest']),
                         implied_volatility=float(row['impliedVolatility']),
@@ -205,12 +213,22 @@ class OptionsTrader:
                             # Keep default values
                     
                     # Filter by spread ratio and expiration time
-                    if (contract.spread / contract.mid_price <= self.max_spread_ratio and 
+                    # Avoid division by zero error when mid_price is 0
+                    if (contract.mid_price > 0 and
+                        contract.spread / contract.mid_price <= self.max_spread_ratio and
                         contract.days_to_expiry > self.min_days_to_expiry):
                         contracts.append(contract)
             
             # Process puts
             for _, row in puts.iterrows():
+                # Validate bid/ask values to prevent division by zero errors
+                bid_val = float(row['bid']) if pd.notnull(row['bid']) and row['bid'] > 0 else 0.0
+                ask_val = float(row['ask']) if pd.notnull(row['ask']) and row['ask'] > 0 else 0.0
+
+                # Skip contracts with invalid pricing data
+                if bid_val <= 0 or ask_val <= 0 or bid_val >= ask_val:
+                    continue
+
                 if row['volume'] >= self.min_volume and row['openInterest'] >= self.min_open_interest:
                     contract = OptionsContract(
                         symbol=f"{symbol}{exp_date.strftime('%y%m%d')}P{int(row['strike']*1000):08d}",
@@ -218,8 +236,8 @@ class OptionsTrader:
                         strike=float(row['strike']),
                         expiration=exp_date,
                         option_type='put',
-                        bid=float(row['bid']),
-                        ask=float(row['ask']),
+                        bid=bid_val,
+                        ask=ask_val,
                         volume=int(row['volume']),
                         open_interest=int(row['openInterest']),
                         implied_volatility=float(row['impliedVolatility']),
@@ -260,7 +278,9 @@ class OptionsTrader:
                             # Keep default values
                     
                     # Filter by spread ratio and expiration time
-                    if (contract.spread / contract.mid_price <= self.max_spread_ratio and 
+                    # Avoid division by zero error when mid_price is 0
+                    if (contract.mid_price > 0 and
+                        contract.spread / contract.mid_price <= self.max_spread_ratio and
                         contract.days_to_expiry > self.min_days_to_expiry):
                         contracts.append(contract)
             
@@ -394,14 +414,126 @@ class OptionsTrader:
         logger.warning(f"No suitable options strategy found for {symbol} even with fallback")
         return None
     
-    async def execute_options_strategy(self, strategy: OptionsStrategy, contracts: List[OptionsContract], 
+    def select_best_contract(self, contracts: List[OptionsContract], strategy: OptionsStrategy) -> OptionsContract:
+        """Select the best contract from available options based on risk/reward scoring"""
+        if len(contracts) == 1:
+            return contracts[0]
+
+        scored_contracts = []
+
+        for contract in contracts:
+            score = 0.0
+
+            # 1. Liquidity scoring (30% weight) - Higher volume/OI = better fills
+            if contract.volume and contract.open_interest:
+                liquidity = contract.volume + (contract.open_interest * 0.5)
+                if liquidity > 1000:
+                    score += 30
+                elif liquidity > 500:
+                    score += 20
+                elif liquidity > 100:
+                    score += 10
+                else:
+                    score += 5
+
+            # 2. Bid-ask spread (20% weight) - Tighter spread = better pricing
+            if contract.bid and contract.ask and contract.ask > 0:
+                spread_pct = (contract.ask - contract.bid) / contract.ask
+                if spread_pct < 0.05:  # Less than 5% spread
+                    score += 20
+                elif spread_pct < 0.10:
+                    score += 15
+                elif spread_pct < 0.20:
+                    score += 10
+                else:
+                    score += 5
+
+            # 3. Delta scoring (25% weight) - Optimal delta range
+            if contract.delta:
+                abs_delta = abs(contract.delta)
+                if 0.40 <= abs_delta <= 0.60:  # Sweet spot delta
+                    score += 25
+                elif 0.30 <= abs_delta <= 0.70:
+                    score += 18
+                elif 0.20 <= abs_delta <= 0.80:
+                    score += 12
+                else:
+                    score += 5
+
+            # 4. IV Rank (15% weight) - Higher IV = more premium but also opportunity
+            if contract.implied_volatility:
+                iv_pct = contract.implied_volatility * 100
+                if 30 <= iv_pct <= 60:  # Good IV range
+                    score += 15
+                elif 20 <= iv_pct <= 70:
+                    score += 10
+                else:
+                    score += 5
+
+            # 5. Theta decay (10% weight) - Lower theta = slower decay
+            if contract.theta:
+                abs_theta = abs(contract.theta)
+                if abs_theta < 0.05:  # Low decay
+                    score += 10
+                elif abs_theta < 0.10:
+                    score += 7
+                else:
+                    score += 3
+
+            scored_contracts.append((score, contract))
+            logger.info(f"Contract {contract.symbol} scored {score:.1f} points "
+                       f"(Delta: {contract.delta:.2f}, Vol: {contract.volume}, OI: {contract.open_interest})")
+
+        # Sort by score descending and return best
+        scored_contracts.sort(reverse=True, key=lambda x: x[0])
+        best_contract = scored_contracts[0][1]
+        logger.info(f"Selected best contract: {best_contract.symbol} with score {scored_contracts[0][0]:.1f}")
+
+        return best_contract
+
+    async def wait_for_order_fill(self, order_id: str, max_wait_seconds: int = 30):
+        """Wait for an order to fill with status polling"""
+        import time
+
+        elapsed = 0
+        poll_interval = 2  # Check every 2 seconds
+
+        while elapsed < max_wait_seconds:
+            try:
+                # Query order status from broker
+                order_status = await self.options_broker.broker.get_order(order_id)
+
+                if order_status.status == 'filled':
+                    filled_price = order_status.filled_price if order_status.filled_price else 0
+                    logger.info(f"Order {order_id} filled at ${filled_price:.2f}")
+                    return order_status
+                elif order_status.status in ['cancelled', 'expired', 'rejected']:
+                    logger.warning(f"Order {order_id} {order_status.status}")
+                    return order_status
+
+                # Still pending - wait and retry
+                await asyncio.sleep(poll_interval)
+                elapsed += poll_interval
+
+            except Exception as e:
+                logger.error(f"Error checking order status: {e}")
+                await asyncio.sleep(poll_interval)
+                elapsed += poll_interval
+
+        logger.warning(f"Order {order_id} did not fill within {max_wait_seconds}s")
+        return None
+
+    async def execute_options_strategy(self, strategy: OptionsStrategy, contracts: List[OptionsContract],
                                      quantity: int = 1, confidence: float = 0.5) -> Optional[OptionsPosition]:
         """Execute an options trading strategy with REAL options orders"""
-        
+
         if not contracts:
             return None
-        
-        underlying = contracts[0].underlying
+
+        # SELECT BEST CONTRACT using scoring system
+        contract = self.select_best_contract(contracts, strategy)
+
+        underlying = contract.underlying
         position_id = f"{underlying}_{strategy}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         
         try:
@@ -409,11 +541,8 @@ class OptionsTrader:
             executed_orders = []
             executed_contracts = []
             
-            # Execute strategy legs with SMART PRICING
+            # Execute strategy legs with SMART PRICING (contract already selected as best)
             if strategy == OptionsStrategy.LONG_CALL:
-                # Buy call option with smart pricing
-                contract = contracts[0]
-                
                 # Get current underlying price
                 import yfinance as yf
                 underlying_ticker = yf.Ticker(underlying)
@@ -462,21 +591,31 @@ class OptionsTrader:
                 )
                 
                 order_response = await self.options_broker.submit_options_order(order_request)
+                logger.info(f"LONG_CALL order submitted: {order_response.id}, waiting for fill...")
+
+                # WAIT FOR ORDER TO FILL (up to 30 seconds)
+                if order_response.id:
+                    filled_order = await self.wait_for_order_fill(order_response.id, max_wait_seconds=30)
+                    if filled_order and filled_order.filled_price:
+                        # Update response with filled data
+                        order_response.avg_fill_price = filled_order.filled_price
+                        order_response.filled_qty = filled_order.filled_qty
+                        order_response.status = filled_order.status
+
                 executed_orders.append(order_response)
-                
+
                 if order_response.avg_fill_price:
                     total_cost = order_response.avg_fill_price * quantity * 100
                     executed_contracts = [contract]
-                    
+
                     logger.info(f"Smart pricing LONG_CALL: {smart_price.reasoning} | "
                               f"Target: ${smart_price.target_price:.2f} | "
                               f"Filled: ${order_response.avg_fill_price:.2f}")
+                else:
+                    logger.warning(f"LONG_CALL order did not fill: {order_response.id}")
                 
             elif strategy == OptionsStrategy.LONG_PUT:
-                # Buy put option with confidence-based order type
-                contract = contracts[0]
-                
-                # Get current underlying price for smart pricing
+                # Get current underlying price for smart pricing (contract already selected as best)
                 import yfinance as yf
                 underlying_ticker = yf.Ticker(underlying)
                 underlying_hist = underlying_ticker.history(period="1d")
@@ -524,12 +663,26 @@ class OptionsTrader:
                 )
                 
                 order_response = await self.options_broker.submit_options_order(order_request)
+                logger.info(f"LONG_PUT order submitted: {order_response.id}, waiting for fill...")
+
+                # WAIT FOR ORDER TO FILL (up to 30 seconds)
+                if order_response.id:
+                    filled_order = await self.wait_for_order_fill(order_response.id, max_wait_seconds=30)
+                    if filled_order and filled_order.filled_price:
+                        # Update response with filled data
+                        order_response.avg_fill_price = filled_order.filled_price
+                        order_response.filled_qty = filled_order.filled_qty
+                        order_response.status = filled_order.status
+
                 executed_orders.append(order_response)
-                
+
                 if order_response.avg_fill_price:
                     total_cost = order_response.avg_fill_price * quantity * 100
                     executed_contracts = [contract]
-                
+                    logger.info(f"LONG_PUT filled at ${order_response.avg_fill_price:.2f}")
+                else:
+                    logger.warning(f"LONG_PUT order did not fill: {order_response.id}")
+
             elif strategy == OptionsStrategy.BULL_CALL_SPREAD:
                 # Buy lower strike call, sell higher strike call
                 long_call, short_call = contracts[0], contracts[1]
@@ -922,3 +1075,62 @@ class OptionsTrader:
             'total_pnl': total_pnl,
             'open_positions': open_positions
         }
+
+    async def get_liquid_options(self, symbol: str, option_type: str = 'both',
+                                min_volume: int = None, min_oi: int = None) -> List[OptionsContract]:
+        """
+        Get liquid options contracts for a symbol
+
+        Args:
+            symbol: Underlying symbol (e.g., 'SPY', 'AAPL')
+            option_type: 'call', 'put', or 'both'
+            min_volume: Minimum volume filter (overrides class default)
+            min_oi: Minimum open interest filter (overrides class default)
+
+        Returns:
+            List of liquid OptionsContract objects
+        """
+        try:
+            # Use provided filters or class defaults
+            volume_filter = min_volume if min_volume is not None else self.min_volume
+            oi_filter = min_oi if min_oi is not None else self.min_open_interest
+
+            # Get options chain if not already cached
+            if symbol not in self.option_chains:
+                logger.info(f"Fetching options chain for {symbol}")
+                await self.get_options_chain(symbol)
+
+            if symbol not in self.option_chains:
+                logger.warning(f"No options chain available for {symbol}")
+                return []
+
+            contracts = self.option_chains[symbol]
+
+            # Filter by option type
+            if option_type.lower() == 'call':
+                filtered_contracts = [c for c in contracts if c.option_type == 'call']
+            elif option_type.lower() == 'put':
+                filtered_contracts = [c for c in contracts if c.option_type == 'put']
+            else:  # 'both'
+                filtered_contracts = contracts
+
+            # Apply liquidity filters
+            liquid_contracts = []
+            for contract in filtered_contracts:
+                if (contract.volume >= volume_filter and
+                    contract.open_interest >= oi_filter and
+                    contract.bid > 0 and contract.ask > 0 and
+                    contract.mid_price > 0):
+                    liquid_contracts.append(contract)
+
+            logger.info(f"Found {len(liquid_contracts)} liquid {option_type} options for {symbol} "
+                       f"(volume >= {volume_filter}, OI >= {oi_filter})")
+
+            # Sort by volume descending for best liquidity first
+            liquid_contracts.sort(key=lambda x: (x.volume, x.open_interest), reverse=True)
+
+            return liquid_contracts
+
+        except Exception as e:
+            logger.error(f"Error getting liquid options for {symbol}: {e}")
+            return []

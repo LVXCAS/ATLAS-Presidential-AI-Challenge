@@ -561,7 +561,19 @@ class AlpacaBrokerIntegration:
         except Exception as e:
             logger.error(f"Unexpected error getting order status for {order_id}: {e}")
             return None
-    
+
+    async def get_order(self, order_id: str) -> Optional[OrderResponse]:
+        """
+        Get order by ID (alias for get_order_status for compatibility)
+
+        Args:
+            order_id: Order ID to retrieve
+
+        Returns:
+            OrderResponse: Order details or None if not found
+        """
+        return await self.get_order_status(order_id)
+
     async def get_all_orders(self, 
                            status: Optional[str] = None,
                            limit: int = 100,
