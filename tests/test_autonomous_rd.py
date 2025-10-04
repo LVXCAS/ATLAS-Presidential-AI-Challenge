@@ -6,7 +6,11 @@ Simple test to validate the autonomous R&D system functionality
 
 import asyncio
 import sys
+import os
 from datetime import datetime
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 print("HIVE TRADING - AUTONOMOUS R&D SYSTEM TEST")
 print("="*70)

@@ -10,8 +10,23 @@ requests>=2.25.0
 
 # Trading Libraries
 yfinance>=0.1.70
+alpaca-py>=0.30.0  # Week 1 Upgrade - Better options support
 alpaca-trade-api>=2.0.0
 quantlib>=1.26
+
+# Week 1 Professional Enhancements
+quantsbin>=1.0.3  # Black-Scholes options pricing
+FinQuant>=0.7.0   # Portfolio risk management
+# openbb>=4.0.0   # Skipped - Python 3.13 incompatibility
+
+# Full Power Enhancement - GitHub Repos Integration
+pandas-ta>=0.4.67b0     # Technical indicators (150+) for ML features
+ta>=0.11.0              # Additional technical indicators
+quantstats>=0.0.77      # Professional performance reports
+backtrader>=1.9.78      # Backtesting framework
+vectorbt>=0.28.1        # Ultra-fast vectorized backtesting
+pyportfolioopt>=1.5.6   # Portfolio optimization (efficient frontier)
+gs-quant>=1.4.31        # Goldman Sachs quant tools
 
 # Machine Learning
 xgboost>=1.5.0

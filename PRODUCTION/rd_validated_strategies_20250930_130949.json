@@ -1,0 +1,103 @@
+{
+  "timestamp": "2025-09-30T13:09:49.953111",
+  "total_strategies_researched": 0,
+  "validated_strategies": 6,
+  "strategies": [
+    {
+      "symbol": "INTC",
+      "type": "momentum",
+      "momentum_score": 0.4968954865027454,
+      "historical_return": 0.5215419681589528,
+      "momentum_5d": 0.028304355248000436,
+      "momentum_20d": 0.017941150702573426,
+      "volatility": 0.04251458108255022,
+      "research_timestamp": "2025-09-30T13:09:48.205746",
+      "live_validation": {
+        "validated": true,
+        "live_price": 33.565,
+        "live_volume": 121181123.0,
+        "validation_timestamp": "2025-09-30T13:09:49.182093"
+      }
+    },
+    {
+      "symbol": "AMD",
+      "type": "momentum",
+      "momentum_score": 0.03372613000656949,
+      "historical_return": 0.5741388909096021,
+      "momentum_5d": 0.0011313020841670518,
+      "momentum_20d": 3.2879282576481204e-05,
+      "volatility": 0.037059060663861346,
+      "research_timestamp": "2025-09-30T13:09:48.325791",
+      "live_validation": {
+        "validated": true,
+        "live_price": 161.79,
+        "live_volume": 29286349.0,
+        "validation_timestamp": "2025-09-30T13:09:49.273462"
+      }
+    },
+    {
+      "symbol": "NVDA",
+      "type": "momentum",
+      "momentum_score": 0.22510043117925144,
+      "historical_return": 0.6940396300438536,
+      "momentum_5d": 0.00904454892148423,
+      "momentum_20d": 0.0046296571491154905,
+      "volatility": 0.028837779664541055,
+      "research_timestamp": "2025-09-30T13:09:48.526718",
+      "live_validation": {
+        "validated": true,
+        "live_price": 186.575,
+        "live_volume": 232308121.0,
+        "validation_timestamp": "2025-09-30T13:09:49.367025"
+      }
+    },
+    {
+      "symbol": "AAPL",
+      "type": "momentum",
+      "momentum_score": 0.09510962385049143,
+      "historical_return": 0.1436590316192603,
+      "momentum_5d": 0.00020113456756960525,
+      "momentum_20d": 0.005317118384599318,
+      "volatility": 0.024890673943124827,
+      "research_timestamp": "2025-09-30T13:09:48.741654",
+      "live_validation": {
+        "validated": true,
+        "live_price": 254.63,
+        "live_volume": 37450336.0,
+        "validation_timestamp": "2025-09-30T13:09:49.459330"
+      }
+    },
+    {
+      "symbol": "MSFT",
+      "type": "momentum",
+      "momentum_score": 0.13859086470321832,
+      "historical_return": 0.3599359814668681,
+      "momentum_5d": 0.003415431346079112,
+      "momentum_20d": 0.0013048301806704743,
+      "volatility": 0.016220581792988534,
+      "research_timestamp": "2025-09-30T13:09:48.897133",
+      "live_validation": {
+        "validated": true,
+        "live_price": 517.95,
+        "live_volume": 19461992.0,
+        "validation_timestamp": "2025-09-30T13:09:49.552217"
+      }
+    },
+    {
+      "symbol": "INTC",
+      "type": "volatility",
+      "realized_vol": 0.04251458108255022,
+      "vol_20d": 0.05894764213285043,
+      "vol_60d": 0.044004503357855815,
+      "vol_percentile": 80.95238095238095,
+      "research_timestamp": "2025-09-30T13:09:49.606263",
+      "live_validation": {
+        "validated": true,
+        "live_price": 33.565,
+        "live_volume": 121181123.0,
+        "validation_timestamp": "2025-09-30T13:09:49.953087"
+      }
+    }
+  ],
+  "ready_for_deployment": true
+}

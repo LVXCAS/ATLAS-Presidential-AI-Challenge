@@ -1,0 +1,21 @@
+{
+  "timestamp": "2025-10-01T08:32:47.744639",
+  "strategy": "intel_dual_manual",
+  "symbol": "INTC",
+  "current_price": 34.26,
+  "opportunity_score": 4.76,
+  "volatility": 0.057,
+  "execution_type": "MANUAL_WEEK1",
+  "week1_conservative": true,
+  "paper_trade": true,
+  "contracts": 2,
+  "alpaca_execution": {
+    "symbol": "INTC",
+    "strategy": "intel_dual",
+    "contracts": 2,
+    "orders": [
+      {
+        "type": "CASH_SECURED_PUT",
+        "strike": 33,
+        "contract": "INTC251024P00033000",
+        "order_id": 

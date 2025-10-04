@@ -7,8 +7,12 @@ Comprehensive test of OpenBB Platform integration
 """
 
 import sys
+import os
 import traceback
 from datetime import datetime
+
+# Add parent directory to path for imports
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 def test_basic_import():
     """Test 1: Basic OpenBB import"""

@@ -1,0 +1,50 @@
+{
+  "date": "2025-10-01",
+  "week": 1,
+  "day": 1,
+  "scans_completed": 53,
+  "opportunities_found": 265,
+  "trades_executed": 1,
+  "trades": [
+    {
+      "timestamp": "2025-10-01T08:35:43.063914",
+      "strategy": "earnings_week1_continuous",
+      "symbol": "AAPL",
+      "current_price": 255.566,
+      "opportunity_score": 4.5,
+      "scan_number": 1,
+      "execution_type": "REAL_ALPACA_PAPER",
+      "week1_conservative": true,
+      "paper_trade": true,
+      "strategy_details": "Long Straddle (Earnings)",
+      "contracts": 1,
+      "expiry_days": 14,
+      "expected_move": 0.125,
+      "alpaca_execution": {
+        "symbol": "AAPL",
+        "strategy": "long_straddle",
+        "strike": 256,
+        "contracts": 1,
+        "orders": [
+          {
+            "type": "CALL",
+            "contract": "AAPL251017C00255000",
+            "order_id": "d57d62b8-b98a-4957-ab7d-4ecf4c512002",
+            "status": "OrderStatus.PENDING_NEW"
+          },
+          {
+            "type": "PUT",
+            "contract": "AAPL251017P00255000",
+            "order_id": "699be0bb-bfcd-405b-bef7-2951fcb03236",
+            "status": "OrderStatus.PENDING_NEW"
+          }
+        ]
+      },
+      "cost_percentage": 1.0,
+      "expected_roi": "15-30%",
+      "orders_submitted": 2,
+      "execution_success": true
+    }
+  ],
+  "week1_assessment": "EXCELLENT DISCIPLINE"
+}

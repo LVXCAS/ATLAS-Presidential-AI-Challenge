@@ -53,7 +53,18 @@
       "Bash(npx:*)",
       "WebFetch(domain:finance.yahoo.com)",
       "Bash(touch:*)",
-      "mcp__mcp-simple-timeserver__get_local_time"
+      "mcp__mcp-simple-timeserver__get_local_time",
+      "Bash(git push:*)",
+      "Read(//c/**)",
+      "Bash(pip search:*)",
+      "Bash(pip index:*)",
+      "Bash(openbb)",
+      "Bash(sort:*)",
+      "Bash(chcp:*)",
+      "Bash(git fetch:*)",
+      "Bash(git show-ref:*)",
+      "Bash(awk:*)",
+      "Bash(cat:*)"
     ],
     "deny": [],
     "ask": []
