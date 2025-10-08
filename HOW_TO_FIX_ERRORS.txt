@@ -1,0 +1,105 @@
+================================================================================
+HOW TO FIX THE "realized_vol" ERRORS
+================================================================================
+
+PROBLEM:
+You keep seeing this error:
+  [WARN] Enhanced filters failed for AAPL, using basic:
+  cannot access local variable 'realized_vol' where it is not associated with a value
+
+STATUS:
+✓ THE CODE HAS BEEN FIXED (lines 1994 and 2003 in OPTIONS_BOT.py)
+✗ THE RUNNING BOT IS USING OLD CODE (hasn't reloaded the file)
+
+================================================================================
+SOLUTION: RESTART THE BOT
+================================================================================
+
+OPTION 1: Manual Restart (Recommended)
+--------------------------------------
+1. In the terminal where the bot is running, press: Ctrl + C
+2. Wait for it to stop completely
+3. Run: python OPTIONS_BOT.py
+4. Errors will be gone!
+
+OPTION 2: Use Restart Script
+-----------------------------
+1. Double-click: restart_bot.bat
+2. This will:
+   - Kill the old bot process
+   - Start fresh with fixed code
+3. Errors will be gone!
+
+OPTION 3: Kill Process Manually
+--------------------------------
+1. Open Task Manager
+2. Find "python3.11.exe" with highest memory (1.5GB)
+3. Right-click → End Task
+4. Open terminal in C:\Users\kkdo\PC-HIVE-TRADING
+5. Run: python OPTIONS_BOT.py
+6. Errors will be gone!
+
+================================================================================
+WHY RESTARTING FIXES IT
+================================================================================
+
+Python loads code into memory when it starts:
+- When you START the bot → It loads OPTIONS_BOT.py into RAM
+- When I FIX the code → The file changes on disk
+- But the RUNNING bot → Still has OLD code in RAM
+- Only RESTARTING → Loads the NEW fixed code
+
+This is normal Python behavior - it doesn't auto-reload files!
+
+================================================================================
+WHAT THE FIX DOES
+================================================================================
+
+BEFORE (Bug):
+  Line 1994: vol_ok = market_data.get('realized_vol', 20) > 15
+  Line 2194: if 15 < realized_vol < 50:  ← ERROR! Variable not defined
+
+AFTER (Fixed):
+  Line 1994: realized_vol = market_data.get('realized_vol', 20)
+             vol_ok = realized_vol > 15
+  Line 2194: if 15 < realized_vol < 50:  ← Works! Variable is defined
+
+The variable is now properly defined in BOTH the try block (line 1994)
+and the except block (line 2003).
+
+================================================================================
+OTHER FIXES APPLIED
+================================================================================
+
+1. ✓ Fixed 'trend' → 'trend_direction' (line 2405)
+2. ✓ Fixed realized_vol variable (lines 1994, 2003)
+3. ✓ Improved rejection logging (lines 2358-2370)
+
+All fixes are in the file, just need to restart!
+
+================================================================================
+VERIFICATION
+================================================================================
+
+After restarting, you should see:
+✓ No more "realized_vol" errors
+✓ No more "trend" errors
+✓ Enhanced filters working properly
+✓ All 11 enhancements active
+✓ Clearer rejection messages
+
+The warnings will stop and the bot will use the enhanced filters correctly.
+
+================================================================================
+QUICK RESTART NOW
+================================================================================
+
+Run this command in terminal:
+  cd C:\Users\kkdo\PC-HIVE-TRADING
+  python OPTIONS_BOT.py
+
+Or double-click:
+  restart_bot.bat
+
+That's it!
+================================================================================

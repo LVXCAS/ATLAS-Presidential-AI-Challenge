@@ -55,6 +55,17 @@ from agents.options_broker import OptionsBroker
 from agents.risk_management import RiskManager, RiskLevel
 from ai.ml_ensemble_wrapper import get_ml_ensemble
 
+# Import ensemble voting system
+from enhancements.ensemble_voting import get_ensemble_system
+
+# Import all enhancement modules
+from enhancements.greeks_optimizer import get_greeks_optimizer
+from enhancements.volatility_regime import get_volatility_adapter
+from enhancements.spread_strategies import get_spread_strategies
+from enhancements.market_regime import get_market_regime_detector
+from enhancements.dynamic_stops import get_dynamic_stop_manager
+from enhancements.liquidity_filter import get_liquidity_filter
+
 # Import profit target monitoring
 try:
     from profit_target_monitor import ProfitTargetMonitor
@@ -293,6 +304,24 @@ class TomorrowReadyOptionsBot:
         self.pre_trained_models = None
         self.learning_models_loaded = False
         print("- Learning models deferred (will load on demand)")
+
+        # Enhancement Modules Integration
+        try:
+            self.greeks_optimizer = get_greeks_optimizer()
+            self.volatility_adapter = get_volatility_adapter()
+            self.spread_strategies = get_spread_strategies()
+            self.market_regime_detector = get_market_regime_detector()
+            self.dynamic_stop_manager = get_dynamic_stop_manager()
+            self.liquidity_filter = get_liquidity_filter()
+            print("+ Enhancement modules loaded (Greeks, VIX regime, Spreads, Market regime, Dynamic stops, Liquidity)")
+        except Exception as e:
+            print(f"- Enhancement modules unavailable: {e}")
+            self.greeks_optimizer = None
+            self.volatility_adapter = None
+            self.spread_strategies = None
+            self.market_regime_detector = None
+            self.dynamic_stop_manager = None
+            self.liquidity_filter = None
         
         # Eastern Time for market operations
         self.et_timezone = pytz.timezone('US/Eastern')
@@ -302,6 +331,7 @@ class TomorrowReadyOptionsBot:
         self.cycle_count = 0
         self.active_positions = {}
         self.daily_pnl = 0.0
+        self.starting_equity = 0.0  # Track starting equity for accurate daily P&L
         self.is_market_open = False
         self.last_position_check = None
         
@@ -350,11 +380,27 @@ class TomorrowReadyOptionsBot:
             # Mega cap (best liquidity)
             'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA',
             # Major ETFs (excellent options liquidity)
-            'SPY', 'QQQ', 'IWM', 'XLF', 'XLK', 'XLV', 'XLE', 'GLD', 'TLT',
+            'SPY', 'QQQ', 'IWM', 'XLF', 'XLK', 'XLV', 'XLE', 'GLD', 'TLT', 'EEM', 'XOP',
             # Large cap leaders
-            'JPM', 'BAC', 'WFC', 'GS', 'JNJ', 'UNH', 'PFE', 'MRK',
+            'JPM', 'BAC', 'WFC', 'GS', 'JNJ', 'UNH', 'PFE', 'MRK', 'CVX', 'XOM',
             # High-volume options stocks
-            'NFLX', 'CRM', 'AMD', 'INTC', 'DIS', 'V', 'MA', 'COIN', 'UBER'
+            'NFLX', 'CRM', 'AMD', 'INTC', 'DIS', 'V', 'MA', 'COIN', 'UBER',
+            # Tech & Growth
+            'ORCL', 'ADBE', 'CSCO', 'QCOM', 'AVGO', 'TXN', 'ABNB', 'SQ', 'PYPL',
+            # Consumer & Retail
+            'HD', 'WMT', 'NKE', 'MCD', 'SBUX', 'TGT', 'COST',
+            # Healthcare & Biotech
+            'ABBV', 'LLY', 'TMO', 'DHR', 'GILD', 'AMGN',
+            # Industrial & Aerospace
+            'BA', 'CAT', 'GE', 'HON', 'UPS', 'RTX',
+            # Energy
+            'SLB', 'COP', 'OXY', 'HAL', 'DVN',
+            # Semiconductors
+            'MU', 'AMAT', 'LRCX', 'KLAC', 'MRVL',
+            # Financials
+            'C', 'MS', 'BLK', 'SCHW', 'AXP',
+            # Communication
+            'T', 'VZ', 'CMCSA', 'TMUS'
         ]
         
         # Strategy weights (adapted by market regime)
@@ -442,39 +488,27 @@ class TomorrowReadyOptionsBot:
             if not account_info:
                 self.log_trade("Could not retrieve account info for loss limit check", "WARN")
                 return False
-            current_equity = float(account_info.get('portfolio_value', 0))
 
-            # Load starting equity for the day
-            try:
-                with open('daily_starting_equity.json', 'r') as f:
-                    equity_data = json.load(f)
-                    starting_equity = equity_data.get('starting_equity', current_equity)
-                    # Check if this is for today's date
-                    saved_date = equity_data.get('date', '')
-                    today_date = datetime.now().strftime('%Y-%m-%d')
-                    if saved_date != today_date:
-                        self.log_trade(f"Starting equity file is from {saved_date}, updating for {today_date}", "INFO")
-                        # Update with current equity as new starting point
-                        starting_equity = current_equity
-                        equity_data = {'starting_equity': starting_equity, 'date': today_date}
-                        with open('daily_starting_equity.json', 'w') as f:
-                            json.dump(equity_data, f)
-            except Exception as e:
-                self.log_trade(f"Could not load starting equity file: {e}, using current equity", "WARN")
-                starting_equity = current_equity
-                # Create the file
-                try:
-                    equity_data = {'starting_equity': starting_equity, 'date': datetime.now().strftime('%Y-%m-%d')}
-                    with open('daily_starting_equity.json', 'w') as f:
-                        json.dump(equity_data, f)
-                except:
-                    pass
+            # Get current equity (try both 'equity' and 'portfolio_value' for compatibility)
+            current_equity = float(getattr(account_info, 'equity', 0))
+            if current_equity == 0:
+                current_equity = float(account_info.get('portfolio_value', 0))
+
+            # Use the starting_equity captured at market open
+            # If not set yet, use current equity as baseline
+            if self.starting_equity == 0:
+                self.starting_equity = current_equity
+                self.log_trade(f"Starting equity not set, using current: ${current_equity:,.2f}", "INFO")
+
+            starting_equity = self.starting_equity
 
             # Calculate daily P&L percentage
             if starting_equity > 0:
                 daily_pnl_pct = ((current_equity - starting_equity) / starting_equity) * 100
+                daily_pnl_dollars = current_equity - starting_equity
             else:
                 daily_pnl_pct = 0
+                daily_pnl_dollars = 0
 
             # Check if loss limit hit
             if daily_pnl_pct <= self.daily_loss_limit_pct:
@@ -484,6 +518,7 @@ class TomorrowReadyOptionsBot:
 
                     self.log_trade(f"[CRITICAL] DAILY LOSS LIMIT HIT: {daily_pnl_pct:.2f}% <= {self.daily_loss_limit_pct}%", "CRITICAL")
                     self.log_trade(f"Current Equity: ${current_equity:,.2f} | Starting Equity: ${starting_equity:,.2f}", "INFO")
+                    self.log_trade(f"Daily Loss: ${daily_pnl_dollars:,.2f}", "INFO")
                     self.log_trade("STOPPING ALL TRADING FOR THE DAY", "CRITICAL")
 
                     # Close all positions immediately
@@ -1111,7 +1146,53 @@ class TomorrowReadyOptionsBot:
                 # Enhanced intelligent analysis for exit decisions
                 should_exit = False
                 exit_reason = exit_decision.reasoning
-                
+
+                # DYNAMIC STOP LOSS CHECK (Priority: Check first)
+                if self.dynamic_stop_manager:
+                    try:
+                        # Get entry data
+                        entry_price_stops = position_data.get('entry_price', 0)
+                        entry_date = position_data.get('entry_date', datetime.now())
+
+                        # Get current price (estimate based on P&L)
+                        # Approximate current option price from P&L
+                        quantity = position_data.get('quantity', 1)
+                        if quantity > 0 and entry_price_stops > 0:
+                            price_change = current_pnl / (quantity * 100)  # P&L per contract
+                            current_option_price = entry_price_stops + price_change
+                        else:
+                            current_option_price = entry_price_stops
+
+                        # Update peak price
+                        peak_price = position_data.get('peak_price', entry_price_stops)
+                        if current_option_price > peak_price:
+                            peak_price = current_option_price
+                            position_data['peak_price'] = peak_price
+
+                        # Calculate current P&L percentage
+                        if entry_price_stops > 0:
+                            current_pnl_pct = (current_option_price - entry_price_stops) / entry_price_stops
+                        else:
+                            current_pnl_pct = 0
+
+                        # Check if dynamic stop hit
+                        exit_check = self.dynamic_stop_manager.should_exit(
+                            entry_price=entry_price_stops,
+                            entry_date=entry_date,
+                            current_price=current_option_price,
+                            peak_price=peak_price
+                        )
+
+                        if exit_check['exit']:
+                            should_exit = True
+                            exit_reason = f"DYNAMIC STOP: {exit_check['reason']}"
+                            self.log_trade(f"  DYNAMIC STOP HIT: {exit_check['stop_hit']} - {exit_check['reason']}")
+                        else:
+                            self.log_trade(f"  Dynamic Stop: ${exit_check['stop_price']:.2f} | Current: ${current_option_price:.2f} | Peak: ${peak_price:.2f}")
+
+                    except Exception as dyn_stop_error:
+                        self.log_trade(f"  Dynamic stop error: {dyn_stop_error}", "WARN")
+
                 # Use intelligent analysis instead of simple thresholds
                 if self.exit_config['use_intelligent_analysis']:
                     # Primary: Trust the intelligent agent with lower threshold
@@ -1178,12 +1259,26 @@ class TomorrowReadyOptionsBot:
             self._log_learning_insights()
     
     async def calculate_position_pnl(self, position_data, market_data):
-        """Calculate current P&L based on option contract value"""
+        """Calculate current P&L - uses REAL broker data when available"""
         try:
+            symbol = position_data['opportunity']['symbol']
+
+            # FIRST: Try to get REAL P&L from broker
+            try:
+                broker_position = await self.broker.get_position(symbol)
+                if broker_position and broker_position.unrealized_pl is not None:
+                    # Use actual broker P&L (this is the REAL number)
+                    real_pnl = float(broker_position.unrealized_pl)
+                    self.log_trade(f"  [REAL BROKER P&L] ${real_pnl:.2f}", "DEBUG")
+                    return real_pnl
+            except Exception as broker_error:
+                self.log_trade(f"  Could not get broker P&L, using estimate: {broker_error}", "DEBUG")
+
+            # FALLBACK: Estimate P&L if broker data unavailable
             # Get position details
             entry_price = position_data.get('entry_price', 0)  # Entry price per contract
             quantity = position_data.get('quantity', 1)  # Number of contracts
-            
+
             # Get current option value (professional pricing)
             current_option_price = await self.estimate_current_option_price(position_data, market_data)
 
@@ -1196,9 +1291,10 @@ class TomorrowReadyOptionsBot:
             # Each contract represents 100 shares, so multiply by 100
             price_per_contract_change = current_option_price - entry_price
             total_pnl = price_per_contract_change * quantity * 100
-            
+
+            self.log_trade(f"  [ESTIMATED P&L] ${total_pnl:.2f} (broker unavailable)", "DEBUG")
             return total_pnl
-            
+
         except Exception as e:
             self.log_trade(f"P&L calculation error: {e}", "WARN")
             return 0.0
@@ -1689,11 +1785,20 @@ class TomorrowReadyOptionsBot:
         
         # 2. Update market regime
         await self.update_market_regime()
-        
-        # 3. Reset daily counters
+
+        # 3. Capture starting equity for accurate daily P&L tracking
+        try:
+            account_info = await self.broker.get_account_info()
+            self.starting_equity = float(account_info.equity)
+            self.log_trade(f"[OK] Starting equity captured: ${self.starting_equity:,.2f}")
+        except Exception as e:
+            self.log_trade(f"[WARN] Could not capture starting equity: {e}")
+            self.starting_equity = 0.0
+
+        # 4. Reset daily counters
         self.daily_pnl = 0.0
         self.cycle_count = 0
-        
+
         self.log_trade("[OK] Market open procedures completed - Ready for trading")
     
     async def market_close_procedures(self):
@@ -1719,17 +1824,48 @@ class TomorrowReadyOptionsBot:
         
         self.log_trade("[OK] Market close procedures completed - End of trading day")
     
+    async def get_real_daily_pnl(self):
+        """Get REAL daily P&L from broker account"""
+        try:
+            account_info = await self.broker.get_account_info()
+            current_equity = float(account_info.equity)
+
+            if self.starting_equity > 0:
+                # Calculate actual daily P&L from equity change
+                real_daily_pnl = current_equity - self.starting_equity
+                real_daily_pnl_pct = (real_daily_pnl / self.starting_equity) * 100
+                return real_daily_pnl, real_daily_pnl_pct, current_equity
+            else:
+                # No starting equity captured, return current values
+                return 0.0, 0.0, current_equity
+
+        except Exception as e:
+            self.log_trade(f"Could not get real P&L: {e}", "WARN")
+            return None, None, None
+
     async def log_daily_performance(self):
         """Log comprehensive daily performance"""
         stats = self.performance_stats
-        
+
         win_rate = 0
         if stats['total_trades'] > 0:
             win_rate = (stats['winning_trades'] / stats['total_trades']) * 100
-        
+
         self.log_trade("=== DAILY PERFORMANCE SUMMARY ===", "INFO")
-        self.log_trade(f"Daily P&L: ${self.daily_pnl:.2f}")
-        self.log_trade(f"Total P&L: ${stats['total_profit']:.2f}")
+
+        # Get REAL P&L from broker
+        real_pnl, real_pnl_pct, current_equity = await self.get_real_daily_pnl()
+
+        if real_pnl is not None:
+            self.log_trade(f"[REAL BROKER DATA]")
+            self.log_trade(f"  Current Equity: ${current_equity:,.2f}")
+            self.log_trade(f"  Starting Equity: ${self.starting_equity:,.2f}")
+            self.log_trade(f"  Daily P&L: ${real_pnl:+,.2f} ({real_pnl_pct:+.2f}%)")
+            self.daily_pnl = real_pnl  # Update internal tracking with real value
+        else:
+            self.log_trade(f"Daily P&L (estimated): ${self.daily_pnl:.2f}")
+
+        self.log_trade(f"Total P&L (all-time): ${stats['total_profit']:.2f}")
         self.log_trade(f"Win Rate: {win_rate:.1f}%")
         self.log_trade(f"Active Positions: {len(self.active_positions)}")
         self.log_trade(f"Exit Decisions Made: {len(stats['exit_decisions'])}")
@@ -1771,11 +1907,22 @@ class TomorrowReadyOptionsBot:
         self.log_trade(f"Scanning for new opportunities across {len(self.tier1_stocks)} symbols...")
         
         opportunities = []
-        # Scan ALL tier1 symbols for maximum opportunity detection
-        scan_symbols = self.tier1_stocks
+        # Scan tier1 symbols in rotating batches to avoid API rate limits
+        # Cycle through 28 stocks per scan (84 total / 3 batches)
+        cycle_number = (datetime.now().minute // 5) % 3  # 0, 1, or 2
+        batch_size = 28
+        start_idx = cycle_number * batch_size
+        end_idx = start_idx + batch_size
+        scan_symbols = self.tier1_stocks[start_idx:end_idx]
+
+        self.log_trade(f"Scanning batch {cycle_number + 1}/3: symbols {start_idx} to {end_idx}")
         
-        for symbol in scan_symbols:
+        for i, symbol in enumerate(scan_symbols):
             try:
+                # Rate limiting: Add small delay every 10 stocks to avoid API throttling
+                if i > 0 and i % 10 == 0:
+                    import time
+                    time.sleep(1)  # 1 second pause every 10 stocks
                 opportunity = await self.find_high_quality_opportunity(symbol)
                 if opportunity:
                     opportunities.append(opportunity)
@@ -1819,50 +1966,45 @@ class TomorrowReadyOptionsBot:
     async def find_high_quality_opportunity(self, symbol):
         """Find high-quality trading opportunity with enhanced filters for Sharpe optimization"""
         try:
-            # Use lightweight Yahoo Finance data to avoid API rate limits and delays
-            ticker = yf.Ticker(symbol)
-            hist = ticker.history(period="10d")
-            if hist.empty or len(hist) < 5:
-                # Try with shorter period as fallback
-                hist = ticker.history(period="5d")
-                if hist.empty or len(hist) < 3:
-                    return None
+            # Use sequential API manager - exhausts one API before moving to next
+            from agents.sequential_api_manager import get_api_manager
+            api_manager = get_api_manager()
 
-            # Calculate basic metrics quickly
-            current_price = float(hist["Close"].iloc[-1])
-            prev_price = float(hist["Close"].iloc[-5]) if len(hist) >= 5 else current_price
-            price_momentum = (current_price - prev_price) / prev_price if prev_price > 0 else 0
-            current_volume = float(hist["Volume"].iloc[-1])
-            avg_volume = hist["Volume"].mean()
-            volume_ratio = current_volume / avg_volume if avg_volume > 0 else 1.0
-            returns = hist["Close"].pct_change().dropna()
-            realized_vol = returns.std() * 100 * (252 ** 0.5) if len(returns) > 0 else 20.0
-
-            market_data = {
-                "symbol": symbol,
-                "current_price": current_price,
-                "price_momentum": price_momentum,
-                "realized_vol": realized_vol,
-                "volume_ratio": volume_ratio,
-                "price_position": 0.5,
-                "timestamp": datetime.now(),
-                "lightweight": True
-            }
+            market_data = api_manager.get_market_data(symbol, period="10d")
 
             if not market_data:
                 return None
 
+            # Log API source for tracking
+            if market_data.get('source'):
+                self.log_trade(f"Data for {symbol} from {market_data['source'].upper()} API")
+
+            # Get realized volatility early (needed for filters)
+            realized_vol = market_data.get('realized_vol', 20)
+
             # Apply comprehensive filters for Sharpe ratio optimization
             try:
-                filter_results = await self.sharpe_filters.get_comprehensive_filters(symbol, realized_vol / 100)
+                if self.sharpe_filters:
+                    filter_results = await self.sharpe_filters.get_comprehensive_filters(symbol, realized_vol / 100)
+                else:
+                    filter_results = None
 
-                # Extract filter results
-                rsi_filter = filter_results.get('rsi_filter', {})
-                ema_filter = filter_results.get('ema_filter', {})
-                momentum_filter = filter_results.get('momentum_filter', {})
-                volatility_filter = filter_results.get('volatility_filter', {})
-                iv_rank_filter = filter_results.get('iv_rank_filter', {})
-                earnings_filter = filter_results.get('earnings_filter', {})
+                # Extract filter results (use defaults if filters not available)
+                if filter_results:
+                    rsi_filter = filter_results.get('rsi_filter', {})
+                    ema_filter = filter_results.get('ema_filter', {})
+                    momentum_filter = filter_results.get('momentum_filter', {})
+                    volatility_filter = filter_results.get('volatility_filter', {})
+                    iv_rank_filter = filter_results.get('iv_rank_filter', {})
+                    earnings_filter = filter_results.get('earnings_filter', {})
+                else:
+                    # Use default/empty filters if sharpe_filters not available
+                    rsi_filter = {'pass': True}
+                    ema_filter = {'trend': 'NEUTRAL'}
+                    momentum_filter = {}
+                    volatility_filter = {'regime': 'NORMAL'}
+                    iv_rank_filter = {}
+                    earnings_filter = {}
 
                 # Check if RSI filter passes (avoid extreme conditions)
                 if not rsi_filter.get('pass', True):
@@ -1897,7 +2039,7 @@ class TomorrowReadyOptionsBot:
 
                 # Additional quality checks
                 price_position = market_data.get('price_position', 0.5)
-                vol_ok = market_data.get('realized_vol', 20) > 15
+                vol_ok = realized_vol > 15
 
             except Exception as e:
                 # Fallback to basic filters if enhanced filters fail
@@ -1906,7 +2048,7 @@ class TomorrowReadyOptionsBot:
                 momentum_ok = abs(market_data['price_momentum']) > 0.015
                 filter_ok = True
                 price_position = market_data.get('price_position', 0.5)
-                vol_ok = market_data.get('realized_vol', 20) > 15
+                vol_ok = realized_vol > 15
                 vol_regime = 'NORMAL'
                 ema_trend = 'NEUTRAL'
 
@@ -2052,9 +2194,9 @@ class TomorrowReadyOptionsBot:
                     elif strategy == OptionsStrategy.LONG_PUT and rsi_value < 20:
                         reject_reasons.append(f"RSI too low ({rsi_value:.0f}) for PUT - oversold")
 
-                # 2. Very low volume
+                # 2. Very low volume (lowered threshold from 0.5 to 0.25 to allow more opportunities)
                 volume_ratio = market_data.get('volume_ratio', 0)
-                if volume_ratio < 0.5:
+                if volume_ratio < 0.25:
                     reject_reasons.append(f"Volume too low ({volume_ratio:.2f}x avg)")
 
                 # 3. EMA conflicts with strategy (strong bearish with call)
@@ -2181,9 +2323,12 @@ class TomorrowReadyOptionsBot:
                     base_confidence = min(0.92, base_confidence)
                 
                 # Apply basic machine learning calibration
-                confidence = self.learning_engine.calibrate_confidence(
-                    base_confidence, strategy.value, symbol, market_data
-                )
+                if self.learning_engine:
+                    confidence = self.learning_engine.calibrate_confidence(
+                        base_confidence, strategy.value, symbol, market_data
+                    )
+                else:
+                    confidence = base_confidence
 
                 # Apply ML Ensemble prediction (60/40 hybrid: learning_engine 60%, ML ensemble 40%)
                 if self.ml_ensemble:
@@ -2212,6 +2357,176 @@ class TomorrowReadyOptionsBot:
 
                     except Exception as e:
                         self.log_trade(f"ML ensemble integration error: {e}", "WARN")
+
+                # ENSEMBLE VOTING SYSTEM - Final decision from all strategies
+                try:
+                    ensemble_system = get_ensemble_system()
+
+                    # Prepare ML signal for ensemble
+                    ml_signal = None
+                    if self.ml_ensemble:
+                        try:
+                            ml_prediction = self._get_ml_prediction(market_data, symbol)
+                            ml_signal = {
+                                'prediction': ml_prediction.get('prediction', 0),
+                                'confidence': ml_prediction.get('confidence', 0.5)
+                            }
+                        except:
+                            pass
+
+                    # Get ensemble vote
+                    trade_direction = 'CALL' if strategy == OptionsStrategy.LONG_CALL else 'PUT'
+                    ensemble_result = ensemble_system.get_ensemble_vote(symbol, ml_signal, trade_direction)
+
+                    # Log ensemble decision
+                    self.log_trade(f"=== ENSEMBLE VOTE for {symbol} ===")
+                    self.log_trade(f"Decision: {ensemble_result['final_decision']}")
+                    self.log_trade(f"Confidence: {ensemble_result['confidence']:.0%}")
+                    self.log_trade(f"Vote Count: {ensemble_result.get('vote_count', 0)}")
+                    self.log_trade(f"Weighted Score: {ensemble_result.get('weighted_score', 0):.3f}")
+
+                    # Log individual strategy votes
+                    if ensemble_result.get('votes'):
+                        self.log_trade(f"Strategy Votes:")
+                        for strategy_name, vote_data in ensemble_result['votes'].items():
+                            vote_str = "BUY" if vote_data['vote'] > 0 else "SELL"
+                            self.log_trade(f"  {strategy_name}: {vote_str} (conf: {vote_data['confidence']:.0%}, weight: {vote_data['weight']:.0%})")
+
+                    # Log reasoning
+                    if ensemble_result.get('reasoning'):
+                        self.log_trade(f"Reasoning:")
+                        for i, reason in enumerate(ensemble_result['reasoning'][:5], 1):  # Show top 5 reasons
+                            self.log_trade(f"  {i}. {reason}")
+
+                    # REJECT if ensemble says REJECT or HOLD
+                    if ensemble_result['final_decision'] in ['REJECT', 'HOLD']:
+                        self.log_trade(f"ENSEMBLE REJECTED: {symbol} - {ensemble_result['final_decision']}")
+
+                        # Show appropriate rejection reason
+                        if ensemble_result['final_decision'] == 'REJECT':
+                            # For REJECT, first reason is the actual problem (earnings, etc)
+                            if ensemble_result.get('reasoning'):
+                                self.log_trade(f"Rejection reason: {ensemble_result['reasoning'][0]}")
+                        else:
+                            # For HOLD, ensemble score was too low
+                            score = ensemble_result.get('weighted_score', 0)
+                            vote_count = ensemble_result.get('vote_count', 0)
+                            self.log_trade(f"Rejection reason: Ensemble score too low ({score:.2f}, need >0.3 for BUY or <-0.3 for SELL)")
+                            self.log_trade(f"Vote count: {vote_count} strategies voted")
+                            if ensemble_result.get('reasoning'):
+                                self.log_trade(f"Checks performed: {', '.join(ensemble_result['reasoning'][:3])}")
+                        return None
+
+                    # Use ensemble confidence (weighted average from all strategies)
+                    ensemble_confidence = ensemble_result['confidence']
+
+                    # Blend ensemble confidence with existing confidence (70% ensemble, 30% original)
+                    confidence = (ensemble_confidence * 0.7) + (confidence * 0.3)
+
+                    self.log_trade(f"ENSEMBLE APPROVED: {symbol} {trade_direction} - Final confidence: {confidence:.0%}")
+
+                except Exception as e:
+                    self.log_trade(f"Ensemble voting error for {symbol}: {e}", "ERROR")
+                    # Don't reject on error - fall back to original logic
+                    import traceback
+                    self.log_trade(f"Ensemble traceback: {traceback.format_exc()}", "WARN")
+
+                # === ADDITIONAL ENHANCEMENT FILTERS ===
+                # Apply 6 additional enhancement filters after ensemble approval
+                try:
+                    self.log_trade(f"=== ENHANCEMENT FILTERS for {symbol} ===")
+
+                    # FILTER 1: Liquidity Check
+                    if self.liquidity_filter:
+                        liq_check = self.liquidity_filter.approve_for_trading(symbol)
+                        self.log_trade(f"1. Liquidity: {liq_check['recommendation']}")
+                        if not liq_check['approved']:
+                            self.log_trade(f"REJECTED - {liq_check['recommendation']}")
+                            return None
+
+                    # FILTER 2: Market Regime Detection
+                    regime_info = None
+                    if self.market_regime_detector:
+                        regime_info = self.market_regime_detector.detect_regime('SPY')
+                        self.log_trade(f"2. Market Regime: {regime_info['regime']} (Trend: {regime_info['trend_direction']})")
+
+                        # Check if direction aligns with regime
+                        regime_approval = self.market_regime_detector.should_trade_direction(
+                            regime_info, trade_direction
+                        )
+                        if not regime_approval['approved']:
+                            self.log_trade(f"REJECTED - {regime_approval['reason']}")
+                            return None
+
+                    # FILTER 3: VIX Regime & Position Sizing
+                    vix_multiplier = 1.0
+                    if self.volatility_adapter:
+                        vix_info = self.volatility_adapter.determine_regime()
+                        vix_regime = vix_info['regime']
+                        vix_value = vix_info['vix']
+                        size_mult = vix_info['size_multiplier']
+                        vix_multiplier = size_mult
+                        self.log_trade(f"3. VIX Regime: {vix_regime} (VIX: {vix_value:.1f}) - Size: {size_mult:.2f}x")
+
+                        # Block trades in extreme volatility
+                        if vix_value > 60:
+                            self.log_trade(f"REJECTED - VIX too high ({vix_value:.1f})")
+                            return None
+
+                    # FILTER 4: Greeks Optimization (will be used for strike selection)
+                    # Note: Greeks check happens during option selection, not here
+                    # Just log that it will be applied
+                    if self.greeks_optimizer:
+                        self.log_trade(f"4. Greeks Optimizer: Active (will check Delta 0.4-0.6, DTE 21-45)")
+
+                    # FILTER 5: Spread Strategy Evaluation
+                    # Determine if spread is better than naked option
+                    use_spread = False
+                    if self.spread_strategies and confidence >= 0.65:
+                        # For high-confidence trades, evaluate spread vs naked
+                        if trade_direction == 'CALL':
+                            spread = self.spread_strategies.design_bull_call_spread(
+                                current_price, confidence
+                            )
+                        else:
+                            spread = self.spread_strategies.design_bear_put_spread(
+                                current_price, confidence
+                            )
+
+                        quality = self.spread_strategies.evaluate_spread_quality(spread)
+                        self.log_trade(f"5. Spread Strategy: Quality {quality:.0f}/100")
+
+                        # Use spread if quality is good (score > 70)
+                        if quality >= 70:
+                            use_spread = True
+                            self.log_trade(f"   SPREAD SELECTED: {spread['type']}")
+                            self.log_trade(f"   Long: ${spread['long_strike']}, Short: ${spread['short_strike']}")
+                            self.log_trade(f"   Est Cost: ${spread['estimated_cost']:.2f}, Max Profit: ${spread['max_profit']:.2f}")
+
+                    # FILTER 6: Dynamic Stops (will be applied during position management)
+                    if self.dynamic_stop_manager:
+                        self.log_trade(f"6. Dynamic Stops: Active (time-based + profit trailing)")
+
+                    # Apply regime-based adjustments to confidence
+                    if regime_info:
+                        regime_adjustments = self.market_regime_detector.get_strategy_adjustments(
+                            regime_info
+                        )
+                        confidence = confidence * regime_adjustments['confidence_mult']
+                        self.log_trade(f"   Regime adjusted confidence: {confidence:.1%}")
+
+                    # Apply VIX-based confidence adjustment
+                    if vix_multiplier < 0.8:
+                        confidence = confidence * 0.9  # Reduce confidence in high vol
+                        self.log_trade(f"   VIX adjusted confidence: {confidence:.1%}")
+
+                    self.log_trade(f"=== ALL FILTERS PASSED ===")
+                    self.log_trade(f"Final Confidence: {confidence:.1%}")
+
+                except Exception as filter_error:
+                    self.log_trade(f"Enhancement filter error: {filter_error}", "WARN")
+                    import traceback
+                    self.log_trade(f"Filter traceback: {traceback.format_exc()}", "WARN")
 
                 # Apply quantitative finance analysis
                 quant_analysis = None
@@ -2487,7 +2802,9 @@ class TomorrowReadyOptionsBot:
                                 'position': position,  # Real position object
                                 'opportunity': opportunity,
                                 'entry_time': datetime.now(),
+                                'entry_date': datetime.now(),  # For dynamic stops
                                 'entry_price': position.entry_price,
+                                'peak_price': position.entry_price,  # Track highest price for trailing stops
                                 'quantity': adaptive_quantity,  # Use actual quantity
                                 'market_regime_at_entry': self.market_regime,
                                 'real_trade': True,
@@ -2616,7 +2933,7 @@ class TomorrowReadyOptionsBot:
                 # Intraday trading
                 elif self.is_market_hours() and self.is_market_open:
                     await self.intraday_trading_cycle()
-                    await asyncio.sleep(300)  # 5-minute cycles during market hours
+                    await asyncio.sleep(60)  # 1-minute cycles during market hours (increased frequency)
                 
                 # Market close
                 elif not self.is_market_hours() and self.is_market_open:

@@ -814,17 +814,20 @@ class OptionsTrader:
                 return None
             
             # Create position tracking
+            # Convert total_cost to float to avoid Decimal/float type errors
+            total_cost_float = float(total_cost) if total_cost else 0.0
+
             position = OptionsPosition(
                 symbol=position_id,
                 underlying=underlying,
                 strategy=strategy,
                 contracts=executed_contracts,
                 quantity=quantity,
-                entry_price=total_cost / (quantity * 100) if total_cost > 0 else 0,
+                entry_price=total_cost_float / (quantity * 100) if total_cost_float > 0 else 0,
                 entry_time=datetime.now(),
-                stop_loss=total_cost * 0.5,  # 50% stop loss
-                take_profit=total_cost * 2.0,  # 100% profit target
-                max_loss=total_cost  # Maximum loss is premium paid
+                stop_loss=total_cost_float * 0.5,  # 50% stop loss
+                take_profit=total_cost_float * 2.0,  # 100% profit target
+                max_loss=total_cost_float  # Maximum loss is premium paid
             )
             
             self.positions[position_id] = position
