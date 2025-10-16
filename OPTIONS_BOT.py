@@ -1263,18 +1263,47 @@ class TomorrowReadyOptionsBot:
         try:
             symbol = position_data['opportunity']['symbol']
 
-            # FIRST: Try to get REAL P&L from broker
+            # FIRST: Try to get REAL P&L from broker positions
             try:
-                broker_position = await self.broker.get_position(symbol)
-                if broker_position and broker_position.unrealized_pl is not None:
-                    # Use actual broker P&L (this is the REAL number)
-                    real_pnl = float(broker_position.unrealized_pl)
-                    self.log_trade(f"  [REAL BROKER P&L] ${real_pnl:.2f}", "DEBUG")
-                    return real_pnl
-            except Exception as broker_error:
-                self.log_trade(f"  Could not get broker P&L, using estimate: {broker_error}", "DEBUG")
+                # FIXED: Try to get option symbol first (for accurate broker lookup)
+                option_symbol = position_data.get('option_symbol')
+                if not option_symbol:
+                    option_symbol = position_data.get('opportunity', {}).get('option_symbol')
 
-            # FALLBACK: Estimate P&L if broker data unavailable
+                # Get all positions from broker
+                all_positions = await self.broker.get_positions()
+
+                # FIXED: Match using option_symbol first, fall back to underlying symbol
+                for pos in all_positions:
+                    # Try exact option symbol match first (most accurate)
+                    if option_symbol and pos.symbol == option_symbol and hasattr(pos, 'unrealized_pl'):
+                        real_pnl = float(pos.unrealized_pl)
+                        pnl_pct = (real_pnl / (float(pos.cost_basis) if float(pos.cost_basis) > 0 else 1)) * 100
+                        self.log_trade(f"  [REAL BROKER P&L via option_symbol] ${real_pnl:.2f} ({pnl_pct:+.1f}%)", "INFO")
+                        return real_pnl
+                    # Fall back to underlying symbol (less reliable but better than nothing)
+                    elif pos.symbol == symbol and hasattr(pos, 'unrealized_pl'):
+                        real_pnl = float(pos.unrealized_pl)
+                        pnl_pct = (real_pnl / (float(pos.cost_basis) if float(pos.cost_basis) > 0 else 1)) * 100
+                        self.log_trade(f"  [REAL BROKER P&L via underlying symbol] ${real_pnl:.2f} ({pnl_pct:+.1f}%)", "INFO")
+                        return real_pnl
+
+                # If not found in positions, try individual position lookup
+                lookup_symbol = option_symbol if option_symbol else symbol
+                broker_position = await self.broker.get_position(lookup_symbol)
+                if broker_position and hasattr(broker_position, 'unrealized_pl') and broker_position.unrealized_pl is not None:
+                    real_pnl = float(broker_position.unrealized_pl)
+                    if hasattr(broker_position, 'cost_basis') and float(broker_position.cost_basis) > 0:
+                        pnl_pct = (real_pnl / float(broker_position.cost_basis)) * 100
+                        self.log_trade(f"  [REAL BROKER P&L] ${real_pnl:.2f} ({pnl_pct:+.1f}%)", "INFO")
+                    else:
+                        self.log_trade(f"  [REAL BROKER P&L] ${real_pnl:.2f}", "INFO")
+                    return real_pnl
+
+            except Exception as broker_error:
+                pass  # Silently fall back in paper mode
+
+            # FALLBACK: Use tracked P&L in paper mode (more accurate than Black-Scholes)
             # Get position details
             entry_price = position_data.get('entry_price', 0)  # Entry price per contract
             quantity = position_data.get('quantity', 1)  # Number of contracts
@@ -1282,17 +1311,36 @@ class TomorrowReadyOptionsBot:
             # Get current option value (professional pricing)
             current_option_price = await self.estimate_current_option_price(position_data, market_data)
 
-            # Validate option price estimation to prevent ridiculous P&L values
-            if current_option_price > entry_price * 50:  # If current price is 50x entry, cap it
-                self.log_trade(f"WARNING: Option price estimation seems too high: ${current_option_price:.2f} vs entry ${entry_price:.2f}", "WARN")
-                current_option_price = min(current_option_price, entry_price * 10)  # Cap at 10x gain
+            # FIXED: Validation to prevent extreme fake P&L values
+            # Changed from 2x to 10x - options CAN go up 500-1000% in volatile markets
+            max_reasonable_gain = entry_price * 10  # Cap at 10x gain (900%) - realistic for volatile options
+            if current_option_price > max_reasonable_gain:
+                self.log_trade(f"  [WARN] Estimated price ${current_option_price:.2f} seems too high vs entry ${entry_price:.2f}, capping at 10x", "WARN")
+                current_option_price = max_reasonable_gain
+
+            # Sanity check: if estimate seems broken, use entry price as fallback
+            if current_option_price <= 0:
+                self.log_trade(f"  [ERROR] Invalid option price ${current_option_price:.2f}, using entry price ${entry_price:.2f}", "ERROR")
+                current_option_price = entry_price
 
             # Calculate P&L based on contract value difference
             # Each contract represents 100 shares, so multiply by 100
             price_per_contract_change = current_option_price - entry_price
             total_pnl = price_per_contract_change * quantity * 100
 
-            self.log_trade(f"  [ESTIMATED P&L] ${total_pnl:.2f} (broker unavailable)", "DEBUG")
+            # Calculate percentage for logging
+            if entry_price > 0:
+                pnl_pct = ((current_option_price - entry_price) / entry_price) * 100
+                self.log_trade(f"  [PAPER MODE P&L] ${total_pnl:.2f} ({pnl_pct:+.1f}%)", "INFO")
+
+                # ADDED: Warning for suspicious P&L values
+                if abs(total_pnl) > 10000 or abs(pnl_pct) > 500:
+                    self.log_trade(f"  [WARNING] Suspicious P&L detected! Entry: ${entry_price:.2f}, "
+                                 f"Current: ${current_option_price:.2f}, Qty: {quantity}, "
+                                 f"P&L: ${total_pnl:.2f} ({pnl_pct:+.1f}%) - VERIFY THIS!", "WARN")
+            else:
+                self.log_trade(f"  [PAPER MODE P&L] ${total_pnl:.2f}", "INFO")
+
             return total_pnl
 
         except Exception as e:
@@ -1300,17 +1348,34 @@ class TomorrowReadyOptionsBot:
             return 0.0
     
     async def estimate_current_option_price(self, position_data, market_data):
-        """Estimate current option price using professional options pricing"""
+        """Get current option price - tries to fetch real market data first"""
         try:
             opportunity = position_data['opportunity']
             strategy = opportunity['strategy']
             entry_time = position_data['entry_time']
             current_stock_price = market_data['current_price']
-            
+            entry_price = position_data.get('entry_price', 1.0)
+
             # Get option parameters
             strike_price = opportunity.get('strike_price', current_stock_price)
-            entry_price = position_data.get('entry_price', 1.0)
-            
+            symbol = opportunity.get('symbol')
+
+            # TRY 1: Get real option quote from broker/market (paper mode compatible)
+            try:
+                # Try to get current option contract price from options broker
+                if hasattr(self, 'options_broker') and self.options_broker:
+                    option_symbol = opportunity.get('option_symbol')
+                    if option_symbol:
+                        # Get current bid/ask for the option
+                        quote = await self.options_broker.get_option_quote(option_symbol)
+                        if quote and 'mark' in quote:
+                            current_price = quote['mark']
+                            if current_price > 0:
+                                self.log_trade(f"  Using LIVE option price: ${current_price:.2f}", "DEBUG")
+                                return current_price
+            except Exception as e:
+                pass  # Fall through to estimation
+
             # Calculate time to expiry
             days_elapsed = (datetime.now() - entry_time).days
             original_dte = opportunity.get('days_to_expiry', 30)
@@ -1932,36 +1997,32 @@ class TomorrowReadyOptionsBot:
         
         self.log_trade(f"Scan complete: Found {len(opportunities)} opportunities from {len(scan_symbols)} symbols")
         
-        # Execute ALL opportunities with 85%+ confidence
+        # Execute ONLY opportunities with 70%+ confidence
         if opportunities:
-            # Filter opportunities with 75% or higher confidence
-            high_confidence_opportunities = [opp for opp in opportunities if opp.get('confidence', 0) >= 0.85]
-            
+            # Filter opportunities with 70% or higher confidence (STRICT)
+            high_confidence_opportunities = [opp for opp in opportunities if opp.get('confidence', 0) >= 0.70]
+
             if high_confidence_opportunities:
-                self.log_trade(f"Found opportunities with 85%+ confidence")
-                
+                self.log_trade(f"Found {len(high_confidence_opportunities)} opportunities with 70%+ confidence")
+
                 # Sort by confidence * expected_return for execution order
                 high_confidence_opportunities.sort(key=lambda x: x.get('confidence', 0) * x.get('expected_return', 0), reverse=True)
-                
+
                 # Execute all high-confidence opportunities (respecting position limits)
                 for opportunity in high_confidence_opportunities:
                     if len(self.active_positions) >= self.daily_risk_limits.get('max_positions', 5):
                         self.log_trade("Position limit reached - stopping new trades")
                         break
-                    
+
                     success = await self.execute_new_position(opportunity)
                     if success:
                         self.log_trade(f"EXECUTED: {opportunity['symbol']} at {opportunity.get('confidence', 0):.1%} confidence")
                     else:
                         self.log_trade(f"FAILED to execute: {opportunity['symbol']}")
             else:
-                # If no 85%+ confidence, execute best opportunity if it's above 60%
-                best_opportunity = max(opportunities, key=lambda x: x.get('confidence', 0) * x.get('expected_return', 0))
-                if best_opportunity.get('confidence', 0) >= 0.60:
-                    self.log_trade(f"Executing best opportunity at {best_opportunity.get('confidence', 0):.1%} confidence")
-                    await self.execute_new_position(best_opportunity)
-                else:
-                    self.log_trade(f"Best opportunity only {best_opportunity.get('confidence', 0):.1%} confidence - too low")
+                # If no 70%+ confidence, don't trade (strict threshold)
+                best_confidence = max([opp.get('confidence', 0) for opp in opportunities]) if opportunities else 0
+                self.log_trade(f"No opportunities meet 70% confidence threshold (best: {best_confidence:.1%})")
     
     async def find_high_quality_opportunity(self, symbol):
         """Find high-quality trading opportunity with enhanced filters for Sharpe optimization"""
@@ -2012,10 +2073,8 @@ class TomorrowReadyOptionsBot:
 
                 # Check if EMA trend is favorable
                 ema_trend = ema_filter.get('trend', 'NEUTRAL')
-                if ema_trend == 'BEARISH':
-                    # Reduce bearish trades by 70% as per analysis
-                    if np.random.random() < 0.7:
-                        return None
+                # REMOVED BEARISH FILTER - was causing bot to only trade calls in bearish markets
+                # Previously filtered out 70% of bearish/PUT trades which is WRONG
 
                 # Check volatility regime for position sizing later
                 vol_regime = volatility_filter.get('regime', 'NORMAL')
@@ -2034,8 +2093,7 @@ class TomorrowReadyOptionsBot:
                 volume_ok = market_data['volume_ratio'] > 0.8
                 momentum_ok = abs(market_data['price_momentum']) > 0.015
                 filter_ok = (rsi_filter.get('pass', True) and
-                           (ema_trend != 'BEARISH' or np.random.random() > 0.7) and
-                           iv_rank >= 30)
+                           iv_rank >= 30)  # REMOVED bearish bias filter
 
                 # Additional quality checks
                 price_position = market_data.get('price_position', 0.5)
@@ -2055,14 +2113,12 @@ class TomorrowReadyOptionsBot:
             if (volume_ok and momentum_ok and filter_ok) or (momentum_ok and vol_ok and price_position > 0.3 and filter_ok):
                 
                 # Enhanced strategy selection based on filters and momentum
+                # FIXED: Removed bullish bias, now properly trades BOTH calls AND puts
                 if 'ema_trend' in locals() and ema_trend == 'BULLISH':
                     # Strong bullish EMA bias - prefer calls
-                    if market_data['price_momentum'] >= 0:
-                        strategy = OptionsStrategy.LONG_CALL
-                    else:
-                        strategy = OptionsStrategy.LONG_CALL  # Still prefer calls in bullish trend
+                    strategy = OptionsStrategy.LONG_CALL
                 elif 'ema_trend' in locals() and ema_trend == 'BEARISH':
-                    # Bearish EMA bias - prefer puts but already filtered most out
+                    # Bearish EMA bias - prefer puts (FIXED: now properly used)
                     strategy = OptionsStrategy.LONG_PUT
                 else:
                     # Traditional momentum-based selection
@@ -2071,7 +2127,12 @@ class TomorrowReadyOptionsBot:
                     elif market_data['price_momentum'] < -0.01:
                         strategy = OptionsStrategy.LONG_PUT
                     else:
-                        strategy = OptionsStrategy.LONG_CALL  # Default to calls
+                        # FIXED: Use market regime instead of defaulting to calls
+                        # Check broader market trend via SPY or use momentum sign
+                        if market_data['price_momentum'] >= 0:
+                            strategy = OptionsStrategy.LONG_CALL
+                        else:
+                            strategy = OptionsStrategy.LONG_PUT
 
                 # Multi-timeframe Analysis
                 mtf_trend = 'NEUTRAL'
@@ -2512,7 +2573,8 @@ class TomorrowReadyOptionsBot:
                         regime_adjustments = self.market_regime_detector.get_strategy_adjustments(
                             regime_info
                         )
-                        confidence = confidence * regime_adjustments['confidence_mult']
+                        confidence_mult = regime_adjustments.get('confidence_mult', 1.0)
+                        confidence = confidence * confidence_mult
                         self.log_trade(f"   Regime adjusted confidence: {confidence:.1%}")
 
                     # Apply VIX-based confidence adjustment
@@ -2724,160 +2786,166 @@ class TomorrowReadyOptionsBot:
                     self.log_trade(f"No options available for {symbol}")
                     return False
             
-            # Find the best options strategy to execute
-            market_data = opportunity.get('market_data', {})
-            current_price = market_data.get('current_price', 550.0)
-            volatility = market_data.get('realized_vol', 20) / 100
-            
-            # Get the strategy with proper parameters
-            strategy_result = self.options_trader.find_best_options_strategy(
-                symbol=symbol,
-                price=current_price,
-                volatility=volatility,
-                rsi=60.0,  # Assume bullish
-                price_change=0.01  # Small positive change
-            )
-            
-            if strategy_result:
-                strategy_type, contracts = strategy_result
-                
-                if contracts:
-                    # Execute the options strategy with REAL orders
-                    self.log_trade(f"PLACING REAL OPTIONS TRADE: {symbol} {strategy_type}")
-                    
-                    try:
-                        # Execute through the options trader with confidence level and adaptive sizing
-                        opportunity_confidence = opportunity.get('confidence', 0.5)
-                        
-                        # Enhanced position sizing with volatility-based adjustments
-                        base_quantity = 1
+            # CRITICAL FIX (Oct 15, 2025): Use the strategy already determined in the opportunity
+            # BUG: Previously was re-calling find_best_options_strategy here, which could return
+            # a DIFFERENT strategy than what was identified earlier, causing bot to trade the
+            # WRONG direction (e.g., identified LONG_PUT but executed LONG_CALL)
+            # This bug caused 0% win rate with 15 consecutive losses (-$4,268)
 
-                        # Apply learning-based multiplier
-                        learning_multiplier = self.learning_engine.get_position_size_multiplier()
+            strategy_type = opportunity['strategy']  # Use the strategy from opportunity
 
-                        # Apply volatility-based multiplier from enhanced filters
-                        volatility_multiplier = opportunity.get('position_multiplier', 1.0)
+            # Get the contracts for this strategy from the options chain
+            if symbol in self.options_trader.option_chains:
+                all_contracts = self.options_trader.option_chains[symbol]
 
-                        # Combine multipliers with conservative cap
-                        combined_multiplier = learning_multiplier * volatility_multiplier
+                # Filter contracts by strategy type
+                if strategy_type == OptionsStrategy.LONG_CALL:
+                    contracts = [c for c in all_contracts if c.option_type == 'call']
+                elif strategy_type == OptionsStrategy.LONG_PUT:
+                    contracts = [c for c in all_contracts if c.option_type == 'put']
+                else:
+                    contracts = all_contracts  # For spreads/straddles that use multiple types
 
-                        # Apply confidence-based sizing (higher confidence = larger size)
-                        confidence_multiplier = 0.5 + (opportunity_confidence * 0.5)  # 0.5 to 1.0 range
+                # Sort by best scoring (will be selected in execute_options_strategy)
+                contracts.sort(key=lambda c: (c.volume, c.open_interest), reverse=True)
+            else:
+                self.log_trade(f"ERROR: Options chain not found for {symbol} - cannot execute {strategy_type}")
+                return False
 
-                        # Final quantity calculation with caps
-                        final_multiplier = combined_multiplier * confidence_multiplier
-                        final_multiplier = max(0.5, min(2.0, final_multiplier))  # Cap between 0.5x and 2.0x
+            if contracts:
+                # Execute the options strategy with REAL orders
+                self.log_trade(f"PLACING REAL OPTIONS TRADE: {symbol} {strategy_type}")
 
-                        adaptive_quantity = max(1, int(base_quantity * final_multiplier))
-                        
-                        position = await self.options_trader.execute_options_strategy(
-                            strategy=strategy_type,
-                            contracts=contracts,
-                            quantity=adaptive_quantity,
-                            confidence=opportunity_confidence
-                        )
-                        
-                        if position:
-                            # Create position data with real trade information
-                            position_id = f"{symbol}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
-                            
-                            # Record trade entry for learning
-                            self.learning_engine.record_trade_entry(
-                                trade_id=position_id,
-                                symbol=symbol,
-                                strategy=strategy_type.value,
-                                confidence=opportunity_confidence,
-                                entry_price=position.entry_price,
-                                quantity=position.quantity,
-                                max_profit=opportunity.get('max_profit', 2.0),
-                                max_loss=opportunity.get('max_loss', 1.0),
-                                market_conditions={
-                                    'market_regime': self.market_regime,
-                                    'volatility': opportunity.get('market_data', {}).get('realized_vol', 20),
-                                    'volume_ratio': opportunity.get('market_data', {}).get('volume_ratio', 1.0),
-                                    'price_momentum': opportunity.get('market_data', {}).get('price_momentum', 0.0)
-                                }
-                            )
-                            position_data = {
-                                'position': position,  # Real position object
-                                'opportunity': opportunity,
-                                'entry_time': datetime.now(),
-                                'entry_date': datetime.now(),  # For dynamic stops
-                                'entry_price': position.entry_price,
-                                'peak_price': position.entry_price,  # Track highest price for trailing stops
-                                'quantity': adaptive_quantity,  # Use actual quantity
-                                'market_regime_at_entry': self.market_regime,
-                                'real_trade': True,
-                                'order_ids': getattr(position, 'order_ids', []),
-                                # Enhanced risk management data
-                                'enhanced_filters': opportunity.get('enhanced_filters', False),
-                                'volatility_regime': opportunity.get('volatility_regime', 'NORMAL'),
-                                'ema_trend': opportunity.get('ema_trend', 'NEUTRAL'),
-                                'position_multiplier': opportunity.get('position_multiplier', 1.0),
-                                'final_multiplier': final_multiplier,
-                                'max_loss_enhanced': enhanced_max_loss,
-                                'stop_loss_pct': 0.25 if opportunity.get('enhanced_filters', False) else 0.30,
-                                'risk_limit_used': risk_limit
-                            }
-                            
-                            # Add to active positions
-                            self.active_positions[position_id] = position_data
-                            
-                            # Update stats
-                            self.performance_stats['total_trades'] += 1
-                            
-                            # Enhanced logging with Sharpe optimization details
-                            filters_used = "ENHANCED" if opportunity.get('enhanced_filters', False) else "BASIC"
-                            vol_regime = opportunity.get('volatility_regime', 'NORMAL')
-                            ema_trend = opportunity.get('ema_trend', 'NEUTRAL')
+                try:
+                    # Execute through the options trader with confidence level and adaptive sizing
+                    opportunity_confidence = opportunity.get('confidence', 0.5)
 
-                            self.log_trade(f"SUCCESS: REAL TRADE EXECUTED: {symbol} {strategy_type} - Risk: ${position_risk:.2f}")
-                            self.log_trade(f"   Filters: {filters_used} | Vol: {vol_regime} | EMA: {ema_trend}")
-                            self.log_trade(f"   Position Size: {adaptive_quantity}x (Multiplier: {final_multiplier:.2f})")
-                            self.log_trade(f"   Stop Loss: {position_data['stop_loss_pct']:.0%} | Confidence: {opportunity_confidence:.1%}")
-                            self.log_trade(f"   Order IDs: {position_data.get('order_ids', [])}")
-                            self.log_trade(f"   Entry Price: ${position.entry_price:.2f}")
-                            self.log_trade(f"   Expected Sharpe Boost: Enhanced filters active", "INFO")
-                            
-                            return True
-                        else:
-                            self.log_trade(f"FAILED Options strategy execution failed for {symbol}")
-                            return False
-                            
-                    except Exception as trade_error:
-                        self.log_trade(f"FAILED Real trade execution failed: {trade_error}", "ERROR")
+                    # Enhanced position sizing with volatility-based adjustments
+                    base_quantity = 1
 
-                        # Check if error is due to insufficient funds/buying power
-                        error_msg = str(trade_error).lower()
-                        if any(keyword in error_msg for keyword in ['insufficient', 'buying power', 'not enough', 'funds']):
-                            self.log_trade(f"DETECTED INSUFFICIENT FUNDS - Triggering emergency exit analysis", "WARN")
-                            await self.handle_insufficient_funds_emergency()
+                    # Apply learning-based multiplier
+                    learning_multiplier = self.learning_engine.get_position_size_multiplier()
 
-                        # Fall back to simulation tracking if real trade fails
+                    # Apply volatility-based multiplier from enhanced filters
+                    volatility_multiplier = opportunity.get('position_multiplier', 1.0)
+
+                    # Combine multipliers with conservative cap
+                    combined_multiplier = learning_multiplier * volatility_multiplier
+
+                    # Apply confidence-based sizing (higher confidence = larger size)
+                    confidence_multiplier = 0.5 + (opportunity_confidence * 0.5)  # 0.5 to 1.0 range
+
+                    # Final quantity calculation with caps
+                    final_multiplier = combined_multiplier * confidence_multiplier
+                    final_multiplier = max(0.5, min(2.0, final_multiplier))  # Cap between 0.5x and 2.0x
+
+                    adaptive_quantity = max(1, int(base_quantity * final_multiplier))
+
+                    position = await self.options_trader.execute_options_strategy(
+                        strategy=strategy_type,
+                        contracts=contracts,
+                        quantity=adaptive_quantity,
+                        confidence=opportunity_confidence
+                    )
+
+                    if position:
+                        # Create position data with real trade information
                         position_id = f"{symbol}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+
+                        # Record trade entry for learning
+                        self.learning_engine.record_trade_entry(
+                            trade_id=position_id,
+                            symbol=symbol,
+                            strategy=strategy_type.value,
+                            confidence=opportunity_confidence,
+                            entry_price=position.entry_price,
+                            quantity=position.quantity,
+                            max_profit=opportunity.get('max_profit', 2.0),
+                            max_loss=opportunity.get('max_loss', 1.0),
+                            market_conditions={
+                                'market_regime': self.market_regime,
+                                'volatility': opportunity.get('market_data', {}).get('realized_vol', 20),
+                                'volume_ratio': opportunity.get('market_data', {}).get('volume_ratio', 1.0),
+                                'price_momentum': opportunity.get('market_data', {}).get('price_momentum', 0.0)
+                            }
+                        )
                         position_data = {
-                            'position': None,
+                            'position': position,  # Real position object
                             'opportunity': opportunity,
                             'entry_time': datetime.now(),
-                            'entry_price': opportunity.get('net_debit', 0),
-                            'quantity': 1,
+                            'entry_date': datetime.now(),  # For dynamic stops
+                            'entry_price': position.entry_price,
+                            'peak_price': position.entry_price,  # Track highest price for trailing stops
+                            'quantity': adaptive_quantity,  # Use actual quantity
                             'market_regime_at_entry': self.market_regime,
-                            'real_trade': False,
-                            'simulation_reason': str(trade_error)
+                            'real_trade': True,
+                            'order_ids': getattr(position, 'order_ids', []),
+                            # Enhanced risk management data
+                            'enhanced_filters': opportunity.get('enhanced_filters', False),
+                            'volatility_regime': opportunity.get('volatility_regime', 'NORMAL'),
+                            'ema_trend': opportunity.get('ema_trend', 'NEUTRAL'),
+                            'position_multiplier': opportunity.get('position_multiplier', 1.0),
+                            'final_multiplier': final_multiplier,
+                            'max_loss_enhanced': enhanced_max_loss,
+                            'stop_loss_pct': 0.25 if opportunity.get('enhanced_filters', False) else 0.30,
+                            'risk_limit_used': risk_limit
                         }
-                        
+
+                        # Add to active positions
                         self.active_positions[position_id] = position_data
+
+                        # Update stats
                         self.performance_stats['total_trades'] += 1
-                        
-                        self.log_trade(f"WARNING: FALLBACK SIMULATION: {symbol} {strategy} - Risk: ${position_risk:.2f}")
+
+                        # Enhanced logging with Sharpe optimization details
+                        filters_used = "ENHANCED" if opportunity.get('enhanced_filters', False) else "BASIC"
+                        vol_regime = opportunity.get('volatility_regime', 'NORMAL')
+                        ema_trend = opportunity.get('ema_trend', 'NEUTRAL')
+
+                        self.log_trade(f"SUCCESS: REAL TRADE EXECUTED: {symbol} {strategy_type} - Risk: ${position_risk:.2f}")
+                        self.log_trade(f"   Filters: {filters_used} | Vol: {vol_regime} | EMA: {ema_trend}")
+                        self.log_trade(f"   Position Size: {adaptive_quantity}x (Multiplier: {final_multiplier:.2f})")
+                        self.log_trade(f"   Stop Loss: {position_data['stop_loss_pct']:.0%} | Confidence: {opportunity_confidence:.1%}")
+                        self.log_trade(f"   Order IDs: {position_data.get('order_ids', [])}")
+                        self.log_trade(f"   Entry Price: ${position.entry_price:.2f}")
+                        self.log_trade(f"   Expected Sharpe Boost: Enhanced filters active", "INFO")
+
                         return True
-                else:
-                    self.log_trade(f"No suitable contracts found for {symbol} {strategy}")
-                    return False
+                    else:
+                        self.log_trade(f"FAILED Options strategy execution failed for {symbol}")
+                        return False
+
+                except Exception as trade_error:
+                    self.log_trade(f"FAILED Real trade execution failed: {trade_error}", "ERROR")
+
+                    # Check if error is due to insufficient funds/buying power
+                    error_msg = str(trade_error).lower()
+                    if any(keyword in error_msg for keyword in ['insufficient', 'buying power', 'not enough', 'funds']):
+                        self.log_trade(f"DETECTED INSUFFICIENT FUNDS - Triggering emergency exit analysis", "WARN")
+                        await self.handle_insufficient_funds_emergency()
+
+                    # Fall back to simulation tracking if real trade fails
+                    position_id = f"{symbol}_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+                    position_data = {
+                        'position': None,
+                        'opportunity': opportunity,
+                        'entry_time': datetime.now(),
+                        'entry_price': opportunity.get('net_debit', 0),
+                        'quantity': 1,
+                        'market_regime_at_entry': self.market_regime,
+                        'real_trade': False,
+                        'simulation_reason': str(trade_error)
+                    }
+
+                    self.active_positions[position_id] = position_data
+                    self.performance_stats['total_trades'] += 1
+
+                    self.log_trade(f"WARNING: FALLBACK SIMULATION: {symbol} {strategy_type} - Risk: ${position_risk:.2f}")
+                    return True
             else:
-                self.log_trade(f"No strategy generated for {symbol}")
+                self.log_trade(f"No suitable contracts found for {symbol} {strategy_type}")
                 return False
-            
+
         except Exception as e:
             self.log_trade(f"Position execution error: {e}", "ERROR")
             import traceback

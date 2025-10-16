@@ -70,18 +70,24 @@ class ProfitTargetMonitor:
 
                 # Check if it's the same trading day
                 if data.get('date') == str(self.trading_date):
-                    return data.get('starting_equity')
+                    starting_equity = data.get('starting_equity')
+                    logger.info(f"Using saved starting equity for {self.trading_date}: ${starting_equity:,.2f}")
+                    return starting_equity
 
-            # If no file or different date, get current equity as starting point
+            # If no file or different date, get current portfolio value as starting point
             account = self.broker.api.get_account()
-            current_equity = float(account.equity)
+
+            # FIXED: Use portfolio_value (same as we use for current_equity)
+            current_equity = float(account.portfolio_value)
 
             # Save new starting equity
             with open(self.starting_equity_file, 'w') as f:
                 json.dump({
                     'date': str(self.trading_date),
                     'starting_equity': current_equity,
-                    'timestamp': datetime.now().isoformat()
+                    'timestamp': datetime.now().isoformat(),
+                    'account_equity': float(account.equity),
+                    'cash': float(account.cash)
                 }, f)
 
             logger.info(f"New trading day - Starting equity: ${current_equity:,.2f}")
@@ -99,7 +105,22 @@ class ProfitTargetMonitor:
         try:
             # Get current account info
             account = self.broker.api.get_account()
-            self.current_equity = float(account.equity)
+
+            # FIXED: Use portfolio_value which is more accurate than equity
+            # portfolio_value = actual market value of all holdings + cash
+            # equity = portfolio_value but can lag in some cases
+            self.current_equity = float(account.portfolio_value)
+
+            # Also get cash and last_equity for comparison
+            current_cash = float(account.cash)
+            last_equity = float(account.last_equity)
+            account_equity = float(account.equity)
+
+            # Debug logging to understand discrepancies
+            logger.debug(f"Account values - Equity: ${account_equity:.2f}, "
+                        f"Portfolio: ${self.current_equity:.2f}, "
+                        f"Cash: ${current_cash:.2f}, "
+                        f"Last Equity: ${last_equity:.2f}")
 
             # Get or set starting equity for the day
             if self.initial_equity is None:
