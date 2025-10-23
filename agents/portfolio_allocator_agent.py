@@ -20,6 +20,106 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+# ENHANCEMENT: Adaptive Ensemble Weights
+class AdaptiveEnsembleWeights:
+    """
+    GAME CHANGER: Dynamically adjust strategy weights based on market regime
+
+    Stops using the same weights in all markets!
+    - Bull market? Use momentum!
+    - Sideways? Use mean reversion!
+    - High volatility? Use options strategies!
+    """
+
+    @staticmethod
+    def get_regime_based_weights(regime: str, volatility: float, trend_strength: float = 0.0) -> Dict[str, float]:
+        """
+        Get optimal strategy weights for current market regime
+
+        Args:
+            regime: Market regime name
+            volatility: Current volatility level (annualized)
+            trend_strength: -1 to 1 (-1=strong downtrend, 1=strong uptrend)
+
+        Returns:
+            Dict of strategy weights (must sum to 1.0)
+        """
+
+        # HIGH VOLATILITY REGIME (>30% annualized)
+        if volatility > 0.30:
+            logger.info(f"High vol regime ({volatility:.1%}) - favoring mean reversion + options")
+            return {
+                'momentum': 0.15,
+                'mean_reversion': 0.40,  # MR works great in chaos
+                'options_volatility': 0.25,  # Options benefit from high vol
+                'sentiment': 0.10,
+                'short_selling': 0.10
+            }
+
+        # STRONG UPTREND REGIME (trend_strength > 0.6)
+        elif trend_strength > 0.6:
+            logger.info(f"Strong uptrend (strength={trend_strength:.2f}) - favoring momentum")
+            return {
+                'momentum': 0.50,         # Ride the trend!
+                'mean_reversion': 0.10,   # Don't fade strong trends
+                'options_volatility': 0.15,
+                'sentiment': 0.15,
+                'short_selling': 0.10
+            }
+
+        # STRONG DOWNTREND REGIME (trend_strength < -0.6)
+        elif trend_strength < -0.6:
+            logger.info(f"Strong downtrend (strength={trend_strength:.2f}) - defensive positioning")
+            return {
+                'momentum': 0.20,
+                'mean_reversion': 0.15,
+                'options_volatility': 0.30,  # Options for hedging
+                'sentiment': 0.15,
+                'short_selling': 0.20       # Short selling in downtrends
+            }
+
+        # SIDEWAYS/RANGING REGIME (low trend strength, normal vol)
+        elif abs(trend_strength) < 0.3 and volatility < 0.20:
+            logger.info("Sideways market - favoring mean reversion")
+            return {
+                'momentum': 0.10,         # Momentum fails in chop
+                'mean_reversion': 0.50,   # MR excels in ranges
+                'options_volatility': 0.15,
+                'sentiment': 0.15,
+                'short_selling': 0.10
+            }
+
+        # MODERATE CONDITIONS (default balanced)
+        else:
+            logger.info("Balanced market conditions - using balanced weights")
+            return {
+                'momentum': 0.30,
+                'mean_reversion': 0.30,
+                'options_volatility': 0.20,
+                'sentiment': 0.10,
+                'short_selling': 0.10
+            }
+
+    @staticmethod
+    def get_crisis_mode_weights() -> Dict[str, float]:
+        """
+        EMERGENCY: Crisis mode weights when market is in distress
+
+        Triggered when:
+        - VIX > 40
+        - SPY down >5% in single day
+        - Correlation breakdown detected
+        """
+        logger.warning("⚠️ CRISIS MODE ACTIVATED - Defensive weights")
+        return {
+            'momentum': 0.05,          # Almost no momentum
+            'mean_reversion': 0.10,    # Some MR for bounces
+            'options_volatility': 0.50,  # Heavy options for hedging
+            'sentiment': 0.20,          # Watch news closely
+            'short_selling': 0.15
+        }
+
+
 class MarketRegime(Enum):
     """Market regime classifications"""
     TRENDING_UP = "trending_up"
@@ -535,15 +635,62 @@ class RegimeDetector:
 
 class PortfolioAllocatorAgent:
     """Main Portfolio Allocator Agent using LangGraph"""
-    
+
     def __init__(self):
         self.explainability_engine = ExplainabilityEngine()
         self.conflict_resolver = ConflictResolver()
         self.regime_detector = RegimeDetector()
         self.model_version = "1.0.0"
-        
+
+        # ENHANCEMENT: Add adaptive weights manager
+        self.adaptive_weights = AdaptiveEnsembleWeights()
+
+        # Store current regime info (updated from regime detection agent)
+        self.current_regime = {
+            'volatility': 0.15,
+            'trend_strength': 0.0,
+            'regime_name': 'BALANCED'
+        }
+
         # Build LangGraph workflow
         self.workflow = self._build_workflow()
+
+    def update_regime_info(self, regime_data: Dict):
+        """
+        ENHANCEMENT: Update current market regime
+
+        Call this from main loop after regime detection:
+          portfolio_allocator.update_regime_info({
+              'volatility': regime.volatility_level,
+              'trend_strength': regime.trend_strength,
+              'regime_name': regime.regime.value
+          })
+        """
+        self.current_regime = regime_data
+        logger.info(f"✅ Regime updated: {regime_data['regime_name']}, "
+                   f"vol={regime_data['volatility']:.1%}, trend={regime_data['trend_strength']:.2f}")
+
+    def get_dynamic_strategy_weights(self) -> Dict[str, float]:
+        """
+        ENHANCEMENT: Get dynamically adjusted strategy weights
+
+        This replaces static weights! Now adapts to market conditions.
+        """
+        # Get regime-based weights
+        weights = self.adaptive_weights.get_regime_based_weights(
+            regime=self.current_regime.get('regime_name', 'BALANCED'),
+            volatility=self.current_regime.get('volatility', 0.15),
+            trend_strength=self.current_regime.get('trend_strength', 0.0)
+        )
+
+        # Check for crisis mode
+        if self.current_regime.get('volatility', 0) > 0.40:
+            logger.warning("⚠️ Extreme volatility detected")
+            weights = self.adaptive_weights.get_crisis_mode_weights()
+
+        logger.info(f"✅ Dynamic weights: {', '.join([f'{k}={v:.1%}' for k, v in weights.items()])}")
+
+        return weights
     
     def _build_workflow(self) -> StateGraph:
         """Build the LangGraph workflow for signal fusion"""

@@ -120,7 +120,7 @@ class EconomicDataAgent:
                     fed_data['next_meeting_impact'] = 'LOW'
             
         except Exception as e:
-            logger.warning(f"Fed policy data error: {e}")
+            logger.debug(f"Fed policy data error: {e}")  # Changed to debug to reduce log noise
         
         return fed_data
     
@@ -160,7 +160,7 @@ class EconomicDataAgent:
                         inflation_data['inflation_trend'] = 'STABLE'
         
         except Exception as e:
-            logger.warning(f"Inflation data error: {e}")
+            logger.debug(f"Inflation data error: {e}")  # Changed to debug to reduce log noise
         
         return inflation_data
     

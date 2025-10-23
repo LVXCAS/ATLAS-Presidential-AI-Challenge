@@ -34,6 +34,9 @@ from strategies.fibonacci_analysis import (
     FibonacciAnalyzer, analyze_fibonacci_levels
 )
 
+# ENHANCEMENT: Import volume indicators
+from agents.momentum_agent_enhancements import MomentumEnhancements
+
 # Database imports
 import asyncpg
 from sqlalchemy import create_engine, text
@@ -449,7 +452,45 @@ class TechnicalAnalyzer:
         
         except Exception as e:
             logger.error(f"Error calculating MACD signals: {e}")
-        
+
+        return signals
+
+    def calculate_volume_signals(self, df: pd.DataFrame) -> List[TechnicalSignal]:
+        """
+        ENHANCEMENT: Calculate volume-based signals using OBV, CMF, VWAP
+
+        This adds volume confirmation to momentum signals!
+        Volume should confirm price moves - if it doesn't, the signal is weaker.
+
+        Args:
+            df: DataFrame with OHLCV data (needs: high, low, close, volume columns)
+
+        Returns:
+            List of volume-based TechnicalSignals
+        """
+        signals = []
+
+        try:
+            # Use enhancement module for volume calculations
+            volume_signals = MomentumEnhancements.generate_volume_signals(df)
+
+            # Convert to TechnicalSignal format
+            for vol_signal in volume_signals:
+                signals.append(TechnicalSignal(
+                    indicator=vol_signal.indicator,
+                    signal_type=vol_signal.signal_type,
+                    strength=vol_signal.strength,
+                    confidence=vol_signal.confidence,
+                    value=vol_signal.value,
+                    explanation=vol_signal.explanation,
+                    timestamp=datetime.utcnow()
+                ))
+
+            logger.info(f"Generated {len(signals)} volume signals")
+
+        except Exception as e:
+            logger.error(f"Error calculating volume signals: {e}")
+
         return signals
 
 
@@ -741,31 +782,50 @@ class MomentumTradingAgent:
         return workflow.compile()
     
     async def _analyze_technical_indicators(self, state: Dict) -> Dict:
-        """Analyze technical indicators (EMA, RSI, MACD)"""
+        """Analyze technical indicators (EMA, RSI, MACD) + VOLUME"""
         try:
             market_data = state['market_data']
             if not market_data:
                 state['error'] = "No market data available"
                 return state
-            
+
             # Extract price data
             close_prices = np.array([data.close for data in market_data])
-            
+
             # Calculate technical signals
             ema_signals = self.technical_analyzer.calculate_ema_signals(close_prices)
             rsi_signals = self.technical_analyzer.calculate_rsi_signals(close_prices)
             macd_signals = self.technical_analyzer.calculate_macd_signals(close_prices)
-            
-            # Combine all technical signals
-            all_technical_signals = ema_signals + rsi_signals + macd_signals
+
+            # ENHANCEMENT: Calculate volume signals
+            volume_signals = []
+            try:
+                # Convert market_data to DataFrame for volume analysis
+                df = pd.DataFrame([{
+                    'open': d.open,
+                    'high': d.high,
+                    'low': d.low,
+                    'close': d.close,
+                    'volume': d.volume
+                } for d in market_data])
+
+                volume_signals = self.technical_analyzer.calculate_volume_signals(df)
+                logger.info(f"✅ Volume analysis added: {len(volume_signals)} volume signals")
+            except Exception as ve:
+                logger.warning(f"Volume analysis skipped: {ve}")
+
+            # Combine all technical signals (now includes volume!)
+            all_technical_signals = ema_signals + rsi_signals + macd_signals + volume_signals
             state['technical_signals'] = all_technical_signals
-            
-            logger.info(f"Generated {len(all_technical_signals)} technical signals for {state['symbol']}")
-            
+
+            logger.info(f"Generated {len(all_technical_signals)} technical signals for {state['symbol']} "
+                       f"(EMA: {len(ema_signals)}, RSI: {len(rsi_signals)}, "
+                       f"MACD: {len(macd_signals)}, Volume: {len(volume_signals)})")
+
         except Exception as e:
             logger.error(f"Error in technical analysis: {e}")
             state['error'] = str(e)
-        
+
         return state
     
     async def _analyze_fibonacci_levels(self, state: Dict) -> Dict:

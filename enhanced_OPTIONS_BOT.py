@@ -365,9 +365,44 @@ class EnhancedOptionsBot(TomorrowReadyOptionsBot):
         self.log_trade("Enhanced opportunity scanning with advanced analytics...")
         
         opportunities = []
-        scan_symbols = ['AAPL', 'SPY', 'QQQ', 'MSFT', 'GOOGL', 'META', 'TSLA']
-        
-        for symbol in scan_symbols[:5]:  # Top 5 for performance
+        # UPDATED: Top 80 S&P 500 stocks - Maximum coverage with excellent options liquidity
+        scan_symbols = [
+            # TECHNOLOGY (20 stocks - 25%)
+            'AAPL', 'MSFT', 'NVDA', 'GOOGL', 'GOOG', 'AMZN', 'META', 'TSLA',
+            'AVGO', 'ORCL', 'CRM', 'ADBE', 'CSCO', 'ACN', 'AMD', 'INTC',
+            'NOW', 'QCOM', 'TXN', 'INTU',
+
+            # FINANCIALS (15 stocks - 18.75%)
+            'BRK.B', 'JPM', 'V', 'MA', 'BAC', 'WFC', 'MS', 'GS',
+            'SPGI', 'BLK', 'C', 'AXP', 'SCHW', 'CB', 'PGR',
+
+            # HEALTHCARE (12 stocks - 15%)
+            'UNH', 'LLY', 'JNJ', 'ABBV', 'MRK', 'TMO', 'ABT', 'DHR',
+            'PFE', 'BMY', 'AMGN', 'GILD',
+
+            # CONSUMER DISCRETIONARY (9 stocks - 11.25%)
+            'HD', 'MCD', 'NKE', 'SBUX', 'LOW', 'TJX', 'BKNG', 'CMG', 'MAR',
+
+            # CONSUMER STAPLES (6 stocks - 7.5%)
+            'WMT', 'PG', 'COST', 'KO', 'PEP', 'PM',
+
+            # ENERGY (5 stocks - 6.25%)
+            'XOM', 'CVX', 'COP', 'SLB', 'EOG',
+
+            # INDUSTRIALS (6 stocks - 7.5%)
+            'BA', 'CAT', 'GE', 'RTX', 'HON', 'UPS',
+
+            # COMMUNICATION (2 stocks - 2.5%)
+            'NFLX', 'DIS',
+
+            # UTILITIES (2 stocks - 2.5%)
+            'NEE', 'DUK',
+
+            # HIGH-VOLUME FINTECH/TECH (3 stocks)
+            'PYPL', 'SQ', 'UBER'
+        ]
+
+        for symbol in scan_symbols:  # Scan all 80 stocks
             try:
                 opportunity = await self.enhanced_opportunity_analysis(symbol)
                 if opportunity and opportunity['confidence'] > 0.6:

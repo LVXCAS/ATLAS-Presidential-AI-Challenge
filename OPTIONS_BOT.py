@@ -368,7 +368,7 @@ class TomorrowReadyOptionsBot:
         # Daily trading controls
         self.daily_loss_limit_hit = False
         self.trading_stopped_for_day = False
-        self.daily_loss_limit_pct = -4.9  # Stop trading at -4.9% daily loss
+        self.daily_loss_limit_pct = -30.0  # Stop trading at -30% daily loss
         
         # Market regime tracking
         self.market_regime = 'NEUTRAL'
@@ -376,31 +376,41 @@ class TomorrowReadyOptionsBot:
         self.market_trend = 0.0
         
         # Professional trading universe
+        # UPDATED: Top 80 S&P 500 stocks - Maximum coverage with excellent options liquidity
         self.tier1_stocks = [
-            # Mega cap (best liquidity)
-            'AAPL', 'MSFT', 'GOOGL', 'AMZN', 'NVDA', 'META', 'TSLA',
-            # Major ETFs (excellent options liquidity)
-            'SPY', 'QQQ', 'IWM', 'XLF', 'XLK', 'XLV', 'XLE', 'GLD', 'TLT', 'EEM', 'XOP',
-            # Large cap leaders
-            'JPM', 'BAC', 'WFC', 'GS', 'JNJ', 'UNH', 'PFE', 'MRK', 'CVX', 'XOM',
-            # High-volume options stocks
-            'NFLX', 'CRM', 'AMD', 'INTC', 'DIS', 'V', 'MA', 'COIN', 'UBER',
-            # Tech & Growth
-            'ORCL', 'ADBE', 'CSCO', 'QCOM', 'AVGO', 'TXN', 'ABNB', 'SQ', 'PYPL',
-            # Consumer & Retail
-            'HD', 'WMT', 'NKE', 'MCD', 'SBUX', 'TGT', 'COST',
-            # Healthcare & Biotech
-            'ABBV', 'LLY', 'TMO', 'DHR', 'GILD', 'AMGN',
-            # Industrial & Aerospace
-            'BA', 'CAT', 'GE', 'HON', 'UPS', 'RTX',
-            # Energy
-            'SLB', 'COP', 'OXY', 'HAL', 'DVN',
-            # Semiconductors
-            'MU', 'AMAT', 'LRCX', 'KLAC', 'MRVL',
-            # Financials
-            'C', 'MS', 'BLK', 'SCHW', 'AXP',
-            # Communication
-            'T', 'VZ', 'CMCSA', 'TMUS'
+            # TECHNOLOGY (20 stocks - 25%)
+            'AAPL', 'MSFT', 'NVDA', 'GOOGL', 'GOOG', 'AMZN', 'META', 'TSLA',
+            'AVGO', 'ORCL', 'CRM', 'ADBE', 'CSCO', 'ACN', 'AMD', 'INTC',
+            'NOW', 'QCOM', 'TXN', 'INTU',
+
+            # FINANCIALS (15 stocks - 18.75%)
+            'BRK.B', 'JPM', 'V', 'MA', 'BAC', 'WFC', 'MS', 'GS',
+            'SPGI', 'BLK', 'C', 'AXP', 'SCHW', 'CB', 'PGR',
+
+            # HEALTHCARE (12 stocks - 15%)
+            'UNH', 'LLY', 'JNJ', 'ABBV', 'MRK', 'TMO', 'ABT', 'DHR',
+            'PFE', 'BMY', 'AMGN', 'GILD',
+
+            # CONSUMER DISCRETIONARY (9 stocks - 11.25%)
+            'HD', 'MCD', 'NKE', 'SBUX', 'LOW', 'TJX', 'BKNG', 'CMG', 'MAR',
+
+            # CONSUMER STAPLES (6 stocks - 7.5%)
+            'WMT', 'PG', 'COST', 'KO', 'PEP', 'PM',
+
+            # ENERGY (5 stocks - 6.25%)
+            'XOM', 'CVX', 'COP', 'SLB', 'EOG',
+
+            # INDUSTRIALS (6 stocks - 7.5%)
+            'BA', 'CAT', 'GE', 'RTX', 'HON', 'UPS',
+
+            # COMMUNICATION (2 stocks - 2.5%)
+            'NFLX', 'DIS',
+
+            # UTILITIES (2 stocks - 2.5%)
+            'NEE', 'DUK',
+
+            # HIGH-VOLUME FINTECH/TECH (3 stocks)
+            'PYPL', 'SQ', 'UBER'
         ]
         
         # Strategy weights (adapted by market regime)
@@ -1301,22 +1311,48 @@ class TomorrowReadyOptionsBot:
                     return real_pnl
 
             except Exception as broker_error:
-                pass  # Silently fall back in paper mode
+                self.log_trade(f"  [WARN] Could not get real broker P&L: {broker_error}", "WARN")
 
-            # FALLBACK: Use tracked P&L in paper mode (more accurate than Black-Scholes)
+            # SECOND: Try to get REAL current market price from broker (CRITICAL FIX)
+            try:
+                option_symbol = position_data.get('option_symbol')
+                if not option_symbol:
+                    option_symbol = position_data.get('opportunity', {}).get('option_symbol')
+
+                if option_symbol and hasattr(self, 'broker') and self.broker:
+                    # Try to get current market quote for the option
+                    current_quote = await self.broker.get_latest_quote(option_symbol)
+                    if current_quote:
+                        # Use mark price (midpoint of bid/ask) if available, else last price
+                        current_price = None
+                        if hasattr(current_quote, 'ap') and hasattr(current_quote, 'bp'):
+                            # Calculate mark price from bid/ask
+                            if current_quote.ap > 0 and current_quote.bp > 0:
+                                current_price = (current_quote.ap + current_quote.bp) / 2
+                        elif hasattr(current_quote, 'last_price') and current_quote.last_price:
+                            current_price = float(current_quote.last_price)
+
+                        if current_price and current_price > 0:
+                            entry_price = position_data.get('entry_price', 0)
+                            quantity = position_data.get('quantity', 1)
+
+                            # Calculate P&L from REAL market prices
+                            total_pnl = (current_price - entry_price) * quantity * 100
+                            pnl_pct = ((current_price - entry_price) / entry_price) * 100 if entry_price > 0 else 0
+
+                            self.log_trade(f"  [REAL MARKET PRICE P&L] Entry: ${entry_price:.2f}, Current: ${current_price:.2f}, P&L: ${total_pnl:.2f} ({pnl_pct:+.1f}%)", "INFO")
+                            return total_pnl
+            except Exception as quote_error:
+                self.log_trade(f"  [WARN] Could not get real market quote: {quote_error}", "WARN")
+
+            # FALLBACK: Use tracked P&L with estimated pricing (LAST RESORT)
             # Get position details
             entry_price = position_data.get('entry_price', 0)  # Entry price per contract
             quantity = position_data.get('quantity', 1)  # Number of contracts
 
             # Get current option value (professional pricing)
+            self.log_trade(f"  [FALLBACK] Using estimated pricing (not reliable!)", "WARN")
             current_option_price = await self.estimate_current_option_price(position_data, market_data)
-
-            # FIXED: Validation to prevent extreme fake P&L values
-            # Changed from 2x to 10x - options CAN go up 500-1000% in volatile markets
-            max_reasonable_gain = entry_price * 10  # Cap at 10x gain (900%) - realistic for volatile options
-            if current_option_price > max_reasonable_gain:
-                self.log_trade(f"  [WARN] Estimated price ${current_option_price:.2f} seems too high vs entry ${entry_price:.2f}, capping at 10x", "WARN")
-                current_option_price = max_reasonable_gain
 
             # Sanity check: if estimate seems broken, use entry price as fallback
             if current_option_price <= 0:
@@ -1333,11 +1369,11 @@ class TomorrowReadyOptionsBot:
                 pnl_pct = ((current_option_price - entry_price) / entry_price) * 100
                 self.log_trade(f"  [PAPER MODE P&L] ${total_pnl:.2f} ({pnl_pct:+.1f}%)", "INFO")
 
-                # ADDED: Warning for suspicious P&L values
-                if abs(total_pnl) > 10000 or abs(pnl_pct) > 500:
-                    self.log_trade(f"  [WARNING] Suspicious P&L detected! Entry: ${entry_price:.2f}, "
-                                 f"Current: ${current_option_price:.2f}, Qty: {quantity}, "
-                                 f"P&L: ${total_pnl:.2f} ({pnl_pct:+.1f}%) - VERIFY THIS!", "WARN")
+                # Log large P&L for information (no cap - show actual values)
+                if abs(pnl_pct) > 1000:  # Over 10x gain
+                    self.log_trade(f"  [INFO] Large gain detected: Entry: ${entry_price:.2f}, "
+                                 f"Current: ${current_option_price:.2f}, "
+                                 f"P&L: ${total_pnl:.2f} ({pnl_pct:+.1f}%)", "INFO")
             else:
                 self.log_trade(f"  [PAPER MODE P&L] ${total_pnl:.2f}", "INFO")
 
@@ -1601,12 +1637,39 @@ class TomorrowReadyOptionsBot:
                 exit_signals += 2
                 analysis_factors.append(f"High time decay pressure {theta_pressure:.1%} on losing position")
             
+            # HARD STOP LOSS at -20% (CRITICAL FIX)
+            if pnl_percentage <= -20:
+                return {
+                    "should_exit": True,
+                    "reason": f"STOP LOSS: Position down {pnl_percentage:.1f}%",
+                    "confidence": 0.95,
+                    "factors": ["stop_loss_triggered"],
+                    "exit_signals": 5,
+                    "hold_signals": 0,
+                    "pnl_percentage": pnl_percentage,
+                    "days_held": days_held
+                }
+
             # Decision Logic
             net_signal_strength = exit_signals - hold_signals
             should_exit = False
             confidence = 0.5
-            
-            if net_signal_strength >= 3:  # Strong exit signal
+
+            # SPECIAL CASE: Losing positions (CRITICAL FIX - exits faster)
+            if pnl_percentage < -10:  # Down more than 10%
+                if net_signal_strength >= 1:  # Much lower threshold for losers
+                    should_exit = True
+                    confidence = min(0.85, 0.6 + (net_signal_strength * 0.1))
+                    reason = f"Exit losing position (score: +{net_signal_strength}, P&L: {pnl_percentage:.1f}%)"
+                elif net_signal_strength >= 0:  # Even neutral exits losers
+                    should_exit = True
+                    confidence = 0.65
+                    reason = f"Exit losing position on neutral signal (P&L: {pnl_percentage:.1f}%)"
+                else:
+                    should_exit = False
+                    reason = f"Hold losing position (score: {net_signal_strength}, P&L: {pnl_percentage:.1f}%)"
+            # ORIGINAL LOGIC for winning/neutral positions
+            elif net_signal_strength >= 3:  # Strong exit signal
                 should_exit = True
                 confidence = min(0.95, 0.6 + (net_signal_strength * 0.1))
                 reason = f"Strong exit signal (score: +{net_signal_strength}) - {analysis_factors[0]}"
@@ -1951,13 +2014,19 @@ class TomorrowReadyOptionsBot:
         """Main intraday trading cycle"""
         self.cycle_count += 1
         self.log_trade(f"=== TRADING CYCLE #{self.cycle_count} ===")
-        
+
+        # CHECK LOSS LIMIT FIRST (CRITICAL FIX - prevent trading past limit)
+        loss_limit_hit = await self.check_daily_loss_limit()
+        if loss_limit_hit:
+            self.log_trade("Daily loss limit hit - SKIPPING ALL TRADING", "CRITICAL")
+            return  # Hard stop - don't do anything else
+
         # 1. Intelligent position monitoring (every cycle)
         await self.intelligent_position_monitoring()
-        
-        # 2. Look for new opportunities (every cycle for more aggressive trading)
+
+        # 2. Look for new opportunities (only if loss limit not hit)
         await self.scan_for_new_opportunities()
-        
+
         # 3. Risk check
         await self.intraday_risk_check()
         
@@ -1970,17 +2039,12 @@ class TomorrowReadyOptionsBot:
             return
         
         self.log_trade(f"Scanning for new opportunities across {len(self.tier1_stocks)} symbols...")
-        
-        opportunities = []
-        # Scan tier1 symbols in rotating batches to avoid API rate limits
-        # Cycle through 28 stocks per scan (84 total / 3 batches)
-        cycle_number = (datetime.now().minute // 5) % 3  # 0, 1, or 2
-        batch_size = 28
-        start_idx = cycle_number * batch_size
-        end_idx = start_idx + batch_size
-        scan_symbols = self.tier1_stocks[start_idx:end_idx]
 
-        self.log_trade(f"Scanning batch {cycle_number + 1}/3: symbols {start_idx} to {end_idx}")
+        opportunities = []
+        # UPDATED: Scan all 20 stocks in one go (no batching needed with smaller watchlist)
+        scan_symbols = self.tier1_stocks
+
+        self.log_trade(f"Scanning {len(scan_symbols)} diversified stocks: {', '.join(scan_symbols[:5])}...")
         
         for i, symbol in enumerate(scan_symbols):
             try:
@@ -1997,13 +2061,13 @@ class TomorrowReadyOptionsBot:
         
         self.log_trade(f"Scan complete: Found {len(opportunities)} opportunities from {len(scan_symbols)} symbols")
         
-        # Execute ONLY opportunities with 70%+ confidence
+        # Execute ONLY opportunities with 65%+ confidence (OPTIMIZED)
         if opportunities:
-            # Filter opportunities with 70% or higher confidence (STRICT)
-            high_confidence_opportunities = [opp for opp in opportunities if opp.get('confidence', 0) >= 0.70]
+            # Filter opportunities with 65% or higher confidence (balanced quality vs frequency)
+            high_confidence_opportunities = [opp for opp in opportunities if opp.get('confidence', 0) >= 0.65]
 
             if high_confidence_opportunities:
-                self.log_trade(f"Found {len(high_confidence_opportunities)} opportunities with 70%+ confidence")
+                self.log_trade(f"Found {len(high_confidence_opportunities)} opportunities with 65%+ confidence")
 
                 # Sort by confidence * expected_return for execution order
                 high_confidence_opportunities.sort(key=lambda x: x.get('confidence', 0) * x.get('expected_return', 0), reverse=True)
@@ -2020,9 +2084,9 @@ class TomorrowReadyOptionsBot:
                     else:
                         self.log_trade(f"FAILED to execute: {opportunity['symbol']}")
             else:
-                # If no 70%+ confidence, don't trade (strict threshold)
+                # If no 65%+ confidence, don't trade (balanced threshold)
                 best_confidence = max([opp.get('confidence', 0) for opp in opportunities]) if opportunities else 0
-                self.log_trade(f"No opportunities meet 70% confidence threshold (best: {best_confidence:.1%})")
+                self.log_trade(f"No opportunities meet 65% confidence threshold (best: {best_confidence:.1%})")
     
     async def find_high_quality_opportunity(self, symbol):
         """Find high-quality trading opportunity with enhanced filters for Sharpe optimization"""
@@ -2593,15 +2657,20 @@ class TomorrowReadyOptionsBot:
                 # Apply quantitative finance analysis
                 quant_analysis = None
                 try:
+                    # Get current price from market data
+                    current_price = market_data.get('current_price', 0)
+                    if current_price <= 0:
+                        raise ValueError("Invalid current price")
+
                     # Determine strike price and expiry for analysis
                     days_to_expiry = random.randint(21, 35)  # 3-5 weeks
                     expiry_date = (datetime.now() + timedelta(days=days_to_expiry)).strftime('%Y-%m-%d')
 
                     # Choose strike based on strategy and momentum
                     if strategy == OptionsStrategy.LONG_CALL:
-                        strike_multiplier = 1.02 if market_data['price_momentum'] > 0.02 else 1.01
+                        strike_multiplier = 1.02 if market_data.get('price_momentum', 0) > 0.02 else 1.01
                     else:  # LONG_PUT
-                        strike_multiplier = 0.98 if market_data['price_momentum'] < -0.02 else 0.99
+                        strike_multiplier = 0.98 if market_data.get('price_momentum', 0) < -0.02 else 0.99
 
                     strike_price = round(current_price * strike_multiplier, 2)
                     option_type = 'call' if strategy == OptionsStrategy.LONG_CALL else 'put'

@@ -26,6 +26,103 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
+# ENHANCEMENT: Portfolio Heat Monitor
+@dataclass
+class PortfolioHeat:
+    """Portfolio heat metrics"""
+    total_heat: float  # Total $ at risk
+    heat_percentage: float  # % of portfolio
+    heat_limit: float  # Max allowed heat
+    heat_usage: float  # % of limit used
+    can_add_position: bool  # Whether we can add more risk
+    position_heats: Dict[str, float]  # Heat per position
+    correlation_adjustment: float  # Diversification benefit
+
+
+class PortfolioHeatMonitor:
+    """
+    ENHANCEMENT: Monitor total portfolio risk exposure ("heat")
+
+    Portfolio heat = sum of all open position risks
+
+    This prevents overexposure even when individual positions are within limits!
+    """
+
+    def __init__(self, max_heat_pct: float = 15.0):
+        """
+        Args:
+            max_heat_pct: Maximum portfolio heat as % of total value (default 15%)
+        """
+        self.max_heat_pct = max_heat_pct
+        logger.info(f"✅ Portfolio Heat Monitor initialized (max heat: {max_heat_pct}%)")
+
+    def calculate_portfolio_heat(
+        self,
+        positions: List[Dict],
+        portfolio_value: float
+    ) -> PortfolioHeat:
+        """
+        Calculate total portfolio heat
+
+        Heat = potential 1-day loss at 2 standard deviations
+
+        Args:
+            positions: List of dicts with keys: symbol, quantity, price, volatility, beta
+            portfolio_value: Total portfolio value
+
+        Returns:
+            PortfolioHeat object with all metrics
+        """
+        total_heat = 0
+        position_heats = {}
+
+        for position in positions:
+            # Position heat = position_value * daily_vol * 2std * beta
+            position_value = position['quantity'] * position['price']
+            position_volatility = position.get('volatility', 0.20)  # Annualized volatility
+            position_beta = position.get('beta', 1.0)
+
+            # Convert to daily volatility
+            daily_vol = position_volatility / np.sqrt(252)
+
+            # Calculate heat (potential 1-day loss at 2 std)
+            position_heat = position_value * daily_vol * 2.0 * position_beta
+
+            total_heat += position_heat
+            position_heats[position['symbol']] = position_heat
+
+            logger.debug(f"{position['symbol']}: value=${position_value:,.0f}, "
+                        f"vol={position_volatility:.1%}, beta={position_beta:.2f}, "
+                        f"heat=${position_heat:,.0f}")
+
+        # Calculate heat as % of portfolio
+        heat_pct = (total_heat / portfolio_value * 100) if portfolio_value > 0 else 0
+
+        # Calculate heat usage
+        heat_usage = heat_pct / self.max_heat_pct if self.max_heat_pct > 0 else 0
+
+        # Determine if can add more positions (leave 3% buffer)
+        can_add_position = heat_pct < (self.max_heat_pct - 3.0)
+
+        result = PortfolioHeat(
+            total_heat=total_heat,
+            heat_percentage=heat_pct,
+            heat_limit=self.max_heat_pct,
+            heat_usage=heat_usage,
+            can_add_position=can_add_position,
+            position_heats=position_heats,
+            correlation_adjustment=1.0  # Default, can be enhanced
+        )
+
+        logger.info(f"✅ Portfolio Heat: ${total_heat:,.0f} ({heat_pct:.1f}% of portfolio, "
+                   f"{heat_usage:.0%} of limit)")
+
+        if heat_usage > 0.8:
+            logger.warning(f"⚠️ HIGH PORTFOLIO HEAT: Using {heat_usage:.0%} of limit!")
+
+        return result
+
+
 class RiskAlertSeverity(Enum):
     """Risk alert severity levels"""
     LOW = "LOW"
@@ -138,7 +235,7 @@ class RiskManagerAgent:
     def __init__(self, db_config: Dict[str, Any], risk_limits: Optional[RiskLimits] = None):
         """
         Initialize the Risk Manager Agent.
-        
+
         Args:
             db_config: Database configuration
             risk_limits: Risk limits configuration
@@ -147,11 +244,14 @@ class RiskManagerAgent:
         self.risk_limits = risk_limits or RiskLimits()
         self.emergency_stop_active = False
         self.last_risk_check = None
-        
+
+        # ENHANCEMENT: Add portfolio heat monitor
+        self.heat_monitor = PortfolioHeatMonitor(max_heat_pct=15.0)  # 15% max heat
+
         # Initialize LangGraph workflow
         self.workflow = self._create_workflow()
-        
-        logger.info("Risk Manager Agent initialized")
+
+        logger.info("✅ Risk Manager Agent initialized with Portfolio Heat monitoring")
     
     def _create_workflow(self) -> StateGraph:
         """Create the LangGraph workflow for risk management"""
@@ -216,7 +316,59 @@ class RiskManagerAgent:
         except Exception as e:
             logger.error(f"Error in portfolio risk monitoring: {e}")
             raise
-    
+
+    def check_portfolio_risk(
+        self,
+        positions: List[Dict],
+        portfolio_value: float
+    ) -> Dict[str, Any]:
+        """
+        ENHANCEMENT: Check overall portfolio risk using heat monitoring
+
+        Call this at the start of each trading cycle!
+
+        Returns:
+            Dict with risk assessment and alerts
+        """
+        # Calculate portfolio heat
+        heat = self.heat_monitor.calculate_portfolio_heat(
+            positions,
+            portfolio_value
+        )
+
+        # Generate alerts
+        alerts = []
+
+        if heat.heat_usage > 0.9:
+            alerts.append({
+                'severity': 'CRITICAL',
+                'message': f'Portfolio heat at {heat.heat_usage:.0%} of limit - STOP NEW POSITIONS'
+            })
+
+        elif heat.heat_usage > 0.7:
+            alerts.append({
+                'severity': 'WARNING',
+                'message': f'Portfolio heat at {heat.heat_usage:.0%} of limit - reduce exposure'
+            })
+
+        # Find most risky positions
+        sorted_heats = sorted(heat.position_heats.items(), key=lambda x: x[1], reverse=True)
+        top_3_risky = sorted_heats[:3]
+
+        if len(top_3_risky) > 0:
+            top_risk = top_3_risky[0]
+            alerts.append({
+                'severity': 'INFO',
+                'message': f'Highest risk position: {top_risk[0]} (${top_risk[1]:,.0f} heat)'
+            })
+
+        return {
+            'heat': heat,
+            'alerts': alerts,
+            'can_trade': heat.can_add_position,
+            'top_risky_positions': top_3_risky
+        }
+
     async def _load_positions(self, state: Dict[str, Any]) -> Dict[str, Any]:
         """Load current positions from database"""
         try:

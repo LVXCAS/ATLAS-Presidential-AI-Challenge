@@ -40,6 +40,9 @@ from strategies.fibonacci_analysis import (
     FibonacciAnalyzer, analyze_fibonacci_levels
 )
 
+# ENHANCEMENT: Import dynamic threshold calculators
+from agents.mean_reversion_agent_enhancements import MeanReversionEnhancements
+
 # Database imports
 import asyncpg
 from sqlalchemy import create_engine, text
@@ -241,23 +244,33 @@ class BollingerBandAnalyzer:
     def __init__(self):
         self.indicator_library = IndicatorLibrary()
     
-    def calculate_bollinger_signals(self, price_data: np.ndarray, 
+    def calculate_bollinger_signals(self, price_data: np.ndarray,
                                   period: int = 20, std_dev: float = 2.0) -> List[TechnicalSignal]:
-        """Calculate Bollinger Band reversion signals"""
+        """
+        ENHANCED: Calculate Bollinger Band reversion signals with DYNAMIC widths
+
+        Now adapts band width based on volatility:
+        - High volatility (>30%): Wider bands (2.6 std)
+        - Low volatility (<15%): Tighter bands (1.6 std)
+        """
         signals = []
-        
+
         try:
-            # Calculate Bollinger Bands
-            bb_result = calculate_bollinger_bands(price_data, period=period, std_dev=std_dev)
-            bb_data = bb_result.values
-            
-            if len(bb_data) < 2:
+            # ENHANCEMENT: Use dynamic Bollinger Bands that adapt to volatility
+            df = pd.DataFrame({'close': price_data})
+            bb_upper, bb_middle, bb_lower, std_mult, volatility = (
+                MeanReversionEnhancements.calculate_dynamic_bollinger_bands(df, period, std_dev)
+            )
+
+            # Convert to numpy arrays
+            upper_band = bb_upper.values if hasattr(bb_upper, 'values') else bb_upper
+            middle_band = bb_middle.values if hasattr(bb_middle, 'values') else bb_middle
+            lower_band = bb_lower.values if hasattr(bb_lower, 'values') else bb_lower
+
+            logger.info(f"✅ Dynamic BB: volatility={volatility:.1%}, using {std_mult:.2f} std (adaptive!)")
+
+            if len(upper_band) < 2:
                 return signals
-            
-            # Extract bands
-            upper_band = bb_data[:, 0]  # Upper band
-            middle_band = bb_data[:, 1]  # Middle band (SMA)
-            lower_band = bb_data[:, 2]  # Lower band
             
             current_price = price_data[-1]
             prev_price = price_data[-2] if len(price_data) > 1 else current_price
@@ -380,8 +393,42 @@ class BollingerBandAnalyzer:
         
         except Exception as e:
             logger.error(f"Error calculating Bollinger Band signals: {e}")
-        
+
         return signals
+
+    def calculate_mean_reversion_probability(self, price_data: np.ndarray) -> Dict:
+        """
+        ENHANCEMENT: Calculate statistical probability of mean reversion
+
+        This gives you a probability score (0-100%) that price will revert!
+        """
+        try:
+            df = pd.DataFrame({'close': price_data})
+            mr_prob = MeanReversionEnhancements.calculate_mean_reversion_probability(df, price_data[-1])
+
+            logger.info(f"✅ Mean reversion probability: {mr_prob['reversion_probability']:.1%}")
+            return mr_prob
+
+        except Exception as e:
+            logger.error(f"Error calculating MR probability: {e}")
+            return {'reversion_probability': 0.5, 'z_score': 0.0, 'distance_from_mean': 0.0}
+
+    def calculate_dynamic_rsi_thresholds(self, price_data: np.ndarray) -> Dict:
+        """
+        ENHANCEMENT: Calculate dynamic RSI thresholds based on market conditions
+
+        No more static 30/70! Adapts to trending vs ranging markets.
+        """
+        try:
+            df = pd.DataFrame({'close': price_data})
+            rsi_info = MeanReversionEnhancements.calculate_dynamic_rsi_thresholds(df)
+
+            logger.info(f"✅ Dynamic RSI: {rsi_info['oversold_threshold']:.1f} / {rsi_info['overbought_threshold']:.1f}")
+            return rsi_info
+
+        except Exception as e:
+            logger.error(f"Error calculating dynamic RSI: {e}")
+            return {'current_rsi': 50, 'oversold_threshold': 30, 'overbought_threshold': 70}
 
 
 class ZScoreAnalyzer:
