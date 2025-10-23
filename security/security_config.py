@@ -607,24 +607,24 @@ SECURITY CHECKLIST:
 {'*'*30}
 
 Authentication:
-  {'[✓]' if config.get('api', {}).get('authentication', {}).get('jwt_enabled') else '[ ]'} JWT authentication enabled
-  {'[✓]' if config.get('api', {}).get('authentication', {}).get('require_api_key') else '[ ]'} API key authentication
-  {'[✓]' if config.get('monitoring', {}).get('grafana', {}).get('enable_2fa') else '[ ]'} Two-factor authentication
+  {'[[OK]]' if config.get('api', {}).get('authentication', {}).get('jwt_enabled') else '[ ]'} JWT authentication enabled
+  {'[[OK]]' if config.get('api', {}).get('authentication', {}).get('require_api_key') else '[ ]'} API key authentication
+  {'[[OK]]' if config.get('monitoring', {}).get('grafana', {}).get('enable_2fa') else '[ ]'} Two-factor authentication
 
 Encryption:
-  {'[✓]' if metrics.ssl_configured else '[ ]'} SSL/TLS certificates
-  {'[✓]' if metrics.encryption_enabled else '[ ]'} Data encryption at rest
-  {'[✓]' if config.get('database', {}).get('backup_encryption', {}).get('enabled') else '[ ]'} Backup encryption
+  {'[[OK]]' if metrics.ssl_configured else '[ ]'} SSL/TLS certificates
+  {'[[OK]]' if metrics.encryption_enabled else '[ ]'} Data encryption at rest
+  {'[[OK]]' if config.get('database', {}).get('backup_encryption', {}).get('enabled') else '[ ]'} Backup encryption
 
 Network Security:
-  {'[✓]' if len(config.get('network', {}).get('firewall_rules', [])) > 0 else '[ ]'} Firewall configured
-  {'[✓]' if config.get('network', {}).get('intrusion_detection', {}).get('enabled') else '[ ]'} Intrusion detection
-  {'[✓]' if config.get('containers', {}).get('network_security', {}).get('enable_custom_bridge') else '[ ]'} Network isolation
+  {'[[OK]]' if len(config.get('network', {}).get('firewall_rules', [])) > 0 else '[ ]'} Firewall configured
+  {'[[OK]]' if config.get('network', {}).get('intrusion_detection', {}).get('enabled') else '[ ]'} Intrusion detection
+  {'[[OK]]' if config.get('containers', {}).get('network_security', {}).get('enable_custom_bridge') else '[ ]'} Network isolation
 
 Monitoring:
-  {'[✓]' if config.get('database', {}).get('postgresql', {}).get('log_connections') else '[ ]'} Database logging
-  {'[✓]' if config.get('api', {}).get('rate_limiting', {}).get('enabled') else '[ ]'} Rate limiting
-  {'[✓]' if len(config.get('monitoring', {}).get('alerting', {}).get('security_alerts', [])) > 0 else '[ ]'} Security alerting
+  {'[[OK]]' if config.get('database', {}).get('postgresql', {}).get('log_connections') else '[ ]'} Database logging
+  {'[[OK]]' if config.get('api', {}).get('rate_limiting', {}).get('enabled') else '[ ]'} Rate limiting
+  {'[[OK]]' if len(config.get('monitoring', {}).get('alerting', {}).get('security_alerts', [])) > 0 else '[ ]'} Security alerting
 
 NEXT STEPS:
 {'*'*30}

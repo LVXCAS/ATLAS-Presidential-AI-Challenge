@@ -18,8 +18,14 @@ logger = logging.getLogger(__name__)
 class Week1ExecutionSystem(ValidatedStrategySystem):
     """Specialized system for Week 1 perfect execution"""
 
-    def __init__(self):
-        super().__init__(use_paper=True)
+    def __init__(self, force_main_account=False):
+        """
+        Initialize Week 1 execution system
+
+        Args:
+            force_main_account: Force use of main account (for production scanners)
+        """
+        super().__init__(use_paper=True, force_main_account=force_main_account)
 
         # Week 1 specific constraints (more conservative)
         self.week1_constraints = {

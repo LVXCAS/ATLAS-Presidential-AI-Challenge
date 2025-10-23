@@ -84,8 +84,8 @@ class MonstrousROIOrchestrator:
         self.news_stream = []
         self.options_data = {}
 
-        self.logger.info(f"🚀 MONSTROUS ROI ORCHESTRATOR initialized on {self.device}")
-        self.logger.info("💎 All GPU systems loaded and ready for MAXIMUM PROFIT")
+        self.logger.info(f"[LAUNCH] MONSTROUS ROI ORCHESTRATOR initialized on {self.device}")
+        self.logger.info("[GEM] All GPU systems loaded and ready for MAXIMUM PROFIT")
 
     async def start_rd_engine_integration(self):
         """Start and integrate with existing R&D engine"""
@@ -96,7 +96,7 @@ class MonstrousROIOrchestrator:
             ], cwd=os.getcwd(), capture_output=True, text=True)
 
             self.rd_engine_active = True
-            self.logger.info("✅ R&D ENGINE INTEGRATED - Strategy generation ACTIVE")
+            self.logger.info("[OK] R&D ENGINE INTEGRATED - Strategy generation ACTIVE")
 
             # Monitor R&D output
             await self.monitor_rd_output()
@@ -104,7 +104,7 @@ class MonstrousROIOrchestrator:
         except Exception as e:
             self.logger.error(f"R&D integration failed: {e}")
             # Continue with GPU-only mode
-            self.logger.info("🔥 Continuing with GPU-ONLY monster mode")
+            self.logger.info("[FIRE] Continuing with GPU-ONLY monster mode")
 
     async def start_execution_engine_integration(self):
         """Start and integrate with execution engine"""
@@ -115,7 +115,7 @@ class MonstrousROIOrchestrator:
             ], cwd=os.getcwd(), capture_output=True, text=True)
 
             self.execution_engine_active = True
-            self.logger.info("✅ EXECUTION ENGINE INTEGRATED - Live trading ACTIVE")
+            self.logger.info("[OK] EXECUTION ENGINE INTEGRATED - Live trading ACTIVE")
 
             # Monitor execution results
             await self.monitor_execution_results()
@@ -123,7 +123,7 @@ class MonstrousROIOrchestrator:
         except Exception as e:
             self.logger.error(f"Execution integration failed: {e}")
             # Continue with simulation mode
-            self.logger.info("📊 Continuing with SIMULATION mode")
+            self.logger.info("[CHART] Continuing with SIMULATION mode")
 
     async def gpu_data_collection_pipeline(self):
         """Continuous GPU-accelerated data collection"""
@@ -158,7 +158,7 @@ class MonstrousROIOrchestrator:
                 # Feed to strategy generation
                 await self.strategy_queue.put(combined_intelligence)
 
-                self.logger.info(f"🔥 GPU pipeline processed {len(market_signals)} signals")
+                self.logger.info(f"[FIRE] GPU pipeline processed {len(market_signals)} signals")
 
                 # High-frequency updates
                 await asyncio.sleep(1)
@@ -216,7 +216,7 @@ class MonstrousROIOrchestrator:
                     monster_strategy['confidence'] > 0.8):
 
                     await self.execution_queue.put(monster_strategy)
-                    self.logger.info(f"💎 MONSTER STRATEGY generated: {monster_strategy['expected_roi']:.1f}% ROI, {monster_strategy['expected_sharpe']:.2f} Sharpe")
+                    self.logger.info(f"[GEM] MONSTER STRATEGY generated: {monster_strategy['expected_roi']:.1f}% ROI, {monster_strategy['expected_sharpe']:.2f} Sharpe")
 
                 # R&D Integration: Feed results back to R&D engine
                 if self.rd_engine_active:
@@ -254,7 +254,7 @@ class MonstrousROIOrchestrator:
                 # Get monster strategy
                 strategy = await self.execution_queue.get()
 
-                self.logger.info(f"🎯 Executing MONSTER strategy: {strategy['strategy_id']}")
+                self.logger.info(f"[TARGET] Executing MONSTER strategy: {strategy['strategy_id']}")
 
                 # Execute through integrated execution engine
                 if self.execution_engine_active:
@@ -273,7 +273,7 @@ class MonstrousROIOrchestrator:
                 await self.feedback_to_gpu_systems(strategy, execution_results)
 
                 # Log monster results
-                self.logger.info(f"💰 Execution result: {execution_results.get('roi', 0):.2f}% ROI")
+                self.logger.info(f"[MONEY] Execution result: {execution_results.get('roi', 0):.2f}% ROI")
 
             except Exception as e:
                 self.logger.error(f"Execution pipeline error: {e}")
@@ -336,7 +336,7 @@ class MonstrousROIOrchestrator:
         # Update genetic algorithm with strategy success
         await self.gpu_genetics.update_strategy_fitness(feedback)
 
-        self.logger.info(f"🔄 Feedback integrated: {feedback['performance_ratio']:.2f}x performance")
+        self.logger.info(f"[INFO] Feedback integrated: {feedback['performance_ratio']:.2f}x performance")
 
     async def monitor_rd_output(self):
         """Monitor R&D engine output for integration"""
@@ -435,15 +435,15 @@ class MonstrousROIOrchestrator:
                 with open(report_file, 'w') as f:
                     json.dump(report, f, indent=2)
 
-                self.logger.info(f"📊 MONSTER ROI REPORT: {success_rate:.1f}% success, {avg_roi:.2f}% avg ROI")
+                self.logger.info(f"[CHART] MONSTER ROI REPORT: {success_rate:.1f}% success, {avg_roi:.2f}% avg ROI")
 
             except Exception as e:
                 self.logger.error(f"Report generation error: {e}")
 
     async def run_monster_trading_empire(self):
         """Launch the complete MONSTER trading empire"""
-        self.logger.info("🚀 LAUNCHING MONSTROUS ROI TRADING EMPIRE")
-        self.logger.info("💎 GPU + R&D + EXECUTION = MAXIMUM PROFIT POTENTIAL")
+        self.logger.info("[LAUNCH] LAUNCHING MONSTROUS ROI TRADING EMPIRE")
+        self.logger.info("[GEM] GPU + R&D + EXECUTION = MAXIMUM PROFIT POTENTIAL")
 
         # Start all systems
         tasks = [
@@ -466,9 +466,9 @@ class MonstrousROIOrchestrator:
 def launch_monster_roi_system():
     """Launch the complete MONSTER ROI system"""
     print("="*80)
-    print("🚀 LAUNCHING MONSTROUS ROI TRADING EMPIRE")
-    print("💎 GPU + R&D + EXECUTION INTEGRATION")
-    print("🎯 TARGET: 100%+ ROI, 3.0+ Sharpe Ratio")
+    print("[LAUNCH] LAUNCHING MONSTROUS ROI TRADING EMPIRE")
+    print("[GEM] GPU + R&D + EXECUTION INTEGRATION")
+    print("[TARGET] TARGET: 100%+ ROI, 3.0+ Sharpe Ratio")
     print("="*80)
 
     # Initialize the monster
@@ -478,9 +478,9 @@ def launch_monster_roi_system():
     try:
         asyncio.run(orchestrator.run_monster_trading_empire())
     except KeyboardInterrupt:
-        print("\n🛑 Monster trading empire stopped by user")
+        print("\n[INFO] Monster trading empire stopped by user")
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"[X] Error: {e}")
 
 if __name__ == "__main__":
     launch_monster_roi_system()

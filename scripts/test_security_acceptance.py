@@ -31,7 +31,7 @@ logger = logging.getLogger(__name__)
 
 def test_api_key_encryption():
     """Test that API keys are encrypted in storage."""
-    print("🔐 Testing API Key Encryption...")
+    print("[SECURE] Testing API Key Encryption...")
     
     security_manager = get_security_manager()
     
@@ -52,19 +52,19 @@ def test_api_key_encryption():
         
         # Verify the original key is not in the file (it's encrypted)
         if test_api_key not in encrypted_content:
-            print("✅ API keys are properly encrypted in storage")
+            print("[OK] API keys are properly encrypted in storage")
             return True
         else:
-            print("❌ API keys are not encrypted (found in plaintext)")
+            print("[X] API keys are not encrypted (found in plaintext)")
             return False
     else:
-        print("❌ Secrets file not found")
+        print("[X] Secrets file not found")
         return False
 
 
 def test_environment_configuration():
     """Test environment-based configuration."""
-    print("🌍 Testing Environment-Based Configuration...")
+    print("[INFO] Testing Environment-Based Configuration...")
     
     env_manager = get_env_manager()
     
@@ -83,16 +83,16 @@ def test_environment_configuration():
     risk_config = env_manager.get_risk_config()
     
     if all([db_config, trading_config, risk_config]):
-        print("✅ Environment-based configuration working")
+        print("[OK] Environment-based configuration working")
         return True
     else:
-        print("❌ Environment-based configuration failed")
+        print("[X] Environment-based configuration failed")
         return False
 
 
 def test_secure_api_key_storage():
     """Test secure API key storage and retrieval."""
-    print("🔑 Testing Secure API Key Storage...")
+    print("[INFO] Testing Secure API Key Storage...")
     
     security_manager = get_security_manager()
     
@@ -127,16 +127,16 @@ def test_secure_api_key_storage():
             print(f"   Failed to retrieve {name}: {e}")
     
     if stored_count == len(test_keys) and retrieved_count == len(test_keys):
-        print("✅ Secure API key storage working")
+        print("[OK] Secure API key storage working")
         return True
     else:
-        print(f"❌ API key storage failed (stored: {stored_count}, retrieved: {retrieved_count})")
+        print(f"[X] API key storage failed (stored: {stored_count}, retrieved: {retrieved_count})")
         return False
 
 
 def test_data_encryption():
     """Test encryption for sensitive data."""
-    print("🔒 Testing Data Encryption...")
+    print("[LOCK] Testing Data Encryption...")
     
     env_manager = get_env_manager()
     
@@ -163,16 +163,16 @@ def test_data_encryption():
             print(f"   Encryption failed for data: {e}")
     
     if encryption_success == len(sensitive_data):
-        print("✅ Data encryption working")
+        print("[OK] Data encryption working")
         return True
     else:
-        print(f"❌ Data encryption failed ({encryption_success}/{len(sensitive_data)})")
+        print(f"[X] Data encryption failed ({encryption_success}/{len(sensitive_data)})")
         return False
 
 
 def test_authentication_framework():
     """Test basic authentication framework."""
-    print("🔐 Testing Authentication Framework...")
+    print("[SECURE] Testing Authentication Framework...")
     
     # Test user authentication
     test_users = [
@@ -203,16 +203,16 @@ def test_authentication_framework():
             session_validation_success += 1
     
     if auth_success == len(test_users) and session_validation_success == len(sessions):
-        print("✅ Authentication framework working")
+        print("[OK] Authentication framework working")
         return True
     else:
-        print(f"❌ Authentication failed (auth: {auth_success}/{len(test_users)}, sessions: {session_validation_success}/{len(sessions)})")
+        print(f"[X] Authentication failed (auth: {auth_success}/{len(test_users)}, sessions: {session_validation_success}/{len(sessions)})")
         return False
 
 
 def test_rbac_framework():
     """Test Role-Based Access Control framework."""
-    print("🛡️ Testing RBAC Framework...")
+    print("[INFO]️ Testing RBAC Framework...")
     
     # Test different user roles and permissions
     test_cases = [
@@ -243,16 +243,16 @@ def test_rbac_framework():
         logout_user(session_token)
     
     if rbac_success == len(test_cases):
-        print("✅ RBAC framework working")
+        print("[OK] RBAC framework working")
         return True
     else:
-        print(f"❌ RBAC failed ({rbac_success}/{len(test_cases)})")
+        print(f"[X] RBAC failed ({rbac_success}/{len(test_cases)})")
         return False
 
 
 def main():
     """Run all acceptance tests."""
-    print("🧪 Security System Acceptance Tests")
+    print("[INFO] Security System Acceptance Tests")
     print("=" * 60)
     print("Testing Task 1.3 Acceptance Criteria:")
     print("- API keys encrypted")
@@ -286,18 +286,18 @@ def main():
             print(f"   Test error: {test_name} - {e}")
     
     print("\n" + "=" * 60)
-    print(f"📊 Test Results: {passed_tests}/{total_tests} tests passed")
+    print(f"[CHART] Test Results: {passed_tests}/{total_tests} tests passed")
     
     if passed_tests == total_tests:
-        print("🎉 All acceptance criteria met!")
-        print("\n✅ Task 1.3 Implementation Complete:")
+        print("[PARTY] All acceptance criteria met!")
+        print("\n[OK] Task 1.3 Implementation Complete:")
         print("   • Secure API key storage implemented")
         print("   • Data encryption working")
         print("   • Environment-based configuration active")
         print("   • Authentication and RBAC framework operational")
         return True
     else:
-        print("❌ Some acceptance criteria not met")
+        print("[X] Some acceptance criteria not met")
         return False
 
 

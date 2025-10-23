@@ -316,7 +316,7 @@ class EnhancedDataSourcesScanner:
         print("=" * 40)
         print("Data Sources:")
         for source, available in self.data_sources.items():
-            status = "✓" if available else "✗"
+            status = "[OK]" if available else "[X]"
             print(f"  {status} {source.replace('_', ' ').title()}")
         print()
 
@@ -334,7 +334,7 @@ class EnhancedDataSourcesScanner:
             if score >= 4.5:  # Week 1 threshold
                 market_data['opportunity_score'] = score
                 intel_opportunities.append(market_data)
-                print(f"   ✓ QUALIFIES for Intel-style trade")
+                print(f"   [OK] QUALIFIES for Intel-style trade")
             else:
                 print(f"   → Below Week 1 threshold (4.5)")
 
@@ -353,7 +353,7 @@ class EnhancedDataSourcesScanner:
                 if score >= 3.8:  # Week 1 earnings threshold
                     market_data['opportunity_score'] = score
                     earnings_opportunities.append(market_data)
-                    print(f"   ✓ QUALIFIES for earnings trade")
+                    print(f"   [OK] QUALIFIES for earnings trade")
                 else:
                     print(f"   → Below earnings threshold (3.8)")
 

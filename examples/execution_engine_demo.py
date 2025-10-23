@@ -390,12 +390,12 @@ class ExecutionEngineDemo:
             print("DEMO COMPLETED SUCCESSFULLY")
             print("="*80)
             print("The Execution Engine Agent demonstrates:")
-            print("✓ Smart order routing across multiple venues")
-            print("✓ Market impact estimation and slippage minimization")
-            print("✓ Multiple execution algorithms (TWAP, VWAP, Implementation Shortfall)")
-            print("✓ Order size optimization based on liquidity")
-            print("✓ Real-time execution monitoring and optimization")
-            print("✓ Comprehensive performance metrics tracking")
+            print("[OK] Smart order routing across multiple venues")
+            print("[OK] Market impact estimation and slippage minimization")
+            print("[OK] Multiple execution algorithms (TWAP, VWAP, Implementation Shortfall)")
+            print("[OK] Order size optimization based on liquidity")
+            print("[OK] Real-time execution monitoring and optimization")
+            print("[OK] Comprehensive performance metrics tracking")
             
         except Exception as e:
             print(f"\nDemo failed with error: {e}")

@@ -12,15 +12,20 @@ This script validates that the News and Sentiment Analysis Agent meets all requi
 Requirements: Requirement 3 (News and Sentiment Analysis)
 """
 
+import sys
+import os
+from pathlib import Path
+
+# Add project root to Python path to ensure local config is imported
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
 import asyncio
 import logging
-import sys
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
 import json
-
-# Add project root to path
-sys.path.append('.')
 
 from agents.news_sentiment_agent import (
     create_news_sentiment_agent,
@@ -65,10 +70,10 @@ class NewsSentimentAcceptanceTest:
         self.test_results['total_tests'] += 1
         if passed:
             self.test_results['passed_tests'] += 1
-            logger.info(f"✅ {test_name}: PASSED")
+            logger.info(f"[OK] {test_name}: PASSED")
         else:
             self.test_results['failed_tests'] += 1
-            logger.error(f"❌ {test_name}: FAILED - {details}")
+            logger.error(f"[X] {test_name}: FAILED - {details}")
         
         self.test_results['test_details'].append({
             'test_name': test_name,
@@ -485,7 +490,7 @@ class NewsSentimentAcceptanceTest:
         logger.info("-" * 50)
         
         for test in self.test_results['test_details']:
-            status = "✅ PASS" if test['passed'] else "❌ FAIL"
+            status = "[OK] PASS" if test['passed'] else "[X] FAIL"
             logger.info(f"{status} - {test['test_name']}")
             if test['details']:
                 logger.info(f"    Details: {test['details']}")
@@ -524,17 +529,17 @@ class NewsSentimentAcceptanceTest:
         }
         
         for requirement, met in requirements_met.items():
-            status = "✅" if met else "❌"
+            status = "[OK]" if met else "[X]"
             logger.info(f"{status} {requirement}")
         
         all_requirements_met = all(requirements_met.values())
         
         logger.info("=" * 80)
         if all_requirements_met and failed == 0:
-            logger.info("🎉 ALL ACCEPTANCE TESTS PASSED!")
+            logger.info("[PARTY] ALL ACCEPTANCE TESTS PASSED!")
             logger.info("News and Sentiment Analysis Agent meets all requirements.")
         else:
-            logger.info("⚠️  SOME TESTS FAILED")
+            logger.info("[WARN]  SOME TESTS FAILED")
             logger.info("Please review failed tests and fix issues.")
         
         logger.info("=" * 80)

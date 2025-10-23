@@ -135,11 +135,11 @@ class EnhancedCommunicationValidator:
             data = await redis_manager.get_shared_data('test_key')
             if data and data.get('test') == 'value':
                 self.redis_available = True
-                logger.info("✓ Redis is available")
+                logger.info("[OK] Redis is available")
             else:
-                logger.warning("✗ Redis test failed")
+                logger.warning("[X] Redis test failed")
         except Exception as e:
-            logger.warning(f"✗ Redis not available: {e}")
+            logger.warning(f"[X] Redis not available: {e}")
         
         # Check Kafka
         try:
@@ -148,9 +148,9 @@ class EnhancedCommunicationValidator:
             await kafka_bus.publish('test_topic', {'test': 'message'})
             await kafka_bus.stop()
             self.kafka_available = True
-            logger.info("✓ Kafka is available")
+            logger.info("[OK] Kafka is available")
         except Exception as e:
-            logger.warning(f"✗ Kafka not available: {e}")
+            logger.warning(f"[X] Kafka not available: {e}")
         
         logger.info("")
     
@@ -655,9 +655,9 @@ class EnhancedCommunicationValidator:
         logger.info(f"Summary: {passed} passed, {failed} failed")
         
         if failed == 0:
-            logger.info("✓ All validations passed!")
+            logger.info("[OK] All validations passed!")
         else:
-            logger.warning(f"✗ {failed} validation(s) failed")
+            logger.warning(f"[X] {failed} validation(s) failed")
         
         logger.info("=" * 60)
 

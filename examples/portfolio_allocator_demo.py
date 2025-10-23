@@ -295,11 +295,11 @@ def create_market_scenarios() -> List[Dict[str, any]]:
 
 def print_signal_summary(symbol: str, signals: List[Signal]):
     """Print a summary of input signals"""
-    print(f"\n📊 Input Signals for {symbol}:")
+    print(f"\n[CHART] Input Signals for {symbol}:")
     print("=" * 50)
     
     for signal in signals:
-        direction = "🟢 BUY" if signal.value > 0 else "🔴 SELL"
+        direction = "[GREEN] BUY" if signal.value > 0 else "[RED] SELL"
         strength = "Strong" if abs(signal.value) > 0.6 else "Moderate" if abs(signal.value) > 0.3 else "Weak"
         
         print(f"  {direction} | {signal.signal_type.value.upper():<20} | "
@@ -309,10 +309,10 @@ def print_signal_summary(symbol: str, signals: List[Signal]):
 
 def print_fused_signal_details(symbol: str, fused_signal):
     """Print detailed analysis of fused signal"""
-    print(f"\n🎯 Fused Signal for {symbol}:")
+    print(f"\n[TARGET] Fused Signal for {symbol}:")
     print("=" * 60)
     
-    direction = "🟢 BUY" if fused_signal.value > 0 else "🔴 SELL"
+    direction = "[GREEN] BUY" if fused_signal.value > 0 else "[RED] SELL"
     strength = "Strong" if abs(fused_signal.value) > 0.6 else "Moderate" if abs(fused_signal.value) > 0.3 else "Weak"
     
     print(f"  Final Decision: {direction}")
@@ -321,9 +321,9 @@ def print_fused_signal_details(symbol: str, fused_signal):
     print(f"  Contributing Agents: {', '.join(fused_signal.contributing_agents)}")
     
     if fused_signal.conflict_resolution:
-        print(f"  ⚠️  Conflict Resolved: {fused_signal.conflict_resolution}")
+        print(f"  [WARN]  Conflict Resolved: {fused_signal.conflict_resolution}")
     
-    print(f"\n  🧠 Top 3 Reasons:")
+    print(f"\n  [AI] Top 3 Reasons:")
     for reason in fused_signal.top_3_reasons:
         print(f"    {reason.rank}. {reason.factor.replace('_', ' ').title()}")
         print(f"       {reason.explanation}")
@@ -333,7 +333,7 @@ def print_fused_signal_details(symbol: str, fused_signal):
 
 async def run_scenario_analysis():
     """Run comprehensive scenario analysis"""
-    print("🚀 Portfolio Allocator Agent - Comprehensive Demo")
+    print("[LAUNCH] Portfolio Allocator Agent - Comprehensive Demo")
     print("=" * 80)
     
     # Initialize agent
@@ -343,7 +343,7 @@ async def run_scenario_analysis():
     raw_signals = create_sample_signals()
     
     # Print input signals summary
-    print("\n📈 INPUT SIGNALS SUMMARY")
+    print("\n[UP] INPUT SIGNALS SUMMARY")
     print("=" * 80)
     for symbol, signals in raw_signals.items():
         print_signal_summary(symbol, signals)
@@ -352,7 +352,7 @@ async def run_scenario_analysis():
     scenarios = create_market_scenarios()
     
     for i, scenario in enumerate(scenarios, 1):
-        print(f"\n\n🌍 SCENARIO {i}: {scenario['name'].upper()}")
+        print(f"\n\n[INFO] SCENARIO {i}: {scenario['name'].upper()}")
         print("=" * 80)
         
         # Print market conditions
@@ -373,7 +373,7 @@ async def run_scenario_analysis():
                 print_fused_signal_details(symbol, fused_signals[symbol])
             
             # Print scenario summary
-            print(f"\n📋 Scenario Summary:")
+            print(f"\n[INFO] Scenario Summary:")
             total_signals = len(fused_signals)
             buy_signals = sum(1 for s in fused_signals.values() if s.value > 0)
             sell_signals = total_signals - buy_signals
@@ -388,14 +388,14 @@ async def run_scenario_analysis():
                 print(f"  Conflicts Resolved: {conflicts_resolved}")
             
         except Exception as e:
-            print(f"❌ Error processing scenario: {str(e)}")
+            print(f"[X] Error processing scenario: {str(e)}")
         
         print("\n" + "-" * 80)
 
 
 async def run_explainability_showcase():
     """Showcase the explainability engine in detail"""
-    print("\n\n🧠 EXPLAINABILITY ENGINE SHOWCASE")
+    print("\n\n[AI] EXPLAINABILITY ENGINE SHOWCASE")
     print("=" * 80)
     
     agent = PortfolioAllocatorAgent()
@@ -450,16 +450,16 @@ async def run_explainability_showcase():
         'ai_sector_momentum': 0.85
     }
     
-    print("🎯 Processing NVDA signal with rich metadata...")
+    print("[TARGET] Processing NVDA signal with rich metadata...")
     fused_signals = await agent.process_signals(rich_signal, market_data)
     
     if "NVDA" in fused_signals:
         nvda_signal = fused_signals["NVDA"]
         
-        print(f"\n📊 Detailed Explainability Analysis:")
+        print(f"\n[CHART] Detailed Explainability Analysis:")
         print(f"Final Signal: {nvda_signal.value:+.3f} (Confidence: {nvda_signal.confidence:.1%})")
         
-        print(f"\n🔍 Detailed Reasoning Breakdown:")
+        print(f"\n[SEARCH] Detailed Reasoning Breakdown:")
         for i, reason in enumerate(nvda_signal.top_3_reasons, 1):
             print(f"\n  Reason #{i}: {reason.factor.replace('_', ' ').title()}")
             print(f"  Contribution: {reason.contribution:.1%}")
@@ -477,7 +477,7 @@ async def run_explainability_showcase():
 
 async def run_conflict_resolution_demo():
     """Demonstrate conflict resolution capabilities"""
-    print("\n\n⚔️ CONFLICT RESOLUTION DEMO")
+    print("\n\n[INFO]️ CONFLICT RESOLUTION DEMO")
     print("=" * 80)
     
     agent = PortfolioAllocatorAgent()
@@ -541,10 +541,10 @@ async def run_conflict_resolution_demo():
         'volume_ratio': 1.5
     }
     
-    print("⚡ Processing highly conflicting signals for AMZN...")
+    print("[FAST] Processing highly conflicting signals for AMZN...")
     print("\nInput Signals:")
     for signal in conflicting_signals["AMZN"]:
-        direction = "🟢" if signal.value > 0 else "🔴"
+        direction = "[GREEN]" if signal.value > 0 else "[RED]"
         print(f"  {direction} {signal.signal_type.value}: {signal.value:+.2f} "
               f"(confidence: {signal.confidence:.1%})")
     
@@ -553,8 +553,8 @@ async def run_conflict_resolution_demo():
     if "AMZN" in fused_signals:
         amzn_signal = fused_signals["AMZN"]
         
-        print(f"\n🎯 Conflict Resolution Result:")
-        direction = "🟢 BUY" if amzn_signal.value > 0 else "🔴 SELL"
+        print(f"\n[TARGET] Conflict Resolution Result:")
+        direction = "[GREEN] BUY" if amzn_signal.value > 0 else "[RED] SELL"
         print(f"  Final Decision: {direction}")
         print(f"  Resolved Value: {amzn_signal.value:+.3f}")
         print(f"  Final Confidence: {amzn_signal.confidence:.1%}")
@@ -579,18 +579,18 @@ async def main():
         # Run conflict resolution demo
         await run_conflict_resolution_demo()
         
-        print("\n\n✅ Demo completed successfully!")
+        print("\n\n[OK] Demo completed successfully!")
         print("=" * 80)
         print("The Portfolio Allocator Agent demonstrated:")
-        print("  ✓ Multi-strategy signal fusion")
-        print("  ✓ Regime-based strategy weighting")
-        print("  ✓ Intelligent conflict resolution")
-        print("  ✓ Comprehensive explainability")
-        print("  ✓ Robust error handling")
-        print("  ✓ LangGraph workflow orchestration")
+        print("  [OK] Multi-strategy signal fusion")
+        print("  [OK] Regime-based strategy weighting")
+        print("  [OK] Intelligent conflict resolution")
+        print("  [OK] Comprehensive explainability")
+        print("  [OK] Robust error handling")
+        print("  [OK] LangGraph workflow orchestration")
         
     except Exception as e:
-        print(f"\n❌ Demo failed with error: {str(e)}")
+        print(f"\n[X] Demo failed with error: {str(e)}")
         import traceback
         traceback.print_exc()
 

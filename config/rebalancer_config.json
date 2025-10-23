@@ -1,0 +1,26 @@
+{
+  "enabled": false,
+  "rebalance_frequency_days": 7,
+  "drift_threshold": 0.1,
+  "min_rebalance_amount": 1000,
+  "target_allocations": {
+    "forex": {
+      "target_percent": 0.4,
+      "min_percent": 0.3,
+      "max_percent": 0.5
+    },
+    "futures": {
+      "target_percent": 0.3,
+      "min_percent": 0.2,
+      "max_percent": 0.4
+    },
+    "options": {
+      "target_percent": 0.3,
+      "min_percent": 0.2,
+      "max_percent": 0.4
+    }
+  },
+  "strategy_performance_lookback_days": 30,
+  "underperforming_threshold": 0.0,
+  "outperforming_threshold": 1.5
+}

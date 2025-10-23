@@ -70,7 +70,7 @@ class PaperTradingDemo:
         
     async def start_demo(self):
         """Start the paper trading demo"""
-        print("🚀 PAPER TRADING DEMO - Task 9.1")
+        print("[LAUNCH] PAPER TRADING DEMO - Task 9.1")
         print("=" * 80)
         
         try:
@@ -102,7 +102,7 @@ class PaperTradingDemo:
             print("\n7. Stopping Paper Trading System...")
             await self.agent.stop_paper_trading()
             
-            print("\n✅ Paper Trading Demo completed successfully!")
+            print("\n[OK] Paper Trading Demo completed successfully!")
             
         except Exception as e:
             logger.error(f"Demo failed: {e}")
@@ -111,7 +111,7 @@ class PaperTradingDemo:
     
     async def _initialize_demo(self):
         """Initialize demo environment"""
-        print("   🎯 Setting up demo trading environment...")
+        print("   [TARGET] Setting up demo trading environment...")
         
         # Set demo start time
         self.demo_start_time = datetime.now()
@@ -131,11 +131,11 @@ class PaperTradingDemo:
         print(f"      Available Strategies: {', '.join(self.demo_strategies)}")
         print(f"      Available Agents: {', '.join(self.demo_agents)}")
         
-        print("   ✅ Demo environment initialized")
+        print("   [OK] Demo environment initialized")
     
     async def _run_trading_simulation(self):
         """Run realistic trading simulation"""
-        print("   📊 Running realistic trading simulation...")
+        print("   [CHART] Running realistic trading simulation...")
         
         # Simulation parameters
         simulation_duration = 120  # 2 minutes
@@ -176,7 +176,7 @@ class PaperTradingDemo:
                 logger.error(f"Error in trading simulation: {e}")
                 break
         
-        print(f"   ✅ Trading simulation completed: {order_count} orders executed")
+        print(f"   [OK] Trading simulation completed: {order_count} orders executed")
     
     def _generate_random_order(self) -> OrderRequest:
         """Generate a random order for simulation"""
@@ -239,7 +239,7 @@ class PaperTradingDemo:
         try:
             summary = self.agent.get_portfolio_summary()
             
-            print(f"      📈 Portfolio Update:")
+            print(f"      [UP] Portfolio Update:")
             print(f"         Total Value: ${summary['total_value']:,.2f}")
             print(f"         Cash: ${summary['cash']:,.2f}")
             print(f"         Unrealized P&L: ${summary['unrealized_pnl']:,.2f}")
@@ -252,12 +252,12 @@ class PaperTradingDemo:
     
     async def _display_results(self):
         """Display comprehensive trading results"""
-        print("   📊 Displaying comprehensive trading results...")
+        print("   [CHART] Displaying comprehensive trading results...")
         
         # Get portfolio summary
         summary = self.agent.get_portfolio_summary()
         
-        print(f"\n      💰 PORTFOLIO SUMMARY:")
+        print(f"\n      [MONEY] PORTFOLIO SUMMARY:")
         print(f"         Initial Capital: ${self.config.initial_capital:,.2f}")
         print(f"         Current Value: ${summary['total_value']:,.2f}")
         print(f"         Total Return: {summary['total_return']*100:.2f}%")
@@ -271,7 +271,7 @@ class PaperTradingDemo:
         positions = self.agent.get_positions_summary()
         
         if positions:
-            print(f"\n      📈 POSITIONS SUMMARY:")
+            print(f"\n      [UP] POSITIONS SUMMARY:")
             print(f"         Total Positions: {len(positions)}")
             
             for pos in positions:
@@ -279,13 +279,13 @@ class PaperTradingDemo:
                 print(f"             Current: ${pos['current_price']:.2f} | P&L: ${pos['unrealized_pnl']:,.2f}")
                 print(f"             Strategy: {pos['strategy']} | Agent: {pos['agent_id']}")
         else:
-            print(f"\n      📈 POSITIONS SUMMARY: No open positions")
+            print(f"\n      [UP] POSITIONS SUMMARY: No open positions")
         
         # Get performance summary
         performance = self.agent.get_performance_summary()
         
         if performance:
-            print(f"\n      📊 PERFORMANCE METRICS:")
+            print(f"\n      [CHART] PERFORMANCE METRICS:")
             print(f"         Total Return: {performance['total_return']*100:.2f}%")
             print(f"         Annualized Return: {performance['annualized_return']*100:.2f}%")
             print(f"         Volatility: {performance['volatility']*100:.2f}%")
@@ -297,7 +297,7 @@ class PaperTradingDemo:
             print(f"         Losing Trades: {performance['losing_trades']}")
         
         # Get trading statistics
-        print(f"\n      🔄 TRADING STATISTICS:")
+        print(f"\n      [INFO] TRADING STATISTICS:")
         print(f"         Total Orders: {summary['order_count']}")
         print(f"         Total Trades: {summary['trade_count']}")
         print(f"         Uptime: {summary['uptime_seconds']:.1f} seconds")
@@ -306,7 +306,7 @@ class PaperTradingDemo:
     
     async def _test_mode_switching(self):
         """Test switching between paper and live trading modes"""
-        print("   🔄 Testing mode switching capabilities...")
+        print("   [INFO] Testing mode switching capabilities...")
         
         try:
             # Test switch to live trading
@@ -316,9 +316,9 @@ class PaperTradingDemo:
             # Verify mode switch
             summary = self.agent.get_portfolio_summary()
             if summary['trading_mode'] == 'live':
-                print("      ✅ Successfully switched to live trading mode")
+                print("      [OK] Successfully switched to live trading mode")
             else:
-                print("      ❌ Failed to switch to live trading mode")
+                print("      [X] Failed to switch to live trading mode")
             
             # Test switch back to paper trading
             print("      Testing switch back to paper trading mode...")
@@ -327,19 +327,19 @@ class PaperTradingDemo:
             # Verify mode switch
             summary = self.agent.get_portfolio_summary()
             if summary['trading_mode'] == 'paper':
-                print("      ✅ Successfully switched back to paper trading mode")
+                print("      [OK] Successfully switched back to paper trading mode")
             else:
-                print("      ❌ Failed to switch back to paper trading mode")
+                print("      [X] Failed to switch back to paper trading mode")
             
-            print("      ✅ Mode switching test completed successfully")
+            print("      [OK] Mode switching test completed successfully")
             
         except Exception as e:
-            print(f"      ❌ Mode switching test failed: {e}")
+            print(f"      [X] Mode switching test failed: {e}")
             logger.error(f"Mode switching test failed: {e}")
     
     async def _analyze_performance(self):
         """Analyze paper trading performance"""
-        print("   📈 Analyzing paper trading performance...")
+        print("   [UP] Analyzing paper trading performance...")
         
         try:
             # Get performance data
@@ -358,54 +358,54 @@ class PaperTradingDemo:
             win_rate = performance['win_rate']
             
             # Performance assessment
-            print(f"\n      🎯 PERFORMANCE ASSESSMENT:")
+            print(f"\n      [TARGET] PERFORMANCE ASSESSMENT:")
             
             # Return analysis
             if total_return > 0.05:
-                print(f"         Returns: 🟢 EXCELLENT ({total_return*100:.2f}%)")
+                print(f"         Returns: [GREEN] EXCELLENT ({total_return*100:.2f}%)")
             elif total_return > 0.02:
-                print(f"         Returns: 🟡 GOOD ({total_return*100:.2f}%)")
+                print(f"         Returns: [YELLOW] GOOD ({total_return*100:.2f}%)")
             elif total_return > 0:
-                print(f"         Returns: 🟠 POSITIVE ({total_return*100:.2f}%)")
+                print(f"         Returns: [INFO] POSITIVE ({total_return*100:.2f}%)")
             else:
-                print(f"         Returns: 🔴 NEGATIVE ({total_return*100:.2f}%)")
+                print(f"         Returns: [RED] NEGATIVE ({total_return*100:.2f}%)")
             
             # Risk analysis
             if volatility < 0.15:
-                print(f"         Volatility: 🟢 LOW ({volatility*100:.2f}%)")
+                print(f"         Volatility: [GREEN] LOW ({volatility*100:.2f}%)")
             elif volatility < 0.25:
-                print(f"         Volatility: 🟡 MODERATE ({volatility*100:.2f}%)")
+                print(f"         Volatility: [YELLOW] MODERATE ({volatility*100:.2f}%)")
             else:
-                print(f"         Volatility: 🔴 HIGH ({volatility*100:.2f}%)")
+                print(f"         Volatility: [RED] HIGH ({volatility*100:.2f}%)")
             
             # Sharpe ratio analysis
             if sharpe_ratio > 1.5:
-                print(f"         Sharpe Ratio: 🟢 EXCELLENT ({sharpe_ratio:.2f})")
+                print(f"         Sharpe Ratio: [GREEN] EXCELLENT ({sharpe_ratio:.2f})")
             elif sharpe_ratio > 1.0:
-                print(f"         Sharpe Ratio: 🟡 GOOD ({sharpe_ratio:.2f})")
+                print(f"         Sharpe Ratio: [YELLOW] GOOD ({sharpe_ratio:.2f})")
             elif sharpe_ratio > 0:
-                print(f"         Sharpe Ratio: 🟠 POSITIVE ({sharpe_ratio:.2f})")
+                print(f"         Sharpe Ratio: [INFO] POSITIVE ({sharpe_ratio:.2f})")
             else:
-                print(f"         Sharpe Ratio: 🔴 NEGATIVE ({sharpe_ratio:.2f})")
+                print(f"         Sharpe Ratio: [RED] NEGATIVE ({sharpe_ratio:.2f})")
             
             # Drawdown analysis
             if max_drawdown < 0.05:
-                print(f"         Max Drawdown: 🟢 LOW ({max_drawdown*100:.2f}%)")
+                print(f"         Max Drawdown: [GREEN] LOW ({max_drawdown*100:.2f}%)")
             elif max_drawdown < 0.10:
-                print(f"         Max Drawdown: 🟡 MODERATE ({max_drawdown*100:.2f}%)")
+                print(f"         Max Drawdown: [YELLOW] MODERATE ({max_drawdown*100:.2f}%)")
             else:
-                print(f"         Max Drawdown: 🔴 HIGH ({max_drawdown*100:.2f}%)")
+                print(f"         Max Drawdown: [RED] HIGH ({max_drawdown*100:.2f}%)")
             
             # Win rate analysis
             if win_rate > 0.6:
-                print(f"         Win Rate: 🟢 EXCELLENT ({win_rate*100:.1f}%)")
+                print(f"         Win Rate: [GREEN] EXCELLENT ({win_rate*100:.1f}%)")
             elif win_rate > 0.5:
-                print(f"         Win Rate: 🟡 GOOD ({win_rate*100:.1f}%)")
+                print(f"         Win Rate: [YELLOW] GOOD ({win_rate*100:.1f}%)")
             else:
-                print(f"         Win Rate: 🔴 POOR ({win_rate*100:.1f}%)")
+                print(f"         Win Rate: [RED] POOR ({win_rate*100:.1f}%)")
             
             # Overall assessment
-            print(f"\n      🎯 OVERALL ASSESSMENT:")
+            print(f"\n      [TARGET] OVERALL ASSESSMENT:")
             
             # Calculate composite score
             score = 0
@@ -416,18 +416,18 @@ class PaperTradingDemo:
             if win_rate > 0.5: score += 1
             
             if score >= 4:
-                print(f"         🟢 EXCELLENT PERFORMANCE - Ready for live trading")
+                print(f"         [GREEN] EXCELLENT PERFORMANCE - Ready for live trading")
             elif score >= 3:
-                print(f"         🟡 GOOD PERFORMANCE - Minor improvements needed")
+                print(f"         [YELLOW] GOOD PERFORMANCE - Minor improvements needed")
             elif score >= 2:
-                print(f"         🟠 MODERATE PERFORMANCE - Significant improvements needed")
+                print(f"         [INFO] MODERATE PERFORMANCE - Significant improvements needed")
             else:
-                print(f"         🔴 POOR PERFORMANCE - Major improvements needed")
+                print(f"         [RED] POOR PERFORMANCE - Major improvements needed")
             
-            print(f"      ✅ Performance analysis completed")
+            print(f"      [OK] Performance analysis completed")
             
         except Exception as e:
-            print(f"      ❌ Performance analysis failed: {e}")
+            print(f"      [X] Performance analysis failed: {e}")
             logger.error(f"Performance analysis failed: {e}")
 
 
@@ -438,14 +438,14 @@ async def main():
         await demo.start_demo()
         
         print("\n" + "=" * 80)
-        print("🎉 PAPER TRADING DEMO COMPLETED SUCCESSFULLY!")
+        print("[PARTY] PAPER TRADING DEMO COMPLETED SUCCESSFULLY!")
         print("=" * 80)
         print("\nTask 9.1 - Paper Trading Mode has been implemented and demonstrated:")
-        print("✅ Paper trading simulation mode with realistic market simulation")
-        print("✅ Realistic order execution simulation with slippage and commissions")
-        print("✅ Paper trading performance tracking and analytics")
-        print("✅ Seamless switch between paper and live trading modes")
-        print("✅ Integration with existing trading infrastructure")
+        print("[OK] Paper trading simulation mode with realistic market simulation")
+        print("[OK] Realistic order execution simulation with slippage and commissions")
+        print("[OK] Paper trading performance tracking and analytics")
+        print("[OK] Seamless switch between paper and live trading modes")
+        print("[OK] Integration with existing trading infrastructure")
         
         print("\nThe paper trading system is now ready for production use!")
         print("It provides comprehensive simulation capabilities for strategy validation and risk-free testing.")
@@ -453,7 +453,7 @@ async def main():
         return True
         
     except Exception as e:
-        print(f"\n❌ Demo failed: {e}")
+        print(f"\n[X] Demo failed: {e}")
         logger.error(f"Demo execution failed: {e}", exc_info=True)
         return False
 

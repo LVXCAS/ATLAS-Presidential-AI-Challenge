@@ -29,15 +29,15 @@ def install_package(package):
     try:
         logger.info(f"Installing {package}...")
         subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-        logger.info(f"✅ Successfully installed {package}")
+        logger.info(f"[OK] Successfully installed {package}")
         return True
     except subprocess.CalledProcessError as e:
-        logger.error(f"❌ Failed to install {package}: {e}")
+        logger.error(f"[X] Failed to install {package}: {e}")
         return False
 
 def main():
     """Install all required packages"""
-    logger.info("🚀 Installing Market Data Ingestor dependencies...")
+    logger.info("[LAUNCH] Installing Market Data Ingestor dependencies...")
     
     failed_packages = []
     
@@ -46,13 +46,13 @@ def main():
             failed_packages.append(package)
     
     if failed_packages:
-        logger.error(f"❌ Failed to install {len(failed_packages)} packages:")
+        logger.error(f"[X] Failed to install {len(failed_packages)} packages:")
         for package in failed_packages:
             logger.error(f"   - {package}")
         sys.exit(1)
     else:
-        logger.info("✅ All dependencies installed successfully!")
-        logger.info("🎉 Market Data Ingestor Agent is ready to use!")
+        logger.info("[OK] All dependencies installed successfully!")
+        logger.info("[PARTY] Market Data Ingestor Agent is ready to use!")
 
 if __name__ == "__main__":
     main()

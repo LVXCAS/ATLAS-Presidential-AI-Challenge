@@ -34,7 +34,7 @@ class MeanReversionDemo:
     
     def __init__(self):
         self.agent = MeanReversionTradingAgent()
-        print("🤖 Mean Reversion Trading Agent Demo")
+        print("[BOT] Mean Reversion Trading Agent Demo")
         print("=" * 50)
     
     def generate_mean_reverting_data(self, symbol: str, length: int = 100, 
@@ -45,7 +45,7 @@ class MeanReversionDemo:
         data = []
         current_price = base_price
         
-        print(f"📊 Generating {length} days of mean-reverting data for {symbol}")
+        print(f"[CHART] Generating {length} days of mean-reverting data for {symbol}")
         print(f"   Base price: ${base_price:.2f}")
         print(f"   Mean reversion strength: {mean_reversion_strength}")
         
@@ -134,7 +134,7 @@ class MeanReversionDemo:
     
     def demo_bollinger_band_reversion(self):
         """Demonstrate Bollinger Band reversion detection"""
-        print("\n🎯 Demo 1: Bollinger Band Reversion Detection")
+        print("\n[TARGET] Demo 1: Bollinger Band Reversion Detection")
         print("-" * 45)
         
         # Generate data with extreme moves (touches bands)
@@ -164,7 +164,7 @@ class MeanReversionDemo:
         signal = self.agent.generate_signal_sync("AAPL", market_data)
         
         if signal:
-            print(f"✅ Signal Generated: {signal.signal_type.value.upper()}")
+            print(f"[OK] Signal Generated: {signal.signal_type.value.upper()}")
             print(f"   Signal Value: {signal.value:.3f}")
             print(f"   Confidence: {signal.confidence:.1%}")
             print(f"   Bollinger Signals: {len(signal.bollinger_signals)}")
@@ -174,11 +174,11 @@ class MeanReversionDemo:
                 for bb_signal in signal.bollinger_signals[:3]:
                     print(f"     • {bb_signal.indicator}: {bb_signal.explanation}")
         else:
-            print("❌ No signal generated")
+            print("[X] No signal generated")
     
     def demo_zscore_analysis(self):
         """Demonstrate Z-score mean reversion analysis"""
-        print("\n📈 Demo 2: Z-Score Mean Reversion Analysis")
+        print("\n[UP] Demo 2: Z-Score Mean Reversion Analysis")
         print("-" * 42)
         
         # Generate data with extreme Z-scores
@@ -209,7 +209,7 @@ class MeanReversionDemo:
         signal = self.agent.generate_signal_sync("TSLA", market_data)
         
         if signal:
-            print(f"✅ Signal Generated: {signal.signal_type.value.upper()}")
+            print(f"[OK] Signal Generated: {signal.signal_type.value.upper()}")
             print(f"   Signal Value: {signal.value:.3f}")
             print(f"   Confidence: {signal.confidence:.1%}")
             print(f"   Z-Score Signals: {len(signal.zscore_signals)}")
@@ -219,11 +219,11 @@ class MeanReversionDemo:
                 for z_signal in signal.zscore_signals[:3]:
                     print(f"     • {z_signal.indicator}: {z_signal.explanation}")
         else:
-            print("❌ No signal generated")
+            print("[X] No signal generated")
     
     def demo_pairs_trading(self):
         """Demonstrate pairs trading with cointegration"""
-        print("\n🔗 Demo 3: Pairs Trading with Cointegration")
+        print("\n[INFO] Demo 3: Pairs Trading with Cointegration")
         print("-" * 41)
         
         # Generate cointegrated pair
@@ -246,7 +246,7 @@ class MeanReversionDemo:
         signal = self.agent.generate_signal_sync("AAPL", aapl_data, pairs_data=pairs_data)
         
         if signal:
-            print(f"✅ Signal Generated: {signal.signal_type.value.upper()}")
+            print(f"[OK] Signal Generated: {signal.signal_type.value.upper()}")
             print(f"   Signal Value: {signal.value:.3f}")
             print(f"   Confidence: {signal.confidence:.1%}")
             print(f"   Pairs Signals: {len(signal.pairs_signals)}")
@@ -259,11 +259,11 @@ class MeanReversionDemo:
                     print(f"       Cointegration p-value: {pair_signal.cointegration_pvalue:.3f}")
                     print(f"       Recommendation: {pair_signal.explanation}")
         else:
-            print("❌ No signal generated")
+            print("[X] No signal generated")
     
     def demo_fibonacci_targets(self):
         """Demonstrate Fibonacci extension targets"""
-        print("\n🌀 Demo 4: Fibonacci Extension Targets")
+        print("\n[INFO] Demo 4: Fibonacci Extension Targets")
         print("-" * 35)
         
         # Generate data with clear swings for Fibonacci analysis
@@ -297,7 +297,7 @@ class MeanReversionDemo:
         signal = self.agent.generate_signal_sync("NVDA", market_data)
         
         if signal:
-            print(f"✅ Signal Generated: {signal.signal_type.value.upper()}")
+            print(f"[OK] Signal Generated: {signal.signal_type.value.upper()}")
             print(f"   Signal Value: {signal.value:.3f}")
             print(f"   Confidence: {signal.confidence:.1%}")
             print(f"   Fibonacci Targets: {len(signal.fibonacci_targets)}")
@@ -309,11 +309,11 @@ class MeanReversionDemo:
                     print(f"       Distance: {fib_target.distance_pct:.1f}%")
                     print(f"       Confidence: {fib_target.confidence:.1%}")
         else:
-            print("❌ No signal generated")
+            print("[X] No signal generated")
     
     def demo_sentiment_divergence(self):
         """Demonstrate sentiment divergence detection"""
-        print("\n💭 Demo 5: Sentiment Divergence Detection")
+        print("\n[INFO] Demo 5: Sentiment Divergence Detection")
         print("-" * 38)
         
         # Generate data with price-sentiment divergence
@@ -332,7 +332,7 @@ class MeanReversionDemo:
         signal = self.agent.generate_signal_sync("GOOGL", market_data, sentiment_data)
         
         if signal:
-            print(f"✅ Signal Generated: {signal.signal_type.value.upper()}")
+            print(f"[OK] Signal Generated: {signal.signal_type.value.upper()}")
             print(f"   Signal Value: {signal.value:.3f}")
             print(f"   Confidence: {signal.confidence:.1%}")
             print(f"   Sentiment Divergence: {signal.sentiment_divergence}")
@@ -343,11 +343,11 @@ class MeanReversionDemo:
                 print(f"   Divergence Type: {divergence_type}")
                 print(f"   Divergence Strength: {abs(signal.sentiment_divergence):.2f}")
         else:
-            print("❌ No signal generated")
+            print("[X] No signal generated")
     
     def demo_complete_analysis(self):
         """Demonstrate complete mean reversion analysis"""
-        print("\n🎯 Demo 6: Complete Mean Reversion Analysis")
+        print("\n[TARGET] Demo 6: Complete Mean Reversion Analysis")
         print("-" * 42)
         
         # Generate comprehensive test data
@@ -358,7 +358,7 @@ class MeanReversionDemo:
         qqq_data = self.generate_mean_reverting_data("QQQ", 100, 350.0, 0.07)
         pairs_data = {"QQQ": qqq_data}
         
-        print("📊 Analyzing SPY with complete mean reversion strategy...")
+        print("[CHART] Analyzing SPY with complete mean reversion strategy...")
         print(f"   Market data points: {len(market_data)}")
         print(f"   Sentiment score: {sentiment_data.overall_sentiment:.2f}")
         print(f"   Pairs symbols: {list(pairs_data.keys())}")
@@ -366,31 +366,31 @@ class MeanReversionDemo:
         signal = self.agent.generate_signal_sync("SPY", market_data, sentiment_data, pairs_data)
         
         if signal:
-            print(f"\n✅ FINAL SIGNAL: {signal.signal_type.value.upper()}")
+            print(f"\n[OK] FINAL SIGNAL: {signal.signal_type.value.upper()}")
             print(f"   Signal Value: {signal.value:.3f}")
             print(f"   Confidence: {signal.confidence:.1%}")
             print(f"   Market Regime: {signal.market_regime.value if signal.market_regime else 'Unknown'}")
             
-            print(f"\n📈 Technical Analysis Summary:")
+            print(f"\n[UP] Technical Analysis Summary:")
             print(f"   Bollinger Band Signals: {len(signal.bollinger_signals)}")
             print(f"   Z-Score Signals: {len(signal.zscore_signals)}")
             print(f"   Pairs Trading Signals: {len(signal.pairs_signals)}")
             print(f"   Fibonacci Targets: {len(signal.fibonacci_targets)}")
             
-            print(f"\n🎯 Risk Management:")
+            print(f"\n[TARGET] Risk Management:")
             print(f"   Position Size: {signal.position_size_pct:.1%}")
             print(f"   Stop Loss: {signal.stop_loss_pct:.1%}")
             print(f"   Take Profit Targets: {signal.take_profit_targets}")
             print(f"   Max Holding Period: {signal.max_holding_period} days")
             
-            print(f"\n🧠 Top 3 Reasons for Decision:")
+            print(f"\n[AI] Top 3 Reasons for Decision:")
             for reason in signal.top_3_reasons:
                 print(f"   {reason.rank}. {reason.factor}")
                 print(f"      {reason.explanation}")
                 print(f"      Contribution: {reason.contribution:.2f}, Confidence: {reason.confidence:.1%}")
             
             # Show signal as JSON
-            print(f"\n📋 Complete Signal Data:")
+            print(f"\n[INFO] Complete Signal Data:")
             signal_dict = signal.to_dict()
             print(json.dumps({
                 'symbol': signal_dict['symbol'],
@@ -402,11 +402,11 @@ class MeanReversionDemo:
                 'top_reasons': [r['factor'] for r in signal_dict['top_3_reasons']]
             }, indent=2))
         else:
-            print("❌ No signal generated")
+            print("[X] No signal generated")
     
     def demo_market_regimes(self):
         """Demonstrate market regime detection"""
-        print("\n🌊 Demo 7: Market Regime Detection")
+        print("\n[INFO] Demo 7: Market Regime Detection")
         print("-" * 32)
         
         regimes_data = {
@@ -490,7 +490,7 @@ class MeanReversionDemo:
     
     def run_all_demos(self):
         """Run all demonstration scenarios"""
-        print("🚀 Running All Mean Reversion Trading Agent Demos")
+        print("[LAUNCH] Running All Mean Reversion Trading Agent Demos")
         print("=" * 55)
         
         try:
@@ -503,8 +503,8 @@ class MeanReversionDemo:
             self.demo_complete_analysis()
             
             print("\n" + "=" * 55)
-            print("✅ All demos completed successfully!")
-            print("\n🎯 Key Features Demonstrated:")
+            print("[OK] All demos completed successfully!")
+            print("\n[TARGET] Key Features Demonstrated:")
             print("   • Bollinger Band reversion detection")
             print("   • Z-score mean reversion analysis")
             print("   • Pairs trading with cointegration")
@@ -515,7 +515,7 @@ class MeanReversionDemo:
             print("   • Risk management integration")
             
         except Exception as e:
-            print(f"\n❌ Demo failed with error: {e}")
+            print(f"\n[X] Demo failed with error: {e}")
             import traceback
             traceback.print_exc()
 

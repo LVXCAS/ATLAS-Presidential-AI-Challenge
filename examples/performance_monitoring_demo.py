@@ -52,7 +52,7 @@ class PerformanceMonitoringDemo:
     
     async def start_demo(self):
         """Start the performance monitoring demo"""
-        print("🚀 PERFORMANCE MONITORING DEMO - Task 8.1")
+        print("[LAUNCH] PERFORMANCE MONITORING DEMO - Task 8.1")
         print("=" * 80)
         
         try:
@@ -80,7 +80,7 @@ class PerformanceMonitoringDemo:
             print("\n6. Stopping Monitoring System...")
             await self.monitor.stop_monitoring()
             
-            print("\n✅ Performance Monitoring Demo completed successfully!")
+            print("\n[OK] Performance Monitoring Demo completed successfully!")
             
         except Exception as e:
             logger.error(f"Demo failed: {e}")
@@ -89,7 +89,7 @@ class PerformanceMonitoringDemo:
     
     def _initialize_demo_data(self):
         """Initialize demo trading data"""
-        print("   📊 Setting up demo trading positions...")
+        print("   [CHART] Setting up demo trading positions...")
         
         for symbol in self.demo_data['symbols']:
             base_price = self.demo_data['base_prices'][symbol]
@@ -110,7 +110,7 @@ class PerformanceMonitoringDemo:
     
     async def _run_monitoring_simulation(self):
         """Run monitoring simulation for several minutes"""
-        print("   🔄 Simulating trading activity and monitoring...")
+        print("   [INFO] Simulating trading activity and monitoring...")
         
         simulation_duration = 60  # 1 minute simulation
         update_interval = 2  # Update every 2 seconds
@@ -134,7 +134,7 @@ class PerformanceMonitoringDemo:
             # Wait for next update
             await asyncio.sleep(update_interval)
         
-        print(f"   ✅ Simulation completed: {update_count} updates over {simulation_duration} seconds")
+        print(f"   [OK] Simulation completed: {update_count} updates over {simulation_duration} seconds")
     
     def _simulate_market_movements(self):
         """Simulate realistic market price movements"""
@@ -197,14 +197,14 @@ class PerformanceMonitoringDemo:
     
     async def _display_results(self):
         """Display comprehensive monitoring results"""
-        print("\n📊 PERFORMANCE MONITORING RESULTS")
+        print("\n[CHART] PERFORMANCE MONITORING RESULTS")
         print("=" * 80)
         
         # Get dashboard data
         dashboard = self.monitor.get_dashboard_data()
         
         # Display system health
-        print(f"\n🏥 System Health:")
+        print(f"\n[INFO] System Health:")
         health = dashboard.system_health
         print(f"   Status: {health['status'].upper()}")
         print(f"   Health Score: {health['health_score']}/100")
@@ -215,10 +215,10 @@ class PerformanceMonitoringDemo:
         if health['issues']:
             print(f"   Issues:")
             for issue in health['issues']:
-                print(f"     ⚠️  {issue}")
+                print(f"     [WARN]  {issue}")
         
         # Display performance metrics
-        print(f"\n⚡ Performance Metrics:")
+        print(f"\n[FAST] Performance Metrics:")
         perf = dashboard.performance_metrics
         if 'latency' in perf:
             latency = perf['latency']
@@ -231,7 +231,7 @@ class PerformanceMonitoringDemo:
             print(f"   System Uptime: {uptime_hours:.2f} hours")
         
         # Display P&L summary
-        print(f"\n💰 P&L Summary:")
+        print(f"\n[MONEY] P&L Summary:")
         pnl = dashboard.pnl_summary
         if pnl:
             print(f"   Total P&L: ${pnl.get('total_pnl', 0):,.2f}")
@@ -240,7 +240,7 @@ class PerformanceMonitoringDemo:
             print(f"   Active Positions: {pnl.get('position_count', 0)}")
         
         # Display resource usage
-        print(f"\n💻 Resource Usage:")
+        print(f"\n[LAPTOP] Resource Usage:")
         resources = dashboard.resource_usage
         if resources:
             print(f"   CPU Usage: {resources.get('cpu_percent', 0):.1f}%")
@@ -249,7 +249,7 @@ class PerformanceMonitoringDemo:
             print(f"   Active Processes: {resources.get('process_count', 0)}")
         
         # Display latency summary
-        print(f"\n⏱️  Latency Summary:")
+        print(f"\n[TIMER]  Latency Summary:")
         latency_summary = dashboard.latency_summary
         if latency_summary:
             for component, metrics in latency_summary.items():
@@ -261,7 +261,7 @@ class PerformanceMonitoringDemo:
                 print(f"     Samples: {metrics.sample_count}")
         
         # Display active alerts
-        print(f"\n🚨 Active Alerts:")
+        print(f"\n[ALERT] Active Alerts:")
         alerts = dashboard.alerts
         if alerts:
             for alert in alerts:
@@ -270,34 +270,34 @@ class PerformanceMonitoringDemo:
                 print(f"     Value: {alert.value:.2f}")
                 print(f"     Threshold: {alert.threshold:.2f}")
         else:
-            print("   ✅ No active alerts")
+            print("   [OK] No active alerts")
     
     async def _export_data(self):
         """Export dashboard data to file"""
-        print("   📁 Exporting dashboard data...")
+        print("   [INFO] Exporting dashboard data...")
         
         try:
             export_path = self.monitor.export_dashboard_data()
-            print(f"   ✅ Dashboard data exported to: {export_path}")
+            print(f"   [OK] Dashboard data exported to: {export_path}")
             
             # Also generate performance report
             report = self.monitor.get_performance_report(hours=1)
-            print(f"   📊 Performance report generated: {report['data_points']} data points")
+            print(f"   [CHART] Performance report generated: {report['data_points']} data points")
             
             if 'latency_stats' in report:
-                print("   ⏱️  Latency Statistics:")
+                print("   [TIMER]  Latency Statistics:")
                 for component, stats in report['latency_stats'].items():
                     print(f"     {component}: Avg P99={stats['avg_p99']:.2f}ms, Max={stats['max_p99']:.2f}ms")
             
             if 'pnl_stats' in report:
-                print("   💰 P&L Statistics:")
+                print("   [MONEY] P&L Statistics:")
                 pnl_stats = report['pnl_stats']
                 print(f"     Total P&L: ${pnl_stats['total_pnl']:,.2f}")
                 print(f"     Average P&L: ${pnl_stats['avg_pnl']:,.2f}")
                 print(f"     Range: ${pnl_stats['min_pnl']:,.2f} to ${pnl_stats['max_pnl']:,.2f}")
             
         except Exception as e:
-            print(f"   ❌ Error exporting data: {e}")
+            print(f"   [X] Error exporting data: {e}")
 
 
 async def main():
@@ -307,15 +307,15 @@ async def main():
         await demo.start_demo()
         
         print("\n" + "=" * 80)
-        print("🎉 PERFORMANCE MONITORING DEMO COMPLETED SUCCESSFULLY!")
+        print("[PARTY] PERFORMANCE MONITORING DEMO COMPLETED SUCCESSFULLY!")
         print("=" * 80)
         print("\nTask 8.1 - Performance Monitoring has been implemented and demonstrated:")
-        print("✅ Basic performance dashboards with real-time metrics")
-        print("✅ Real-time P&L tracking and portfolio monitoring")
-        print("✅ Latency monitoring (p50/p95/p99) for all system components")
-        print("✅ System resource monitoring (CPU, memory, disk, network)")
-        print("✅ Basic alerting for system failures and performance degradation")
-        print("✅ Dashboard data export and performance reporting")
+        print("[OK] Basic performance dashboards with real-time metrics")
+        print("[OK] Real-time P&L tracking and portfolio monitoring")
+        print("[OK] Latency monitoring (p50/p95/p99) for all system components")
+        print("[OK] System resource monitoring (CPU, memory, disk, network)")
+        print("[OK] Basic alerting for system failures and performance degradation")
+        print("[OK] Dashboard data export and performance reporting")
         
         print("\nThe performance monitoring system is now ready for production use!")
         print("It provides comprehensive visibility into system health, performance, and trading operations.")
@@ -323,7 +323,7 @@ async def main():
         return True
         
     except Exception as e:
-        print(f"\n❌ Demo failed: {e}")
+        print(f"\n[X] Demo failed: {e}")
         logger.error(f"Demo execution failed: {e}", exc_info=True)
         return False
 

@@ -1,0 +1,21 @@
+{
+  "timestamp": "20251022_063034",
+  "options_opportunities": 5,
+  "forex_opportunities": 0,
+  "futures_opportunities": 0,
+  "futures_enabled": false,
+  "top_recommendations": [
+    {
+      "symbol": "GOOGL",
+      "asset_type": "OPTIONS",
+      "score": 9.309999999999999,
+      "confidence": 0.6100000000000001
+    },
+    {
+      "symbol": "AMZN",
+      "asset_type": "OPTIONS",
+      "score": 8.56,
+      "confidence": 0.6100000000000001
+    }
+  ]
+}

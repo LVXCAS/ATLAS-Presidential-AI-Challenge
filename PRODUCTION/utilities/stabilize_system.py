@@ -34,7 +34,7 @@ def stabilize_system():
         if os.path.exists(file):
             backup_name = f"{disabled_dir}/{file}.disabled_{datetime.now().strftime('%Y%m%d')}"
             shutil.move(file, backup_name)
-            print(f"✓ Disabled: {file} -> {backup_name}")
+            print(f"[OK] Disabled: {file} -> {backup_name}")
         else:
             print(f"- Not found: {file}")
 
@@ -54,9 +54,9 @@ def stabilize_system():
 
     for file in good_components:
         if os.path.exists(file):
-            print(f"✓ Active: {file}")
+            print(f"[OK] Active: {file}")
         else:
-            print(f"❌ Missing: {file}")
+            print(f"[X] Missing: {file}")
 
     print()
 
@@ -78,9 +78,9 @@ try:
     from autonomous_options_trader import OptionsTrader
     from autonomous_options_discovery import OptionsDiscovery
     from autonomous_decision_framework import AutonomousDecisionFramework
-    print("✓ Safe components imported successfully")
+    print("[OK] Safe components imported successfully")
 except ImportError as e:
-    print(f"❌ Import error: {e}")
+    print(f"[X] Import error: {e}")
     print("Some components may need to be checked")
 
 class SafeOptionsSystem:
@@ -128,7 +128,7 @@ if __name__ == "__main__":
         f.write(safe_launcher_content)
 
     print("3. CREATED SAFE LAUNCHER:")
-    print("✓ safe_options_launcher.py - Only runs proven strategies")
+    print("[OK] safe_options_launcher.py - Only runs proven strategies")
     print()
 
     # 4. Create safeguards file
@@ -160,15 +160,15 @@ if __name__ == "__main__":
         f.write(safeguards_content)
 
     print("4. SAFEGUARDS IMPLEMENTED:")
-    print("✓ trading_safeguards.json - Hard limits active")
+    print("[OK] trading_safeguards.json - Hard limits active")
     print()
 
     print("5. SYSTEM STATUS:")
     print("-" * 15)
-    print("✅ Rapid trading components: DISABLED")
-    print("✅ Options strategy components: ACTIVE")
-    print("✅ Safeguards: IMPLEMENTED")
-    print("✅ Safe launcher: CREATED")
+    print("[OK] Rapid trading components: DISABLED")
+    print("[OK] Options strategy components: ACTIVE")
+    print("[OK] Safeguards: IMPLEMENTED")
+    print("[OK] Safe launcher: CREATED")
     print()
 
     print("6. NEXT STEPS:")
@@ -178,7 +178,7 @@ if __name__ == "__main__":
     print("C) Scale up if working properly")
     print()
 
-    print("🛡️ SYSTEM STABILIZED!")
+    print("[INFO]️ SYSTEM STABILIZED!")
     print("Ready to run proven options strategies safely")
 
 if __name__ == "__main__":

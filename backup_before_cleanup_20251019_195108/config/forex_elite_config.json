@@ -1,0 +1,62 @@
+{
+  "account": {
+    "account_id": "101-001-37330890-001",
+    "api_key": "0bff5dc7375409bb8747deebab8988a1-d8b26324102c95d6f2b6f641bc330a7c",
+    "practice": true,
+    "paper_trading": true
+  },
+  "trading": {
+    "pairs": [
+      "EUR_USD",
+      "USD_JPY"
+    ],
+    "timeframe": "H1",
+    "scan_interval": 3600,
+    "max_positions": 2,
+    "max_daily_trades": 5,
+    "risk_per_trade": 0.01,
+    "account_size": 100000
+  },
+  "strategy": {
+    "name": "FOREX_ELITE_STRICT",
+    "ema_fast": 10,
+    "ema_slow": 21,
+    "ema_trend": 200,
+    "rsi_period": 14,
+    "adx_period": 14,
+    "rsi_long_lower": 50,
+    "rsi_long_upper": 70,
+    "rsi_short_lower": 30,
+    "rsi_short_upper": 50,
+    "adx_threshold": 25,
+    "score_threshold": 8.0,
+    "risk_reward_ratio": 2.0,
+    "min_score": 8.0
+  },
+  "risk_management": {
+    "max_total_risk": 0.05,
+    "consecutive_loss_limit": 3,
+    "max_daily_loss": 0.1,
+    "trailing_stop": true,
+    "trailing_distance": 0.5
+  },
+  "position_management": {
+    "check_interval": 300,
+    "atr_stop_multiplier": 2.0,
+    "risk_reward_ratio": 2.0
+  },
+  "logging": {
+    "trade_log_dir": "forex_trades",
+    "system_log_dir": "logs",
+    "save_frequency": 300
+  },
+  "notifications": {
+    "enable_console": true,
+    "enable_file": true,
+    "enable_email": false
+  },
+  "emergency": {
+    "stop_file": "STOP_FOREX_TRADING.txt",
+    "check_stop_file": true
+  }
+}

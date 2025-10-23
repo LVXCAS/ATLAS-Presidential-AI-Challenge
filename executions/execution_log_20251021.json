@@ -1,0 +1,91 @@
+{
+  "date": "20251021",
+  "executions": [
+    {
+      "symbol": "NVDA",
+      "strategy": "BULL_PUT_SPREAD",
+      "asset_type": "OPTIONS",
+      "entry_time": "2025-10-21T06:30:35.551182",
+      "entry_price": 182.51499938964844,
+      "sell_strike": 175.0,
+      "buy_strike": 165.0,
+      "num_contracts": 1,
+      "expected_credit": 300.0,
+      "max_risk": 700.0,
+      "expiration": "2025-11-21T06:30:34.992002",
+      "expiration_date": "2025-11-21",
+      "status": "OPEN",
+      "paper_trade": true,
+      "ai_score": 8.56,
+      "ai_confidence": 0.6100000000000001,
+      "orders": [
+        {
+          "leg": "BUY_PUT",
+          "symbol": "NVDA251121P00165000",
+          "strike": 165.0,
+          "qty": 1,
+          "order_id": "eb6e7970-863f-4126-b6a2-57c320df22df",
+          "status": "pending_new"
+        },
+        {
+          "leg": "SELL_PUT",
+          "symbol": "NVDA251121P00175000",
+          "strike": 175.0,
+          "qty": 1,
+          "order_id": "ebf08ccf-c185-4ef9-a530-d3fc6b7de037",
+          "status": "pending_new"
+        }
+      ],
+      "alpaca_order_ids": [
+        "eb6e7970-863f-4126-b6a2-57c320df22df",
+        "ebf08ccf-c185-4ef9-a530-d3fc6b7de037"
+      ],
+      "real_execution": true,
+      "buy_put_symbol": "NVDA251121P00165000",
+      "sell_put_symbol": "NVDA251121P00175000"
+    },
+    {
+      "symbol": "AMZN",
+      "strategy": "BULL_PUT_SPREAD",
+      "asset_type": "OPTIONS",
+      "entry_time": "2025-10-21T06:30:35.725350",
+      "entry_price": 218.52000427246094,
+      "sell_strike": 210.0,
+      "buy_strike": 200.0,
+      "num_contracts": 1,
+      "expected_credit": 300.0,
+      "max_risk": 700.0,
+      "expiration": "2025-11-21T06:30:35.552027",
+      "expiration_date": "2025-11-21",
+      "status": "OPEN",
+      "paper_trade": true,
+      "ai_score": 8.51,
+      "ai_confidence": 0.56,
+      "orders": [
+        {
+          "leg": "BUY_PUT",
+          "symbol": "AMZN251121P00200000",
+          "strike": 200.0,
+          "qty": 1,
+          "order_id": "a5a04a71-4124-4c01-aa9b-0162c7504de9",
+          "status": "pending_new"
+        },
+        {
+          "leg": "SELL_PUT",
+          "symbol": "AMZN251121P00210000",
+          "strike": 210.0,
+          "qty": 1,
+          "order_id": "b6c1f8d2-a445-4616-87b8-5a2e0e93742f",
+          "status": "pending_new"
+        }
+      ],
+      "alpaca_order_ids": [
+        "a5a04a71-4124-4c01-aa9b-0162c7504de9",
+        "b6c1f8d2-a445-4616-87b8-5a2e0e93742f"
+      ],
+      "real_execution": true,
+      "buy_put_symbol": "AMZN251121P00200000",
+      "sell_put_symbol": "AMZN251121P00210000"
+    }
+  ]
+}

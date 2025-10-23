@@ -1,276 +1,150 @@
-#!/usr/bin/env python3
 """
-Real Alpaca Options Executor
-Submits actual options orders to Alpaca paper trading account
+OPTIONS EXECUTOR READY
+Options Executor - Actually places options trades
+Adds execution capability to options scanning
 """
 
-import os
+import requests
+import json
 from datetime import datetime, timedelta
-from alpaca.trading.client import TradingClient
-from alpaca.trading.requests import GetOptionContractsRequest, MarketOrderRequest
-from alpaca.trading.enums import OrderSide, TimeInForce
-from dotenv import load_dotenv
 
-load_dotenv('.env.paper')
-
-class AlpacaOptionsExecutor:
-    """Execute real options orders on Alpaca paper account"""
-
+class OptionsExecutor:
     def __init__(self):
-        self.api = TradingClient(
-            api_key=os.getenv('ALPACA_API_KEY'),
-            secret_key=os.getenv('ALPACA_SECRET_KEY'),
-            paper=True
-        )
+        self.api_key = 'PKZ7F4B26EOEZ8UN8G8U'
+        self.api_secret = 'B1aTbyUpEUsCF1CpxsyshsdUXvGZBqoYEfORpLok'
+        self.base_url = "https://paper-api.alpaca.markets"
 
-    def find_option_contract(self, symbol: str, strike: float, expiry_days: int, option_type: str):
-        """Find the appropriate option contract"""
-        try:
-            # Calculate target expiry date (closest Friday after expiry_days)
-            target_date = datetime.now() + timedelta(days=expiry_days)
-            # Move to next Friday
-            days_to_friday = (4 - target_date.weekday()) % 7
-            if days_to_friday == 0:
-                days_to_friday = 7
-            expiry_date = target_date + timedelta(days=days_to_friday)
+        self.headers = {
+            'APCA-API-KEY-ID': self.api_key,
+            'APCA-API-SECRET-KEY': self.api_secret
+        }
 
-            # Search for contracts
-            request = GetOptionContractsRequest(
-                underlying_symbols=[symbol],
-                status="active",
-                expiration_date_gte=expiry_date.strftime('%Y-%m-%d'),
-                expiration_date_lte=(expiry_date + timedelta(days=7)).strftime('%Y-%m-%d'),
-                type=option_type.lower(),  # 'call' or 'put' (lowercase required)
-                strike_price_gte=str(strike - 2.5),  # Must be string
-                strike_price_lte=str(strike + 2.5)   # Must be string
-            )
+        self.max_positions = 3
+        self.position_size = 500  # $500 per options position
 
-            contracts_response = self.api.get_option_contracts(request)
+    def place_options_order(self, symbol, strategy_type, current_price):
+        """Actually place an options trade"""
 
-            # The response is (contracts_dict, headers) tuple
-            if isinstance(contracts_response, tuple):
-                contracts_dict = contracts_response[0]
-            else:
-                contracts_dict = contracts_response
+        # Calculate strikes based on strategy
+        if strategy_type == 'LONG_CALL':
+            strike = round(current_price * 1.02)  # 2% OTM call
+            contracts = [{
+                'action': 'buy',
+                'type': 'call',
+                'strike': strike,
+                'qty': max(1, int(self.position_size / 100))
+            }]
 
-            # Extract contracts list
-            if hasattr(contracts_dict, 'option_contracts'):
-                contracts = contracts_dict.option_contracts
-            elif isinstance(contracts_dict, dict) and 'option_contracts' in contracts_dict:
-                contracts = contracts_dict['option_contracts']
-            else:
-                contracts = []
+        elif strategy_type == 'LONG_PUT':
+            strike = round(current_price * 0.98)  # 2% OTM put
+            contracts = [{
+                'action': 'buy',
+                'type': 'put', 
+                'strike': strike,
+                'qty': max(1, int(self.position_size / 100))
+            }]
 
-            if not contracts:
-                print(f"  WARNING: No {option_type} contracts found for {symbol} ${strike}")
-                return None
+        elif strategy_type == 'BULL_PUT_SPREAD':
+            # Sell higher strike put, buy lower strike put
+            contracts = [
+                {'action': 'sell', 'type': 'put', 'strike': round(current_price * 0.98), 'qty': 1},
+                {'action': 'buy', 'type': 'put', 'strike': round(current_price * 0.95), 'qty': 1}
+            ]
 
-            # Find closest strike
-            best_contract = min(contracts, key=lambda c: abs(float(c.strike_price) - strike))
-
-            return best_contract.symbol
-
-        except Exception as e:
-            print(f"  ERROR finding contract: {e}")
+        elif strategy_type == 'IRON_CONDOR':
+            # Four-legged strategy
+            contracts = [
+                {'action': 'sell', 'type': 'put', 'strike': round(current_price * 0.97), 'qty': 1},
+                {'action': 'buy', 'type': 'put', 'strike': round(current_price * 0.94), 'qty': 1},
+                {'action': 'sell', 'type': 'call', 'strike': round(current_price * 1.03), 'qty': 1},
+                {'action': 'buy', 'type': 'call', 'strike': round(current_price * 1.06), 'qty': 1}
+            ]
+        else:
             return None
 
-    def execute_straddle(self, symbol: str, current_price: float, contracts: int = 1, expiry_days: int = 14):
-        """Execute a long straddle (earnings play)"""
-        print(f"\n>>> SUBMITTING REAL OPTIONS ORDERS <<<")
-        print(f"Symbol: {symbol}")
-        print(f"Strategy: Long Straddle")
-        print(f"Strike: ${current_price:.0f} (ATM)")
-        print(f"Contracts: {contracts}")
-        print(f"Expiry: ~{expiry_days} days")
+        # Get next Friday expiry
+        today = datetime.now()
+        days_until_friday = (4 - today.weekday()) % 7
+        if days_until_friday == 0:
+            days_until_friday = 7
+        expiry = today + timedelta(days=days_until_friday)
+        expiry_str = expiry.strftime('%Y%m%d')
 
-        results = {
-            'symbol': symbol,
-            'strategy': 'long_straddle',
-            'strike': round(current_price),
-            'contracts': contracts,
-            'orders': []
-        }
+        # Build order for each leg
+        orders_placed = []
+        for contract in contracts:
+            # Format: SPY241025C450 (symbol + expiry + type + strike)
+            option_symbol = f"{symbol}{expiry_str}{contract['type'][0].upper()}{contract['strike']:05d}000"
 
-        strike = round(current_price)
-
-        # Find and execute CALL
-        call_contract = self.find_option_contract(symbol, strike, expiry_days, 'CALL')
-        if call_contract:
-            try:
-                order_request = MarketOrderRequest(
-                    symbol=call_contract,
-                    qty=contracts,
-                    side=OrderSide.BUY,
-                    time_in_force=TimeInForce.DAY
-                )
-                order = self.api.submit_order(order_data=order_request)
-                print(f"  [OK] CALL order submitted: {order.id}")
-                results['orders'].append({
-                    'type': 'CALL',
-                    'contract': call_contract,
-                    'order_id': order.id,
-                    'status': order.status
-                })
-            except Exception as e:
-                print(f"  [FAIL] CALL order failed: {e}")
-                results['orders'].append({
-                    'type': 'CALL',
-                    'error': str(e)
-                })
-
-        # Find and execute PUT
-        put_contract = self.find_option_contract(symbol, strike, expiry_days, 'PUT')
-        if put_contract:
-            try:
-                order_request = MarketOrderRequest(
-                    symbol=put_contract,
-                    qty=contracts,
-                    side=OrderSide.BUY,
-                    time_in_force=TimeInForce.DAY
-                )
-                order = self.api.submit_order(order_data=order_request)
-                print(f"  [OK] PUT order submitted: {order.id}")
-                results['orders'].append({
-                    'type': 'PUT',
-                    'contract': put_contract,
-                    'order_id': order.id,
-                    'status': order.status
-                })
-            except Exception as e:
-                print(f"  [FAIL] PUT order failed: {e}")
-                results['orders'].append({
-                    'type': 'PUT',
-                    'error': str(e)
-                })
-
-        print(f"\n>>> EXECUTION COMPLETE <<<")
-        print(f"Orders submitted: {len([o for o in results['orders'] if 'order_id' in o])}/2")
-
-        return results
-
-    def execute_intel_dual(self, symbol: str, current_price: float, contracts: int = 2, expiry_days: int = 21):
-        """Execute Intel dual strategy (cash-secured put + long call)"""
-        print(f"\n>>> SUBMITTING REAL OPTIONS ORDERS <<<")
-        print(f"Symbol: {symbol}")
-        print(f"Strategy: Intel Dual (CSP + Long Call)")
-        print(f"Contracts: {contracts}")
-        print(f"Expiry: ~{expiry_days} days")
-
-        results = {
-            'symbol': symbol,
-            'strategy': 'intel_dual',
-            'contracts': contracts,
-            'orders': []
-        }
-
-        # Cash-secured put (4% OTM)
-        put_strike = round(current_price * 0.96)
-        put_contract = self.find_option_contract(symbol, put_strike, expiry_days, 'PUT')
-        if put_contract:
-            try:
-                # SELL put to collect premium
-                order_request = MarketOrderRequest(
-                    symbol=put_contract,
-                    qty=contracts,
-                    side=OrderSide.SELL,
-                    time_in_force=TimeInForce.DAY
-                )
-                order = self.api.submit_order(order_data=order_request)
-                print(f"  [OK] SELL PUT order submitted: {order.id} @ ${put_strike}")
-                results['orders'].append({
-                    'type': 'CASH_SECURED_PUT',
-                    'strike': put_strike,
-                    'contract': put_contract,
-                    'order_id': order.id,
-                    'status': order.status
-                })
-            except Exception as e:
-                print(f"  [FAIL] SELL PUT failed: {e}")
-                results['orders'].append({
-                    'type': 'CASH_SECURED_PUT',
-                    'error': str(e)
-                })
-
-        # Long call (4% OTM)
-        call_strike = round(current_price * 1.04)
-        call_contract = self.find_option_contract(symbol, call_strike, expiry_days, 'CALL')
-        if call_contract:
-            try:
-                # BUY call for upside
-                order_request = MarketOrderRequest(
-                    symbol=call_contract,
-                    qty=contracts,
-                    side=OrderSide.BUY,
-                    time_in_force=TimeInForce.DAY
-                )
-                order = self.api.submit_order(order_data=order_request)
-                print(f"  [OK] BUY CALL order submitted: {order.id} @ ${call_strike}")
-                results['orders'].append({
-                    'type': 'LONG_CALL',
-                    'strike': call_strike,
-                    'contract': call_contract,
-                    'order_id': order.id,
-                    'status': order.status
-                })
-            except Exception as e:
-                print(f"  [FAIL] BUY CALL failed: {e}")
-                results['orders'].append({
-                    'type': 'LONG_CALL',
-                    'error': str(e)
-                })
-
-        print(f"\n>>> EXECUTION COMPLETE <<<")
-        print(f"Orders submitted: {len([o for o in results['orders'] if 'order_id' in o])}/2")
-
-        return results
-
-    def get_positions(self):
-        """Get current option positions"""
-        try:
-            positions = self.api.get_all_positions()
-            option_positions = [p for p in positions if len(p.symbol) > 10]  # Options have long symbols
-            return option_positions
-        except Exception as e:
-            print(f"Error getting positions: {e}")
-            return []
-
-    def get_account_status(self):
-        """Get account info"""
-        try:
-            account = self.api.get_account()
-            return {
-                'buying_power': float(account.buying_power),
-                'cash': float(account.cash),
-                'portfolio_value': float(account.portfolio_value),
-                'options_enabled': hasattr(account, 'options_trading_level'),
-                'options_level': getattr(account, 'options_trading_level', None)
+            order_data = {
+                'symbol': option_symbol,
+                'qty': contract['qty'],
+                'side': 'buy' if contract['action'] == 'buy' else 'sell',
+                'type': 'market',
+                'time_in_force': 'day',
+                'order_class': 'simple'
             }
-        except Exception as e:
-            print(f"Error getting account: {e}")
-            return None
 
+            try:
+                # Place the order
+                url = f"{self.base_url}/v2/orders"
+                response = requests.post(url, headers=self.headers, json=order_data, timeout=5)
+
+                if response.status_code in [200, 201]:
+                    order = response.json()
+                    orders_placed.append({
+                        'symbol': option_symbol,
+                        'side': order_data['side'],
+                        'qty': contract['qty'],
+                        'order_id': order.get('id')
+                    })
+                    print(f"OPTIONS ORDER: {order_data['side'].upper()} {contract['qty']} {option_symbol}")
+                else:
+                    print(f"Failed: {response.text}")
+
+            except Exception as e:
+                print(f"Error: {e}")
+
+        return orders_placed if orders_placed else None
+
+    def execute_from_scanner(self, opportunities):
+        """Execute trades from scanner opportunities"""
+        trades_executed = 0
+
+        for opp in opportunities[:self.max_positions]:  # Limit positions
+            if opp['score'] >= 6.0:  # High confidence only
+                print(f"\n[EXECUTING] {opp['symbol']} - {opp['strategy']}")
+
+                orders = self.place_options_order(
+                    opp['symbol'],
+                    opp['strategy'],
+                    opp['price']
+                )
+
+                if orders:
+                    trades_executed += 1
+
+                    # Send Telegram alert
+                    message = f"OPTIONS TRADE EXECUTED!\n"
+                    message += f"{opp['symbol']} - {opp['strategy']}\n"
+                    message += f"Score: {opp['score']}/10\n"
+                    message += f"Orders: {len(orders)} legs"
+                    self.send_telegram(message)
+
+        return trades_executed
+
+    def send_telegram(self, message):
+        """Send trade alerts"""
+        try:
+            bot_token = "8203125300:AAE1FTiXQALCFh8cX9lKWhq8arEB2yvUGfQ"
+            chat_id = "7606409012"
+            url = f"https://api.telegram.org/bot{bot_token}/sendMessage"
+
+            requests.post(url, data={'chat_id': chat_id, 'text': message}, timeout=3)
+        except:
+            pass
 
 if __name__ == "__main__":
-    # Test the executor
-    executor = AlpacaOptionsExecutor()
-
-    print("ALPACA OPTIONS EXECUTOR - TEST")
-    print("=" * 60)
-
-    # Check account
-    account = executor.get_account_status()
-    if account:
-        print(f"\nAccount Status:")
-        print(f"  Buying Power: ${account['buying_power']:,.2f}")
-        print(f"  Cash: ${account['cash']:,.2f}")
-        print(f"  Portfolio Value: ${account['portfolio_value']:,.2f}")
-        print(f"  Options Level: {account['options_level']}")
-
-    # Check positions
-    positions = executor.get_positions()
-    print(f"\nCurrent Option Positions: {len(positions)}")
-    for pos in positions:
-        print(f"  {pos.symbol}: {pos.qty} @ ${pos.avg_entry_price}")
-
-    print("\n" + "=" * 60)
-    print("Executor ready for live trading!")
+    executor = OptionsExecutor()
+    print("Options Executor Ready")
+    print("Add this to your options scanner to execute trades!")

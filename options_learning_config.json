@@ -1,0 +1,99 @@
+{
+  "learning_enabled": true,
+  "learning_frequency": "weekly",
+  "min_feedback_samples": 20,
+  "max_parameter_change": 0.20,
+
+  "base_confidence_threshold": 4.0,
+  "put_delta_target": -0.35,
+  "call_delta_target": 0.35,
+  "position_size_multiplier": 1.0,
+  "bull_put_momentum_threshold": 0.03,
+
+  "learning_objectives": [
+    "maximize_win_rate",
+    "maximize_profit_factor",
+    "maximize_sharpe_ratio"
+  ],
+
+  "optimization_schedule": {
+    "weekly": "Sunday 6:00 PM PDT",
+    "after_trades": 50,
+    "emergency_threshold": 0.40
+  },
+
+  "parameter_bounds": {
+    "confidence_threshold": [3.0, 5.5],
+    "put_delta_target": [-0.45, -0.25],
+    "call_delta_target": [0.25, 0.45],
+    "position_size_multiplier": [0.5, 1.5],
+    "bull_put_momentum_threshold": [0.02, 0.05]
+  },
+
+  "strategy_preferences": {
+    "DUAL_OPTIONS": {
+      "min_momentum": 0.03,
+      "optimal_regime": ["bull", "trending"],
+      "greek_targets": {
+        "put_delta": -0.35,
+        "call_delta": 0.35
+      }
+    },
+    "BULL_PUT_SPREAD": {
+      "max_momentum": 0.03,
+      "optimal_regime": ["neutral", "bull"],
+      "greek_targets": {
+        "short_put_delta": -0.30,
+        "long_put_delta": -0.15
+      }
+    },
+    "BUTTERFLY": {
+      "max_volatility": 0.02,
+      "optimal_regime": ["sideways", "neutral"],
+      "greek_targets": {
+        "center_delta": 0.0,
+        "wing_spread": 5
+      }
+    }
+  },
+
+  "safety_limits": {
+    "max_drawdown_before_pause": 0.15,
+    "min_win_rate_before_review": 0.45,
+    "consecutive_losses_before_pause": 5,
+    "max_position_size_increase": 1.5
+  },
+
+  "learning_features": {
+    "track_greeks": true,
+    "track_strike_accuracy": true,
+    "track_regime_fit": true,
+    "track_time_decay": true,
+    "track_volatility_changes": true
+  },
+
+  "feedback_collection": {
+    "log_entry": true,
+    "log_intraday": false,
+    "log_exit": true,
+    "include_market_data": true,
+    "include_greeks": true
+  },
+
+  "model_settings": {
+    "online_learning": true,
+    "update_frequency_hours": 168,
+    "min_samples_for_update": 20,
+    "model_types": [
+      "random_forest",
+      "gradient_boosting"
+    ]
+  },
+
+  "reporting": {
+    "daily_summary": true,
+    "weekly_performance": true,
+    "learning_cycle_reports": true,
+    "parameter_change_alerts": true
+  }
+}

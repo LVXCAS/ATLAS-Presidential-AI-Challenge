@@ -51,7 +51,7 @@ class BrokerIntegrationValidator:
         Returns:
             bool: True if all validations pass, False otherwise
         """
-        print("🔍 Starting Broker Integration Validation")
+        print("[SEARCH] Starting Broker Integration Validation")
         print("=" * 60)
         
         validation_tests = [
@@ -73,7 +73,7 @@ class BrokerIntegrationValidator:
         total_tests = len(validation_tests)
         
         for test_name, test_func in validation_tests:
-            print(f"\n🧪 Testing: {test_name}")
+            print(f"\n[INFO] Testing: {test_name}")
             print("-" * 40)
             
             try:
@@ -81,13 +81,13 @@ class BrokerIntegrationValidator:
                 self.test_results[test_name] = result
                 
                 if result:
-                    print(f"✅ {test_name}: PASSED")
+                    print(f"[OK] {test_name}: PASSED")
                     passed_tests += 1
                 else:
-                    print(f"❌ {test_name}: FAILED")
+                    print(f"[X] {test_name}: FAILED")
                     
             except Exception as e:
-                print(f"💥 {test_name}: ERROR - {e}")
+                print(f"[INFO] {test_name}: ERROR - {e}")
                 self.test_results[test_name] = False
                 self.validation_errors.append(f"{test_name}: {e}")
                 logger.error(f"Validation test {test_name} failed with error: {e}")
@@ -97,22 +97,22 @@ class BrokerIntegrationValidator:
         
         # Print summary
         print("\n" + "=" * 60)
-        print("📊 VALIDATION SUMMARY")
+        print("[CHART] VALIDATION SUMMARY")
         print("=" * 60)
         print(f"Tests Passed: {passed_tests}/{total_tests}")
         print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
         
         if self.validation_errors:
-            print(f"\n❌ Errors encountered:")
+            print(f"\n[X] Errors encountered:")
             for error in self.validation_errors:
                 print(f"  - {error}")
         
         success = passed_tests == total_tests
         
         if success:
-            print("\n🎉 All broker integration validations PASSED!")
+            print("\n[PARTY] All broker integration validations PASSED!")
         else:
-            print(f"\n⚠️  {total_tests - passed_tests} validation(s) FAILED")
+            print(f"\n[WARN]  {total_tests - passed_tests} validation(s) FAILED")
         
         return success
     
@@ -130,22 +130,22 @@ class BrokerIntegrationValidator:
             
             for check in required_checks:
                 if check not in health_status:
-                    print(f"❌ Missing health check: {check}")
+                    print(f"[X] Missing health check: {check}")
                     return False
             
             if health_status['connection_status'] != 'healthy':
-                print(f"❌ Connection not healthy: {health_status['connection_status']}")
+                print(f"[X] Connection not healthy: {health_status['connection_status']}")
                 return False
             
             if not health_status['account_accessible']:
-                print(f"❌ Account not accessible")
+                print(f"[X] Account not accessible")
                 return False
             
-            print(f"✅ Connection healthy, paper trading: {health_status['paper_trading']}")
+            print(f"[OK] Connection healthy, paper trading: {health_status['paper_trading']}")
             return True
             
         except Exception as e:
-            print(f"❌ Connection validation failed: {e}")
+            print(f"[X] Connection validation failed: {e}")
             return False
     
     async def validate_account_access(self) -> bool:
@@ -154,7 +154,7 @@ class BrokerIntegrationValidator:
             account_info = await self.broker.get_account_info()
             
             if not account_info:
-                print("❌ Failed to retrieve account information")
+                print("[X] Failed to retrieve account information")
                 return False
             
             required_fields = [
@@ -164,17 +164,17 @@ class BrokerIntegrationValidator:
             
             for field in required_fields:
                 if field not in account_info:
-                    print(f"❌ Missing account field: {field}")
+                    print(f"[X] Missing account field: {field}")
                     return False
             
-            print(f"✅ Account accessible: {account_info['account_number']}")
+            print(f"[OK] Account accessible: {account_info['account_number']}")
             print(f"   Status: {account_info['status']}")
             print(f"   Buying Power: ${account_info['buying_power']:,.2f}")
             
             return True
             
         except Exception as e:
-            print(f"❌ Account access validation failed: {e}")
+            print(f"[X] Account access validation failed: {e}")
             return False
     
     async def validate_market_order(self) -> bool:
@@ -192,32 +192,32 @@ class BrokerIntegrationValidator:
             
             # Validate response structure
             if not order_response.id:
-                print("❌ Order response missing ID")
+                print("[X] Order response missing ID")
                 return False
             
             if order_response.symbol != 'AAPL':
-                print(f"❌ Wrong symbol in response: {order_response.symbol}")
+                print(f"[X] Wrong symbol in response: {order_response.symbol}")
                 return False
             
             if order_response.qty != Decimal('1'):
-                print(f"❌ Wrong quantity in response: {order_response.qty}")
+                print(f"[X] Wrong quantity in response: {order_response.qty}")
                 return False
             
             if order_response.side != OrderSide.BUY:
-                print(f"❌ Wrong side in response: {order_response.side}")
+                print(f"[X] Wrong side in response: {order_response.side}")
                 return False
             
             if order_response.type != OrderType.MARKET:
-                print(f"❌ Wrong type in response: {order_response.type}")
+                print(f"[X] Wrong type in response: {order_response.type}")
                 return False
             
-            print(f"✅ Market order submitted: {order_response.id}")
+            print(f"[OK] Market order submitted: {order_response.id}")
             print(f"   Status: {order_response.status.value}")
             
             return True
             
         except Exception as e:
-            print(f"❌ Market order validation failed: {e}")
+            print(f"[X] Market order validation failed: {e}")
             return False
     
     async def validate_limit_order(self) -> bool:
@@ -237,53 +237,53 @@ class BrokerIntegrationValidator:
             
             # Validate limit order specific fields
             if order_response.limit_price != Decimal('100.00'):
-                print(f"❌ Wrong limit price: {order_response.limit_price}")
+                print(f"[X] Wrong limit price: {order_response.limit_price}")
                 return False
             
             if order_response.time_in_force != TimeInForce.DAY:
-                print(f"❌ Wrong time in force: {order_response.time_in_force}")
+                print(f"[X] Wrong time in force: {order_response.time_in_force}")
                 return False
             
-            print(f"✅ Limit order submitted: {order_response.id}")
+            print(f"[OK] Limit order submitted: {order_response.id}")
             print(f"   Limit Price: ${order_response.limit_price}")
             
             return True
             
         except Exception as e:
-            print(f"❌ Limit order validation failed: {e}")
+            print(f"[X] Limit order validation failed: {e}")
             return False
     
     async def validate_order_status(self) -> bool:
         """Validate order status monitoring"""
         try:
             if not self.test_orders:
-                print("❌ No test orders available for status check")
+                print("[X] No test orders available for status check")
                 return False
             
             order_id = self.test_orders[0]
             order_status = await self.broker.get_order_status(order_id)
             
             if not order_status:
-                print(f"❌ Failed to retrieve order status for {order_id}")
+                print(f"[X] Failed to retrieve order status for {order_id}")
                 return False
             
             if order_status.id != order_id:
-                print(f"❌ Order ID mismatch: expected {order_id}, got {order_status.id}")
+                print(f"[X] Order ID mismatch: expected {order_id}, got {order_status.id}")
                 return False
             
             # Validate status is a valid enum value
             valid_statuses = [status.value for status in OrderStatus]
             if order_status.status.value not in valid_statuses:
-                print(f"❌ Invalid order status: {order_status.status}")
+                print(f"[X] Invalid order status: {order_status.status}")
                 return False
             
-            print(f"✅ Order status retrieved: {order_status.status.value}")
+            print(f"[OK] Order status retrieved: {order_status.status.value}")
             print(f"   Filled: {order_status.filled_qty}/{order_status.qty}")
             
             return True
             
         except Exception as e:
-            print(f"❌ Order status validation failed: {e}")
+            print(f"[X] Order status validation failed: {e}")
             return False
     
     async def validate_order_cancellation(self) -> bool:
@@ -309,7 +309,7 @@ class BrokerIntegrationValidator:
             cancel_result = await self.broker.cancel_order(order_id)
             
             if not cancel_result:
-                print(f"❌ Failed to cancel order {order_id}")
+                print(f"[X] Failed to cancel order {order_id}")
                 return False
             
             # Check that order status was updated
@@ -317,15 +317,15 @@ class BrokerIntegrationValidator:
             updated_status = await self.broker.get_order_status(order_id)
             
             if updated_status and updated_status.status not in [OrderStatus.CANCELED, OrderStatus.PENDING_CANCEL]:
-                print(f"❌ Order not canceled, status: {updated_status.status}")
+                print(f"[X] Order not canceled, status: {updated_status.status}")
                 return False
             
-            print(f"✅ Order canceled successfully: {order_id}")
+            print(f"[OK] Order canceled successfully: {order_id}")
             
             return True
             
         except Exception as e:
-            print(f"❌ Order cancellation validation failed: {e}")
+            print(f"[X] Order cancellation validation failed: {e}")
             return False
     
     async def validate_position_management(self) -> bool:
@@ -334,27 +334,27 @@ class BrokerIntegrationValidator:
             # Get all positions
             positions = await self.broker.get_positions()
             
-            print(f"✅ Retrieved {len(positions)} positions")
+            print(f"[OK] Retrieved {len(positions)} positions")
             
             # Test getting a specific position (may not exist)
             test_position = await self.broker.get_position('AAPL')
             
             if test_position:
-                print(f"✅ Retrieved AAPL position: {test_position.qty} shares")
+                print(f"[OK] Retrieved AAPL position: {test_position.qty} shares")
                 
                 # Validate position structure
                 required_fields = ['symbol', 'qty', 'avg_entry_price', 'market_value']
                 for field in required_fields:
                     if not hasattr(test_position, field):
-                        print(f"❌ Position missing field: {field}")
+                        print(f"[X] Position missing field: {field}")
                         return False
             else:
-                print("✅ No AAPL position found (expected for new account)")
+                print("[OK] No AAPL position found (expected for new account)")
             
             return True
             
         except Exception as e:
-            print(f"❌ Position management validation failed: {e}")
+            print(f"[X] Position management validation failed: {e}")
             return False
     
     async def validate_error_handling(self) -> bool:
@@ -370,32 +370,32 @@ class BrokerIntegrationValidator:
                 )
                 
                 await self.broker.submit_order(invalid_order)
-                print("❌ Expected error for invalid symbol but order succeeded")
+                print("[X] Expected error for invalid symbol but order succeeded")
                 return False
                 
             except Exception:
-                print("✅ Correctly handled invalid symbol error")
+                print("[OK] Correctly handled invalid symbol error")
             
             # Test invalid order ID
             fake_order_status = await self.broker.get_order_status('fake-order-id-12345')
             if fake_order_status is not None:
-                print("❌ Expected None for fake order ID")
+                print("[X] Expected None for fake order ID")
                 return False
             
-            print("✅ Correctly handled invalid order ID")
+            print("[OK] Correctly handled invalid order ID")
             
             # Test non-existent position
             fake_position = await self.broker.get_position('NONEXISTENT_SYMBOL')
             if fake_position is not None:
-                print("❌ Expected None for non-existent position")
+                print("[X] Expected None for non-existent position")
                 return False
             
-            print("✅ Correctly handled non-existent position")
+            print("[OK] Correctly handled non-existent position")
             
             return True
             
         except Exception as e:
-            print(f"❌ Error handling validation failed: {e}")
+            print(f"[X] Error handling validation failed: {e}")
             return False
     
     async def validate_position_reconciliation(self) -> bool:
@@ -411,7 +411,7 @@ class BrokerIntegrationValidator:
             
             for field in required_fields:
                 if field not in reconciliation_report:
-                    print(f"❌ Reconciliation report missing field: {field}")
+                    print(f"[X] Reconciliation report missing field: {field}")
                     return False
             
             # Validate timestamp is recent
@@ -422,17 +422,17 @@ class BrokerIntegrationValidator:
             
             time_diff = datetime.now(timezone.utc) - report_time
             if time_diff.total_seconds() > 60:  # More than 1 minute old
-                print(f"❌ Reconciliation report timestamp too old: {report_time}")
+                print(f"[X] Reconciliation report timestamp too old: {report_time}")
                 return False
             
-            print(f"✅ Position reconciliation completed")
+            print(f"[OK] Position reconciliation completed")
             print(f"   Positions: {reconciliation_report['broker_positions_count']}")
             print(f"   Market Value: ${reconciliation_report['total_market_value']:.2f}")
             
             return True
             
         except Exception as e:
-            print(f"❌ Position reconciliation validation failed: {e}")
+            print(f"[X] Position reconciliation validation failed: {e}")
             return False
     
     async def validate_trade_reporting(self) -> bool:
@@ -452,7 +452,7 @@ class BrokerIntegrationValidator:
             
             for field in required_fields:
                 if field not in trade_report:
-                    print(f"❌ Trade report missing field: {field}")
+                    print(f"[X] Trade report missing field: {field}")
                     return False
             
             # Validate summary structure
@@ -460,17 +460,17 @@ class BrokerIntegrationValidator:
             
             for field in summary_fields:
                 if field not in trade_report['summary']:
-                    print(f"❌ Trade report summary missing field: {field}")
+                    print(f"[X] Trade report summary missing field: {field}")
                     return False
             
-            print(f"✅ Trade report generated")
+            print(f"[OK] Trade report generated")
             print(f"   Period: {start_date.date()} to {end_date.date()}")
             print(f"   Total Trades: {trade_report['summary']['total_trades']}")
             
             return True
             
         except Exception as e:
-            print(f"❌ Trade reporting validation failed: {e}")
+            print(f"[X] Trade reporting validation failed: {e}")
             return False
     
     async def validate_partial_fills(self) -> bool:
@@ -489,23 +489,23 @@ class BrokerIntegrationValidator:
                     
                     # Validate partial fill data
                     if order.filled_qty >= order.qty:
-                        print(f"❌ Partial fill has filled_qty >= qty: {order.filled_qty}/{order.qty}")
+                        print(f"[X] Partial fill has filled_qty >= qty: {order.filled_qty}/{order.qty}")
                         return False
                     
                     if order.filled_qty <= 0:
-                        print(f"❌ Partial fill has invalid filled_qty: {order.filled_qty}")
+                        print(f"[X] Partial fill has invalid filled_qty: {order.filled_qty}")
                         return False
                     
-                    print(f"✅ Found valid partial fill: {order.filled_qty}/{order.qty}")
+                    print(f"[OK] Found valid partial fill: {order.filled_qty}/{order.qty}")
                     break
             
             if not partial_fill_found:
-                print("✅ No partial fills found (expected in paper trading)")
+                print("[OK] No partial fills found (expected in paper trading)")
             
             return True
             
         except Exception as e:
-            print(f"❌ Partial fill validation failed: {e}")
+            print(f"[X] Partial fill validation failed: {e}")
             return False
     
     async def validate_order_lifecycle(self) -> bool:
@@ -526,7 +526,7 @@ class BrokerIntegrationValidator:
             order_id = order_response.id
             
             if order_response.status not in [OrderStatus.NEW, OrderStatus.ACCEPTED, OrderStatus.PENDING_NEW]:
-                print(f"❌ Unexpected initial status: {order_response.status}")
+                print(f"[X] Unexpected initial status: {order_response.status}")
                 return False
             
             # 2. Monitor
@@ -534,14 +534,14 @@ class BrokerIntegrationValidator:
             status_1 = await self.broker.get_order_status(order_id)
             
             if not status_1:
-                print(f"❌ Failed to get order status")
+                print(f"[X] Failed to get order status")
                 return False
             
             # 3. Cancel
             cancel_result = await self.broker.cancel_order(order_id)
             
             if not cancel_result:
-                print(f"❌ Failed to cancel order")
+                print(f"[X] Failed to cancel order")
                 return False
             
             # 4. Verify cancellation
@@ -549,22 +549,22 @@ class BrokerIntegrationValidator:
             final_status = await self.broker.get_order_status(order_id)
             
             if final_status and final_status.status not in [OrderStatus.CANCELED, OrderStatus.PENDING_CANCEL]:
-                print(f"❌ Order not properly canceled: {final_status.status}")
+                print(f"[X] Order not properly canceled: {final_status.status}")
                 return False
             
-            print(f"✅ Complete order lifecycle validated")
+            print(f"[OK] Complete order lifecycle validated")
             print(f"   Submit -> Monitor -> Cancel -> Verify")
             
             return True
             
         except Exception as e:
-            print(f"❌ Order lifecycle validation failed: {e}")
+            print(f"[X] Order lifecycle validation failed: {e}")
             return False
     
     async def cleanup_test_orders(self):
         """Clean up any remaining test orders"""
         try:
-            print(f"\n🧹 Cleaning up {len(self.test_orders)} test orders...")
+            print(f"\n[INFO] Cleaning up {len(self.test_orders)} test orders...")
             
             # Get all open orders
             open_orders = await self.broker.get_all_orders(status='open', limit=100)
@@ -575,10 +575,10 @@ class BrokerIntegrationValidator:
                     await self.broker.cancel_order(order.id)
                     print(f"   Canceled test order: {order.id}")
             
-            print("✅ Cleanup completed")
+            print("[OK] Cleanup completed")
             
         except Exception as e:
-            print(f"⚠️  Cleanup failed: {e}")
+            print(f"[WARN]  Cleanup failed: {e}")
 
 
 async def main():
@@ -589,14 +589,14 @@ async def main():
         success = await validator.run_validation()
         
         if success:
-            print("\n🎉 Broker integration validation PASSED!")
+            print("\n[PARTY] Broker integration validation PASSED!")
             sys.exit(0)
         else:
-            print("\n❌ Broker integration validation FAILED!")
+            print("\n[X] Broker integration validation FAILED!")
             sys.exit(1)
             
     except Exception as e:
-        print(f"\n💥 Validation failed with error: {e}")
+        print(f"\n[INFO] Validation failed with error: {e}")
         logger.error(f"Validation failed: {e}")
         sys.exit(1)
 

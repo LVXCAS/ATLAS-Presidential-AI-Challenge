@@ -40,7 +40,7 @@ from agents.workflow_monitoring import (
 
 async def demo_workflow_components():
     """Demo individual workflow components"""
-    print("🔧 Demo: Individual Workflow Components")
+    print("[TOOL] Demo: Individual Workflow Components")
     print("=" * 50)
     
     # Test conditional router
@@ -85,9 +85,9 @@ async def demo_workflow_components():
     )
     
     routing_decision = router.route_based_on_market_regime(test_state)
-    print(f"   ✓ High volatility routing: {routing_decision['preferred_strategies']}")
-    print(f"   ✓ Risk adjustment: {routing_decision['risk_adjustment']}")
-    print(f"   ✓ Execution priority: {routing_decision['execution_priority']}")
+    print(f"   [OK] High volatility routing: {routing_decision['preferred_strategies']}")
+    print(f"   [OK] Risk adjustment: {routing_decision['risk_adjustment']}")
+    print(f"   [OK] Execution priority: {routing_decision['execution_priority']}")
     
     # Test communication protocols
     print("\n2. Testing Communication Protocols...")
@@ -97,7 +97,7 @@ async def demo_workflow_components():
     # Register test agent
     coordinator.register_agent("test_agent", AgentRole.SIGNAL_GENERATOR, {"test": True})
     status = coordinator.get_agent_status()
-    print(f"   ✓ Registered {status['total_agents']} agents")
+    print(f"   [OK] Registered {status['total_agents']} agents")
     
     # Test conflict resolver
     print("\n3. Testing Conflict Resolution...")
@@ -109,11 +109,11 @@ async def demo_workflow_components():
     }
     
     conflicts = resolver.detect_conflicts(conflicting_signals)
-    print(f"   ✓ Detected {len(conflicts)} conflicts")
+    print(f"   [OK] Detected {len(conflicts)} conflicts")
     
     if conflicts:
         resolution = resolver.resolve_conflict(conflicts[0], "weighted_average")
-        print(f"   ✓ Resolved conflict using weighted average")
+        print(f"   [OK] Resolved conflict using weighted average")
     
     # Test monitoring
     print("\n4. Testing Workflow Monitoring...")
@@ -124,15 +124,15 @@ async def demo_workflow_components():
     monitor.record_component_execution("test_component", 2.0, False, "Test error")
     
     dashboard = monitor.get_monitoring_dashboard()
-    print(f"   ✓ Monitoring dashboard created")
-    print(f"   ✓ System uptime: {dashboard['monitoring_status']['uptime']:.1f}s")
+    print(f"   [OK] Monitoring dashboard created")
+    print(f"   [OK] System uptime: {dashboard['monitoring_status']['uptime']:.1f}s")
     
-    print("\n✅ All component tests passed!")
+    print("\n[OK] All component tests passed!")
 
 
 async def demo_workflow_creation():
     """Demo workflow creation with mocked agents"""
-    print("\n🏗️ Demo: Workflow Creation")
+    print("\n[BUILD] Demo: Workflow Creation")
     print("=" * 50)
     
     # Mock all agent imports to avoid API key issues
@@ -149,10 +149,10 @@ async def demo_workflow_creation():
         workflow = create_trading_workflow()
         
         status = workflow.get_workflow_status()
-        print(f"   ✓ Workflow created successfully")
-        print(f"   ✓ Graph compiled: {status['graph_compiled']}")
-        print(f"   ✓ Agents initialized: {status['agents_initialized']}")
-        print(f"   ✓ Monitoring enabled: {status['monitoring_enabled']}")
+        print(f"   [OK] Workflow created successfully")
+        print(f"   [OK] Graph compiled: {status['graph_compiled']}")
+        print(f"   [OK] Agents initialized: {status['agents_initialized']}")
+        print(f"   [OK] Monitoring enabled: {status['monitoring_enabled']}")
         
         print("\n2. Testing market regime detection...")
         from agents.langgraph_workflow import MarketData
@@ -171,7 +171,7 @@ async def demo_workflow_creation():
         }
         
         regime = workflow._detect_market_regime(high_vol_data)
-        print(f"   ✓ High volatility detected: {regime}")
+        print(f"   [OK] High volatility detected: {regime}")
         
         # Test low volatility detection
         low_vol_data = {
@@ -187,7 +187,7 @@ async def demo_workflow_creation():
         }
         
         regime = workflow._detect_market_regime(low_vol_data)
-        print(f"   ✓ Low volatility detected: {regime}")
+        print(f"   [OK] Low volatility detected: {regime}")
         
         print("\n3. Testing conditional routing...")
         test_state = {
@@ -199,21 +199,21 @@ async def demo_workflow_creation():
         }
         
         route = workflow._route_to_portfolio_or_continue(test_state)
-        print(f"   ✓ Routing decision: {route}")
+        print(f"   [OK] Routing decision: {route}")
         
         print("\n4. Testing monitoring controls...")
         workflow.enable_monitoring()
-        print(f"   ✓ Monitoring enabled: {workflow.monitoring_enabled}")
+        print(f"   [OK] Monitoring enabled: {workflow.monitoring_enabled}")
         
         workflow.disable_monitoring()
-        print(f"   ✓ Monitoring disabled: {workflow.monitoring_enabled}")
+        print(f"   [OK] Monitoring disabled: {workflow.monitoring_enabled}")
         
-        print("\n✅ Workflow creation tests passed!")
+        print("\n[OK] Workflow creation tests passed!")
 
 
 def demo_architecture_overview():
     """Demo the overall architecture"""
-    print("\n🏛️ Demo: Architecture Overview")
+    print("\n[BUILDING] Demo: Architecture Overview")
     print("=" * 50)
     
     print("LangGraph Trading System Architecture:")
@@ -246,16 +246,16 @@ def demo_architecture_overview():
     print()
     
     print("Key Features Implemented:")
-    print("✅ LangGraph StateGraph for agent coordination")
-    print("✅ Comprehensive system state structure with Annotated types")
-    print("✅ Agent communication protocols with message bus")
-    print("✅ Conditional routing based on market conditions")
-    print("✅ Workflow monitoring and debugging tools")
-    print("✅ Signal conflict detection and resolution")
-    print("✅ Performance metrics and alerting system")
-    print("✅ Resource management and agent coordination")
-    print("✅ Market regime detection and adaptive routing")
-    print("✅ Comprehensive error handling and logging")
+    print("[OK] LangGraph StateGraph for agent coordination")
+    print("[OK] Comprehensive system state structure with Annotated types")
+    print("[OK] Agent communication protocols with message bus")
+    print("[OK] Conditional routing based on market conditions")
+    print("[OK] Workflow monitoring and debugging tools")
+    print("[OK] Signal conflict detection and resolution")
+    print("[OK] Performance metrics and alerting system")
+    print("[OK] Resource management and agent coordination")
+    print("[OK] Market regime detection and adaptive routing")
+    print("[OK] Comprehensive error handling and logging")
     print()
     
     print("Workflow Execution Flow:")
@@ -270,7 +270,7 @@ def demo_architecture_overview():
 
 async def main():
     """Run all demos"""
-    print("🚀 LangGraph Workflow Implementation Demo")
+    print("[LAUNCH] LangGraph Workflow Implementation Demo")
     print("=" * 60)
     print("Demonstrating Task 6.1: LangGraph Workflow Implementation")
     print("=" * 60)
@@ -282,29 +282,29 @@ async def main():
         demo_architecture_overview()
         
         print("=" * 60)
-        print("🎉 ALL DEMOS COMPLETED SUCCESSFULLY!")
+        print("[PARTY] ALL DEMOS COMPLETED SUCCESSFULLY!")
         print("=" * 60)
         
-        print("\n📋 Task 6.1 Implementation Summary:")
-        print("✅ Set up LangGraph StateGraph for agent coordination")
-        print("✅ Define system state structure and transitions")
-        print("✅ Implement agent communication protocols")
-        print("✅ Add conditional routing based on market conditions")
-        print("✅ Create workflow monitoring and debugging tools")
+        print("\n[INFO] Task 6.1 Implementation Summary:")
+        print("[OK] Set up LangGraph StateGraph for agent coordination")
+        print("[OK] Define system state structure and transitions")
+        print("[OK] Implement agent communication protocols")
+        print("[OK] Add conditional routing based on market conditions")
+        print("[OK] Create workflow monitoring and debugging tools")
         print()
         
-        print("🎯 Acceptance Test Results:")
-        print("✅ All agents communicate through LangGraph")
-        print("✅ Workflow executes end-to-end")
-        print("✅ State transitions work correctly")
-        print("✅ Conditional routing responds to market conditions")
-        print("✅ Monitoring and debugging tools are functional")
+        print("[TARGET] Acceptance Test Results:")
+        print("[OK] All agents communicate through LangGraph")
+        print("[OK] Workflow executes end-to-end")
+        print("[OK] State transitions work correctly")
+        print("[OK] Conditional routing responds to market conditions")
+        print("[OK] Monitoring and debugging tools are functional")
         print()
         
-        print("🚀 LangGraph Workflow Implementation is COMPLETE and READY!")
+        print("[LAUNCH] LangGraph Workflow Implementation is COMPLETE and READY!")
         
     except Exception as e:
-        print(f"\n❌ Demo failed: {e}")
+        print(f"\n[X] Demo failed: {e}")
         import traceback
         traceback.print_exc()
 

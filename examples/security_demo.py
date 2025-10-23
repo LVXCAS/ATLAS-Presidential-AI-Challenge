@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 def demo_api_key_management():
     """Demonstrate API key management."""
-    print("\n🔑 API Key Management Demo")
+    print("\n[INFO] API Key Management Demo")
     print("=" * 50)
     
     # Set up security manager
@@ -60,7 +60,7 @@ def demo_api_key_management():
             api_key=api_key,
             secret_key=secret_key
         )
-        print(f"✅ Stored {service} credentials")
+        print(f"[OK] Stored {service} credentials")
     
     # List stored keys
     print("\nStored API keys:")
@@ -72,15 +72,15 @@ def demo_api_key_management():
     print("\nRetrieving Alpaca credentials...")
     alpaca_creds = security_manager.get_broker_credentials("alpaca_demo")
     if alpaca_creds:
-        print(f"✅ API Key: {alpaca_creds['api_key'][:10]}...")
-        print(f"✅ Secret Key: {alpaca_creds['secret_key'][:10]}...")
+        print(f"[OK] API Key: {alpaca_creds['api_key'][:10]}...")
+        print(f"[OK] Secret Key: {alpaca_creds['secret_key'][:10]}...")
     
     return security_manager
 
 
 def demo_authentication():
     """Demonstrate user authentication."""
-    print("\n🔐 Authentication Demo")
+    print("\n[SECURE] Authentication Demo")
     print("=" * 50)
     
     # Test login with different users
@@ -97,20 +97,20 @@ def demo_authentication():
         result = login_user(username, password)
         
         if result["success"]:
-            print(f"✅ Login successful")
+            print(f"[OK] Login successful")
             print(f"   Session token: {result['session_token'][:20]}...")
             print(f"   Roles: {result['roles']}")
             print(f"   Expires: {result['expires_at']}")
             sessions[username] = result["session_token"]
         else:
-            print(f"❌ Login failed: {result['error']}")
+            print(f"[X] Login failed: {result['error']}")
     
     return sessions
 
 
 def demo_authorization(sessions):
     """Demonstrate role-based authorization."""
-    print("\n🛡️ Authorization Demo")
+    print("\n[INFO]️ Authorization Demo")
     print("=" * 50)
     
     # Create secure API endpoints instance
@@ -135,14 +135,14 @@ def demo_authorization(sessions):
         print(f"\nTesting {operation} as {user}:")
         try:
             result = func(sessions[user])
-            print(f"✅ Success: {result}")
+            print(f"[OK] Success: {result}")
         except Exception as e:
-            print(f"❌ Failed: {e}")
+            print(f"[X] Failed: {e}")
 
 
 def demo_data_encryption():
     """Demonstrate data encryption."""
-    print("\n🔒 Data Encryption Demo")
+    print("\n[LOCK] Data Encryption Demo")
     print("=" * 50)
     
     # Set up environment manager
@@ -161,17 +161,17 @@ def demo_data_encryption():
     for i, data in enumerate(sensitive_data, 1):
         encrypted = env_manager.secure_settings.encrypt_data(data)
         encrypted_data.append(encrypted)
-        print(f"✅ Data {i} encrypted: {encrypted[:50]}...")
+        print(f"[OK] Data {i} encrypted: {encrypted[:50]}...")
     
     print("\nDecrypting data...")
     for i, encrypted in enumerate(encrypted_data, 1):
         decrypted = env_manager.secure_settings.decrypt_data(encrypted)
-        print(f"✅ Data {i} decrypted: {decrypted}")
+        print(f"[OK] Data {i} decrypted: {decrypted}")
 
 
 def demo_session_management(sessions):
     """Demonstrate session management."""
-    print("\n⏰ Session Management Demo")
+    print("\n[CLOCK] Session Management Demo")
     print("=" * 50)
     
     # Validate sessions
@@ -180,21 +180,21 @@ def demo_session_management(sessions):
         session_info = validate_session(token)
         
         if session_info["valid"]:
-            print(f"✅ Session valid")
+            print(f"[OK] Session valid")
             print(f"   Username: {session_info['username']}")
             print(f"   Roles: {session_info['roles']}")
             print(f"   Expires: {session_info['expires_at']}")
         else:
-            print(f"❌ Session invalid")
+            print(f"[X] Session invalid")
     
     # Logout users
     print("\nLogging out users...")
     for user, token in sessions.items():
         result = logout_user(token)
         if result["success"]:
-            print(f"✅ {user} logged out successfully")
+            print(f"[OK] {user} logged out successfully")
         else:
-            print(f"❌ Failed to logout {user}")
+            print(f"[X] Failed to logout {user}")
     
     # Validate sessions after logout
     print("\nValidating sessions after logout:")
@@ -206,7 +206,7 @@ def demo_session_management(sessions):
 
 def demo_environment_configuration():
     """Demonstrate environment-based configuration."""
-    print("\n⚙️ Environment Configuration Demo")
+    print("\n[GEAR] Environment Configuration Demo")
     print("=" * 50)
     
     env_manager = EnvironmentManager()
@@ -219,7 +219,7 @@ def demo_environment_configuration():
     print("\nConfiguration validation:")
     validation_results = env_manager.validate_configuration()
     for component, is_valid in validation_results.items():
-        status = "✅ VALID" if is_valid else "❌ INVALID"
+        status = "[OK] VALID" if is_valid else "[X] INVALID"
         print(f"  {component}: {status}")
     
     # Show different config sections
@@ -241,7 +241,7 @@ def demo_environment_configuration():
 
 def main():
     """Run all security demos."""
-    print("🚀 LangGraph Trading System - Security Demo")
+    print("[LAUNCH] LangGraph Trading System - Security Demo")
     print("=" * 60)
     
     try:
@@ -263,8 +263,8 @@ def main():
         # Demo 6: Environment Configuration
         demo_environment_configuration()
         
-        print("\n🎉 Security demo completed successfully!")
-        print("\n📝 Key Features Demonstrated:")
+        print("\n[PARTY] Security demo completed successfully!")
+        print("\n[NOTE] Key Features Demonstrated:")
         print("• Secure API key storage with encryption")
         print("• User authentication with session management")
         print("• Role-based access control (RBAC)")
@@ -274,7 +274,7 @@ def main():
         
     except Exception as e:
         logger.error(f"Demo failed: {e}")
-        print(f"\n❌ Demo failed: {e}")
+        print(f"\n[X] Demo failed: {e}")
         return False
     
     return True

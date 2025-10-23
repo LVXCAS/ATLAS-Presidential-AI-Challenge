@@ -3,6 +3,16 @@ Smart Pricing Agent - Intelligent Entry and Exit Price Determination
 Maximizes profit through optimal order pricing and timing
 """
 
+import sys
+import os
+from pathlib import Path
+
+# Add project root to Python path to ensure local config is imported
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+
 import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional, Tuple, Union

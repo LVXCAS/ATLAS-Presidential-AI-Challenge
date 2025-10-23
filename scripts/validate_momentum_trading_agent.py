@@ -138,11 +138,11 @@ class MomentumAgentValidator:
                 assert 0 <= signal.confidence <= 1, "Confidence should be between 0 and 1"
                 assert signal.signal_type in [SignalType.BUY, SignalType.SELL], "Valid signal type"
             
-            logger.info(f"✓ Technical indicators validated - Generated {len(all_signals)} signals")
+            logger.info(f"[OK] Technical indicators validated - Generated {len(all_signals)} signals")
             return True
             
         except Exception as e:
-            logger.error(f"✗ Technical indicators validation failed: {e}")
+            logger.error(f"[X] Technical indicators validation failed: {e}")
             return False
     
     def validate_fibonacci_integration(self) -> bool:
@@ -178,11 +178,11 @@ class MomentumAgentValidator:
                 assert hasattr(signal, 'distance_pct'), "Fibonacci signal should have distance_pct"
                 assert signal.distance_pct >= 0, "Distance should be non-negative"
             
-            logger.info(f"✓ Fibonacci integration validated - Generated {len(fib_signals)} signals")
+            logger.info(f"[OK] Fibonacci integration validated - Generated {len(fib_signals)} signals")
             return True
             
         except Exception as e:
-            logger.error(f"✗ Fibonacci integration validation failed: {e}")
+            logger.error(f"[X] Fibonacci integration validation failed: {e}")
             return False
     
     def validate_sentiment_confirmation(self) -> bool:
@@ -206,11 +206,11 @@ class MomentumAgentValidator:
             alignment4 = self.sentiment_integrator.calculate_sentiment_alignment(0.5, None)
             assert alignment4 == 1.0, "Neutral alignment should not affect signal"
             
-            logger.info("✓ Sentiment confirmation validated")
+            logger.info("[OK] Sentiment confirmation validated")
             return True
             
         except Exception as e:
-            logger.error(f"✗ Sentiment confirmation validation failed: {e}")
+            logger.error(f"[X] Sentiment confirmation validation failed: {e}")
             return False
     
     def validate_volatility_adjustment(self) -> bool:
@@ -238,11 +238,11 @@ class MomentumAgentValidator:
             assert isinstance(position_size, float), "Position size should be float"
             assert 0.01 <= position_size <= 0.1, "Position size should be within risk limits"
             
-            logger.info("✓ Volatility adjustment validated")
+            logger.info("[OK] Volatility adjustment validated")
             return True
             
         except Exception as e:
-            logger.error(f"✗ Volatility adjustment validation failed: {e}")
+            logger.error(f"[X] Volatility adjustment validation failed: {e}")
             return False
     
     async def validate_signal_generation(self) -> bool:
@@ -277,11 +277,11 @@ class MomentumAgentValidator:
                     assert isinstance(signal.macd_signals, list), "MACD signals should be list"
                     assert isinstance(signal.fibonacci_signals, list), "Fibonacci signals should be list"
             
-            logger.info("✓ Signal generation validated")
+            logger.info("[OK] Signal generation validated")
             return True
             
         except Exception as e:
-            logger.error(f"✗ Signal generation validation failed: {e}")
+            logger.error(f"[X] Signal generation validation failed: {e}")
             return False
     
     def validate_explainability(self) -> bool:
@@ -332,11 +332,11 @@ class MomentumAgentValidator:
                 assert hasattr(reason, 'confidence'), "Reason should have confidence"
                 assert 0 <= reason.confidence <= 1, "Confidence should be between 0 and 1"
             
-            logger.info("✓ Explainability validated")
+            logger.info("[OK] Explainability validated")
             return True
             
         except Exception as e:
-            logger.error(f"✗ Explainability validation failed: {e}")
+            logger.error(f"[X] Explainability validation failed: {e}")
             return False
     
     async def validate_backtesting_scenario(self) -> bool:
@@ -373,12 +373,12 @@ class MomentumAgentValidator:
             buy_signals = [s for s in signals if s['signal_type'] in ['buy', 'strong_buy']]
             sell_signals = [s for s in signals if s['signal_type'] in ['sell', 'strong_sell']]
             
-            logger.info(f"✓ Backtesting validated - Generated {len(signals)} signals "
+            logger.info(f"[OK] Backtesting validated - Generated {len(signals)} signals "
                        f"({len(buy_signals)} buy, {len(sell_signals)} sell)")
             return True
             
         except Exception as e:
-            logger.error(f"✗ Backtesting validation failed: {e}")
+            logger.error(f"[X] Backtesting validation failed: {e}")
             return False
     
     async def validate_error_handling(self) -> bool:
@@ -418,11 +418,11 @@ class MomentumAgentValidator:
             invalid_signal = await self.agent.generate_momentum_signal('TEST', invalid_data)
             # Should handle gracefully
             
-            logger.info("✓ Error handling validated")
+            logger.info("[OK] Error handling validated")
             return True
             
         except Exception as e:
-            logger.error(f"✗ Error handling validation failed: {e}")
+            logger.error(f"[X] Error handling validation failed: {e}")
             return False
     
     async def run_validation(self) -> Dict[str, bool]:
@@ -451,16 +451,16 @@ class MomentumAgentValidator:
         total = len(self.validation_results)
         
         for test_name, result in self.validation_results.items():
-            status = "✓ PASS" if result else "✗ FAIL"
+            status = "[OK] PASS" if result else "[X] FAIL"
             print(f"{test_name.replace('_', ' ').title():<30} {status}")
         
         print("-" * 60)
         print(f"Overall Result: {passed}/{total} tests passed")
         
         if passed == total:
-            print("🎉 ALL VALIDATIONS PASSED - Momentum Trading Agent is ready!")
+            print("[PARTY] ALL VALIDATIONS PASSED - Momentum Trading Agent is ready!")
         else:
-            print("⚠️  Some validations failed - Please review the issues above")
+            print("[WARN]  Some validations failed - Please review the issues above")
         
         print("=" * 60)
 

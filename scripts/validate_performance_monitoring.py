@@ -471,7 +471,7 @@ def run_validation_suite() -> list[ValidationResult]:
     results = []
     
     for test_func in validation_tests:
-        print(f"\n🧪 Running: {test_func.__name__}")
+        print(f"\n[INFO] Running: {test_func.__name__}")
         print("-" * 60)
         
         try:
@@ -479,17 +479,17 @@ def run_validation_suite() -> list[ValidationResult]:
             results.append(result)
             
             if result.passed:
-                print(f"✅ PASSED: {result.test_name}")
+                print(f"[OK] PASSED: {result.test_name}")
                 print(f"   Execution time: {result.execution_time:.2f}s")
                 if result.details:
                     print(f"   Details: {result.details}")
             else:
-                print(f"❌ FAILED: {result.test_name}")
+                print(f"[X] FAILED: {result.test_name}")
                 print(f"   Error: {result.error_message}")
                 print(f"   Execution time: {result.execution_time:.2f}s")
                 
         except Exception as e:
-            print(f"💥 CRASHED: {test_func.__name__}")
+            print(f"[INFO] CRASHED: {test_func.__name__}")
             print(f"   Error: {e}")
             result = ValidationResult(test_func.__name__)
             result.set_failed(f"Test crashed: {e}")
@@ -509,38 +509,38 @@ def generate_validation_report(results: list[ValidationResult]) -> str:
     passed_tests = sum(1 for r in results if r.passed)
     failed_tests = total_tests - passed_tests
     
-    print(f"\n📊 Test Summary:")
+    print(f"\n[CHART] Test Summary:")
     print(f"   Total Tests: {total_tests}")
     print(f"   Passed: {passed_tests}")
     print(f"   Failed: {failed_tests}")
     print(f"   Success Rate: {passed_tests/total_tests*100:.1f}%")
     
-    print(f"\n⏱️  Performance Summary:")
+    print(f"\n[TIMER]  Performance Summary:")
     total_time = sum(r.execution_time for r in results)
     avg_time = total_time / total_tests if total_tests > 0 else 0
     print(f"   Total Execution Time: {total_time:.2f}s")
     print(f"   Average Test Time: {avg_time:.2f}s")
     
-    print(f"\n📋 Detailed Results:")
+    print(f"\n[INFO] Detailed Results:")
     for result in results:
-        status = "✅ PASSED" if result.passed else "❌ FAILED"
+        status = "[OK] PASSED" if result.passed else "[X] FAILED"
         print(f"   {status}: {result.test_name} ({result.execution_time:.2f}s)")
         
         if not result.passed and result.error_message:
             print(f"      Error: {result.error_message}")
     
     # Overall assessment
-    print(f"\n🎯 Overall Assessment:")
+    print(f"\n[TARGET] Overall Assessment:")
     if failed_tests == 0:
-        print("   🎉 ALL TESTS PASSED! Performance Monitoring is fully functional.")
-        print("   ✅ Task 8.1 requirements have been met successfully.")
-        print("   🚀 System is ready for production deployment.")
+        print("   [PARTY] ALL TESTS PASSED! Performance Monitoring is fully functional.")
+        print("   [OK] Task 8.1 requirements have been met successfully.")
+        print("   [LAUNCH] System is ready for production deployment.")
     elif failed_tests <= 2:
-        print("   ⚠️  MOST TESTS PASSED. Minor issues detected.")
-        print("   🔧 Some functionality may need attention before production.")
+        print("   [WARN]  MOST TESTS PASSED. Minor issues detected.")
+        print("   [TOOL] Some functionality may need attention before production.")
     else:
-        print("   ❌ MULTIPLE TEST FAILURES. Significant issues detected.")
-        print("   🛠️  System needs major fixes before proceeding.")
+        print("   [X] MULTIPLE TEST FAILURES. Significant issues detected.")
+        print("   [TOOLS]  System needs major fixes before proceeding.")
     
     return f"Validation completed with {passed_tests}/{total_tests} tests passed"
 
@@ -582,16 +582,16 @@ def main():
             with open(validation_file, 'w') as f:
                 json.dump(validation_data, f, indent=2, default=str)
             
-            print(f"\n📄 Validation results saved to: {validation_file}")
+            print(f"\n[INFO] Validation results saved to: {validation_file}")
             
         except Exception as e:
-            print(f"⚠️  Warning: Could not save validation results: {e}")
+            print(f"[WARN]  Warning: Could not save validation results: {e}")
         
         print(f"\n{report}")
         return failed_tests == 0
         
     except Exception as e:
-        print(f"\n💥 Validation suite crashed: {e}")
+        print(f"\n[INFO] Validation suite crashed: {e}")
         traceback.print_exc()
         return False
 

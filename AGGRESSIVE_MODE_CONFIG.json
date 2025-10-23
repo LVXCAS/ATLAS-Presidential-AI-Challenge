@@ -1,0 +1,157 @@
+{
+  "mode": "AGGRESSIVE",
+  "description": "Aggressive mode configuration targeting 30%+ monthly returns with enhanced risk controls",
+
+  "portfolio": {
+    "initial_balance": 100000,
+    "currency": "USD",
+    "leverage_allowed": true,
+    "max_leverage": 2.0
+  },
+
+  "targets": {
+    "monthly_return_pct": 30.0,
+    "max_monthly_drawdown_pct": 15.0,
+    "min_sharpe_ratio": 2.0,
+    "target_win_rate": 0.70
+  },
+
+  "system_allocations": {
+    "forex": {
+      "allocation": 0.30,
+      "target_monthly": 0.30,
+      "max_positions": 10,
+      "risk_per_trade": 0.025,
+      "enabled": true,
+      "notes": "30% allocation, targeting 30% monthly = $30k on $100k"
+    },
+    "options": {
+      "allocation": 0.30,
+      "target_monthly": 0.30,
+      "max_positions": 8,
+      "risk_per_trade": 0.03,
+      "enabled": true,
+      "notes": "30% allocation, targeting 30% monthly = $30k on $100k"
+    },
+    "futures": {
+      "allocation": 0.15,
+      "target_monthly": 0.25,
+      "max_positions": 5,
+      "risk_per_trade": 0.02,
+      "enabled": true,
+      "notes": "15% allocation, targeting 25% monthly = $3.75k on $15k"
+    },
+    "gpu_ai": {
+      "allocation": 0.20,
+      "target_monthly": 0.30,
+      "max_positions": 6,
+      "risk_per_trade": 0.025,
+      "enabled": true,
+      "notes": "20% allocation, targeting 30% monthly = $6k on $20k"
+    },
+    "quant_elite": {
+      "allocation": 0.05,
+      "target_monthly": 0.30,
+      "max_positions": 3,
+      "risk_per_trade": 0.02,
+      "enabled": true,
+      "notes": "5% allocation for experimental elite quant strategies"
+    }
+  },
+
+  "position_sizing": {
+    "method": "kelly_criterion",
+    "kelly_fraction": 0.25,
+    "min_position_size_pct": 1.0,
+    "max_position_size_pct": 5.0,
+    "scale_by_confidence": true,
+    "confidence_multiplier_max": 2.0
+  },
+
+  "risk_management": {
+    "max_total_risk_pct": 10.0,
+    "max_correlated_exposure_pct": 15.0,
+    "emergency_stop_drawdown_pct": 15.0,
+    "daily_loss_limit_pct": 5.0,
+    "weekly_loss_limit_pct": 10.0,
+    "max_concurrent_trades_total": 25,
+    "stop_loss_adjustment": {
+      "enabled": true,
+      "method": "trailing",
+      "trailing_distance_atr_multiple": 1.5
+    }
+  },
+
+  "ai_enhancement": {
+    "enabled": true,
+    "min_enhancement_score": 7.0,
+    "min_confidence": 0.60,
+    "min_ensemble_confidence": 0.55,
+    "min_rl_confidence": 0.50,
+    "use_regime_filtering": true,
+    "ensemble_voting_weights": {
+      "base_strategy": 0.30,
+      "ensemble_ml": 0.30,
+      "rl_agent": 0.25,
+      "ai_enhancer": 0.15
+    }
+  },
+
+  "execution": {
+    "order_type": "market",
+    "slippage_tolerance_pct": 0.1,
+    "max_execution_time_seconds": 5,
+    "retry_failed_orders": true,
+    "max_retries": 3,
+    "confirm_fills": true
+  },
+
+  "optimization": {
+    "auto_optimize_weekly": true,
+    "rebalance_monthly": true,
+    "strategy_rotation_enabled": true,
+    "retire_underperforming_strategies": true,
+    "underperformance_threshold_sharpe": 1.5,
+    "adaptive_position_sizing": true
+  },
+
+  "learning": {
+    "continuous_learning_enabled": true,
+    "learning_cycle_frequency_hours": 168,
+    "min_trades_before_learning": 20,
+    "parameter_adaptation_enabled": true,
+    "regime_learning_enabled": true
+  },
+
+  "monitoring": {
+    "dashboard_update_frequency_seconds": 5,
+    "performance_snapshot_frequency_minutes": 15,
+    "email_alerts_enabled": false,
+    "telegram_alerts_enabled": false,
+    "alert_on_drawdown_pct": 5.0,
+    "alert_on_daily_target_reached": true
+  },
+
+  "safety_overrides": {
+    "auto_scale_back_enabled": true,
+    "scale_back_trigger_monthly_pct": 20.0,
+    "scale_back_reduction_factor": 0.5,
+    "pause_on_market_volatility": true,
+    "max_vix_threshold": 35.0,
+    "resume_after_hours": 24
+  },
+
+  "calculation_notes": {
+    "target_30_pct_monthly": "To achieve 30% monthly on $100k portfolio = $30k profit/month",
+    "allocation_breakdown": {
+      "forex_30pct": "$30k allocation * 30% target = $9k/month contribution",
+      "options_30pct": "$30k allocation * 30% target = $9k/month contribution",
+      "futures_15pct": "$15k allocation * 25% target = $3.75k/month contribution",
+      "gpu_ai_20pct": "$20k allocation * 30% target = $6k/month contribution",
+      "quant_5pct": "$5k allocation * 30% target = $1.5k/month contribution",
+      "total_expected": "$29.25k/month ≈ 29.25% monthly return"
+    },
+    "safety_notes": "Auto scale-back at 20% monthly to reduce risk. Emergency stop at 15% drawdown.",
+    "realistic_expectation": "15-25% monthly is more sustainable. 30%+ requires perfect execution and favorable conditions."
+  }
+}

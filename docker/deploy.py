@@ -123,9 +123,9 @@ class HiveTradeDeployer:
         for name, command in prerequisites:
             try:
                 self.run_command(command, timeout=10)
-                logger.info(f"✓ {name} is available")
+                logger.info(f"[OK] {name} is available")
             except (subprocess.CalledProcessError, FileNotFoundError):
-                logger.error(f"✗ {name} is not available")
+                logger.error(f"[X] {name} is not available")
                 missing.append(name)
         
         if missing:
@@ -135,9 +135,9 @@ class HiveTradeDeployer:
         # Check Docker daemon
         try:
             self.run_command(['docker', 'info'], timeout=10)
-            logger.info("✓ Docker daemon is running")
+            logger.info("[OK] Docker daemon is running")
         except subprocess.CalledProcessError:
-            logger.error("✗ Docker daemon is not running")
+            logger.error("[X] Docker daemon is not running")
             return False
         
         # Check available resources
@@ -297,7 +297,7 @@ class HiveTradeDeployer:
                         response = requests.get(endpoint, timeout=5)
                         if response.status_code == 200:
                             health_status[service] = True
-                            logger.info(f"✓ {service} is healthy")
+                            logger.info(f"[OK] {service} is healthy")
                         else:
                             health_status[service] = False
                             all_healthy = False

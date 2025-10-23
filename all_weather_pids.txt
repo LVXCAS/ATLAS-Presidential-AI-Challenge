@@ -1,0 +1,5 @@
+forex=36808
+scanner=47696
+gpu=68328
+stop_loss=492
+watchdog=62124

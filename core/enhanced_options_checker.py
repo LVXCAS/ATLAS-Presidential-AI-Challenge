@@ -142,10 +142,10 @@ def test_options_availability():
         result = checker.get_best_option(symbol, strike, opt_type)
 
         if result['available']:
-            print(f"✅ {symbol} {opt_type} ${strike}: {result['symbol']} (${result['strike']:.0f})")
+            print(f"[OK] {symbol} {opt_type} ${strike}: {result['symbol']} (${result['strike']:.0f})")
             print(f"   Bid: ${result['bid']:.2f}, Ask: ${result['ask']:.2f}")
         else:
-            print(f"❌ {symbol} {opt_type} ${strike}: {result['reason']}")
+            print(f"[X] {symbol} {opt_type} ${strike}: {result['reason']}")
         print()
 
 if __name__ == "__main__":

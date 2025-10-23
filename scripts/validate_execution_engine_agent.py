@@ -727,10 +727,10 @@ class ExecutionEngineValidator:
                 print(f"- {test['test']}: {test['details']}")
         
         if all_passed:
-            print(f"\n✅ ALL VALIDATIONS PASSED")
+            print(f"\n[OK] ALL VALIDATIONS PASSED")
             print("The Execution Engine Agent implementation is valid and ready for use.")
         else:
-            print(f"\n❌ SOME VALIDATIONS FAILED")
+            print(f"\n[X] SOME VALIDATIONS FAILED")
             print("Please review and fix the failed tests before deployment.")
         
         return all_passed

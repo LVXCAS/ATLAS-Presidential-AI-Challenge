@@ -79,9 +79,9 @@ async def demonstrate_basic_ingestion():
         
         # Display results
         if result['success']:
-            logger.info("✅ Ingestion completed successfully!")
+            logger.info("[OK] Ingestion completed successfully!")
             stats = result['statistics']
-            logger.info(f"📊 Statistics:")
+            logger.info(f"[CHART] Statistics:")
             logger.info(f"   - Duration: {stats.get('duration', 0):.2f} seconds")
             logger.info(f"   - Records fetched: {stats.get('records_fetched', 0)}")
             logger.info(f"   - Records stored: {stats.get('records_stored', 0)}")
@@ -99,7 +99,7 @@ async def demonstrate_basic_ingestion():
                 logger.info(f"   - Unique symbols: {db_stats.get('unique_symbols', 0)}")
                 logger.info(f"   - Average quality: {db_stats.get('avg_quality_score', 0):.3f}")
         else:
-            logger.error("❌ Ingestion failed!")
+            logger.error("[X] Ingestion failed!")
             for error in result['errors']:
                 logger.error(f"   - {error}")
             
@@ -141,9 +141,9 @@ async def demonstrate_failover_mechanism():
         logger.info(f"Failover attempts: {agent.failover_attempts}")
         
         if result['success']:
-            logger.info("✅ Failover mechanism working correctly")
+            logger.info("[OK] Failover mechanism working correctly")
         else:
-            logger.warning("⚠️ Failover mechanism triggered but ingestion still failed")
+            logger.warning("[WARN] Failover mechanism triggered but ingestion still failed")
             
         return result
         
@@ -180,9 +180,9 @@ async def demonstrate_multiple_timeframes():
             
             if result['success']:
                 stats = result['statistics']
-                logger.info(f"✅ {timeframe}: {stats.get('records_stored', 0)} records stored")
+                logger.info(f"[OK] {timeframe}: {stats.get('records_stored', 0)} records stored")
             else:
-                logger.error(f"❌ {timeframe}: Failed")
+                logger.error(f"[X] {timeframe}: Failed")
         
         return results
         
@@ -220,8 +220,8 @@ async def demonstrate_large_batch_ingestion():
         
         if result['success']:
             stats = result['statistics']
-            logger.info("✅ Large batch ingestion completed!")
-            logger.info(f"📊 Performance Metrics:")
+            logger.info("[OK] Large batch ingestion completed!")
+            logger.info(f"[CHART] Performance Metrics:")
             logger.info(f"   - Total duration: {total_duration:.2f} seconds")
             logger.info(f"   - Symbols processed: {len(test_symbols)}")
             logger.info(f"   - Records stored: {stats.get('records_stored', 0)}")
@@ -229,9 +229,9 @@ async def demonstrate_large_batch_ingestion():
             logger.info(f"   - Records per second: {stats.get('records_stored', 0)/total_duration:.2f}")
             
             if result['failed_symbols']:
-                logger.warning(f"⚠️ Failed symbols: {result['failed_symbols']}")
+                logger.warning(f"[WARN] Failed symbols: {result['failed_symbols']}")
         else:
-            logger.error("❌ Large batch ingestion failed!")
+            logger.error("[X] Large batch ingestion failed!")
             
         return result
         
@@ -262,7 +262,7 @@ async def demonstrate_data_quality_validation():
         if result['success']:
             stats = result['statistics']
             
-            logger.info("✅ Data quality validation completed!")
+            logger.info("[OK] Data quality validation completed!")
             
             if 'validation' in stats:
                 validation = stats['validation']
@@ -271,7 +271,7 @@ async def demonstrate_data_quality_validation():
                 suspicious_records = validation.get('suspicious_records', 0)
                 invalid_records = validation.get('invalid_records', 0)
                 
-                logger.info(f"📊 Data Quality Report:")
+                logger.info(f"[CHART] Data Quality Report:")
                 logger.info(f"   - Total records processed: {total_records}")
                 logger.info(f"   - Valid records: {valid_records} ({valid_records/total_records*100:.1f}%)")
                 logger.info(f"   - Suspicious records: {suspicious_records} ({suspicious_records/total_records*100:.1f}%)")
@@ -279,11 +279,11 @@ async def demonstrate_data_quality_validation():
                 
                 quality_score = valid_records / total_records if total_records > 0 else 0
                 if quality_score >= 0.95:
-                    logger.info("🟢 Excellent data quality!")
+                    logger.info("[GREEN] Excellent data quality!")
                 elif quality_score >= 0.90:
-                    logger.info("🟡 Good data quality")
+                    logger.info("[YELLOW] Good data quality")
                 else:
-                    logger.warning("🔴 Poor data quality - investigate data sources")
+                    logger.warning("[RED] Poor data quality - investigate data sources")
             
             if 'database_stats' in stats:
                 db_stats = stats['database_stats']
@@ -299,7 +299,7 @@ async def demonstrate_data_quality_validation():
 
 async def run_comprehensive_demo():
     """Run all demonstration scenarios"""
-    logger.info("🚀 Starting Market Data Ingestor Agent Comprehensive Demo")
+    logger.info("[LAUNCH] Starting Market Data Ingestor Agent Comprehensive Demo")
     logger.info("=" * 60)
     
     demos = [
@@ -315,13 +315,13 @@ async def run_comprehensive_demo():
     
     for demo_name, demo_func in demos:
         try:
-            logger.info(f"\n🔄 Running {demo_name} Demo...")
+            logger.info(f"\n[INFO] Running {demo_name} Demo...")
             result = await demo_func()
             results[demo_name] = result
-            logger.info(f"✅ {demo_name} Demo completed successfully")
+            logger.info(f"[OK] {demo_name} Demo completed successfully")
             
         except Exception as e:
-            logger.error(f"❌ {demo_name} Demo failed: {e}")
+            logger.error(f"[X] {demo_name} Demo failed: {e}")
             results[demo_name] = {"success": False, "error": str(e)}
         
         # Small delay between demos
@@ -329,29 +329,29 @@ async def run_comprehensive_demo():
     
     # Summary
     logger.info("\n" + "=" * 60)
-    logger.info("📋 Demo Summary:")
+    logger.info("[INFO] Demo Summary:")
     
     successful_demos = 0
     for demo_name, result in results.items():
         if isinstance(result, dict) and result.get('success', False):
-            logger.info(f"   ✅ {demo_name}: SUCCESS")
+            logger.info(f"   [OK] {demo_name}: SUCCESS")
             successful_demos += 1
         else:
-            logger.info(f"   ❌ {demo_name}: FAILED")
+            logger.info(f"   [X] {demo_name}: FAILED")
     
-    logger.info(f"\n🎯 Overall Success Rate: {successful_demos}/{len(demos)} ({successful_demos/len(demos)*100:.1f}%)")
+    logger.info(f"\n[TARGET] Overall Success Rate: {successful_demos}/{len(demos)} ({successful_demos/len(demos)*100:.1f}%)")
     
     if successful_demos == len(demos):
-        logger.info("🎉 All demos completed successfully! Market Data Ingestor Agent is working correctly.")
+        logger.info("[PARTY] All demos completed successfully! Market Data Ingestor Agent is working correctly.")
     else:
-        logger.warning("⚠️ Some demos failed. Check the logs above for details.")
+        logger.warning("[WARN] Some demos failed. Check the logs above for details.")
     
     return results
 
 
 async def run_acceptance_test():
     """Run acceptance test as specified in the task requirements"""
-    logger.info("🧪 Running Acceptance Test: Ingest 1 month of OHLCV data for 100 symbols")
+    logger.info("[INFO] Running Acceptance Test: Ingest 1 month of OHLCV data for 100 symbols")
     
     try:
         agent = await create_market_data_ingestor()
@@ -383,8 +383,8 @@ async def run_acceptance_test():
         if result['success']:
             stats = result['statistics']
             
-            logger.info("✅ ACCEPTANCE TEST PASSED!")
-            logger.info(f"📊 Test Results:")
+            logger.info("[OK] ACCEPTANCE TEST PASSED!")
+            logger.info(f"[CHART] Test Results:")
             logger.info(f"   - Symbols processed: {len(test_symbols)}")
             logger.info(f"   - Records stored: {stats.get('records_stored', 0)}")
             logger.info(f"   - Success rate: {stats.get('success_rate', 0):.1%}")
@@ -396,19 +396,19 @@ async def run_acceptance_test():
                 validation = stats['validation']
                 valid_rate = validation.get('valid_records', 0) / validation.get('total_records', 1)
                 if valid_rate >= 0.90:
-                    logger.info("✅ Schema validation: PASSED (>90% valid records)")
+                    logger.info("[OK] Schema validation: PASSED (>90% valid records)")
                 else:
-                    logger.warning(f"⚠️ Schema validation: MARGINAL ({valid_rate:.1%} valid records)")
+                    logger.warning(f"[WARN] Schema validation: MARGINAL ({valid_rate:.1%} valid records)")
             
             return True
         else:
-            logger.error("❌ ACCEPTANCE TEST FAILED!")
+            logger.error("[X] ACCEPTANCE TEST FAILED!")
             for error in result['errors']:
                 logger.error(f"   - {error}")
             return False
             
     except Exception as e:
-        logger.error(f"❌ ACCEPTANCE TEST FAILED with exception: {e}")
+        logger.error(f"[X] ACCEPTANCE TEST FAILED with exception: {e}")
         return False
 
 
@@ -437,7 +437,7 @@ async def demonstrate_satellite_data():
         )
         
         if result['success']:
-            logger.info(f"✅ Successfully ingested satellite data")
+            logger.info(f"[OK] Successfully ingested satellite data")
             logger.info(f"   - Records stored: {result['statistics'].get('records_stored', 0)}")
             logger.info(f"   - Symbols processed: {result['statistics'].get('symbols_processed', 0)}")
             
@@ -449,7 +449,7 @@ async def demonstrate_satellite_data():
                     for key, value in sample['satellite_metrics'].items():
                         logger.info(f"   - {key}: {value}")
         else:
-            logger.warning(f"⚠️ Satellite data ingestion had issues: {result['errors']}")
+            logger.warning(f"[WARN] Satellite data ingestion had issues: {result['errors']}")
             
         return result
         

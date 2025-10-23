@@ -22,7 +22,7 @@ async def test_database_schema():
     try:
         # Connect to database
         conn = await asyncpg.connect(DATABASE_URL)
-        print("✓ Database connection successful")
+        print("[OK] Database connection successful")
         
         # Test 1: Check if key tables exist
         print("\n1. Testing table existence...")
@@ -38,9 +38,9 @@ async def test_database_schema():
                 table
             )
             if result:
-                print(f"  ✓ Table {table} exists")
+                print(f"  [OK] Table {table} exists")
             else:
-                print(f"  ✗ Table {table} missing")
+                print(f"  [X] Table {table} missing")
         
         # Test 2: Check if key functions exist
         print("\n2. Testing function existence...")
@@ -55,9 +55,9 @@ async def test_database_schema():
                 func
             )
             if result:
-                print(f"  ✓ Function {func} exists")
+                print(f"  [OK] Function {func} exists")
             else:
-                print(f"  ✗ Function {func} missing")
+                print(f"  [X] Function {func} missing")
         
         # Test 3: Test data insertion
         print("\n3. Testing data insertion...")
@@ -72,13 +72,13 @@ async def test_database_schema():
             """, 'TEST', 'NASDAQ', datetime.now(), '1m', 
                 Decimal('100.00'), Decimal('101.00'), Decimal('99.50'), 
                 Decimal('100.50'), 10000, 'test')
-            print("  ✓ Market data insertion successful")
+            print("  [OK] Market data insertion successful")
             
             # Clean up
             await conn.execute("DELETE FROM market_data_hf WHERE symbol = 'TEST'")
             
         except Exception as e:
-            print(f"  ✗ Market data insertion failed: {e}")
+            print(f"  [X] Market data insertion failed: {e}")
         
         # Test signal insertion
         try:
@@ -91,13 +91,13 @@ async def test_database_schema():
                 Decimal('0.85'), Decimal('0.80'), 'BUY', 
                 json.dumps(['reason1', 'reason2', 'reason3']), 
                 datetime.now(), '1.0.0')
-            print("  ✓ Signal insertion successful")
+            print("  [OK] Signal insertion successful")
             
             # Clean up
             await conn.execute("DELETE FROM signals WHERE symbol = 'TEST'")
             
         except Exception as e:
-            print(f"  ✗ Signal insertion failed: {e}")
+            print(f"  [X] Signal insertion failed: {e}")
         
         # Test 4: Test basic queries
         print("\n4. Testing basic queries...")
@@ -105,16 +105,16 @@ async def test_database_schema():
         try:
             # Test portfolio metrics function
             result = await conn.fetch("SELECT * FROM calculate_portfolio_metrics()")
-            print(f"  ✓ Portfolio metrics query successful (returned {len(result)} rows)")
+            print(f"  [OK] Portfolio metrics query successful (returned {len(result)} rows)")
         except Exception as e:
-            print(f"  ✗ Portfolio metrics query failed: {e}")
+            print(f"  [X] Portfolio metrics query failed: {e}")
         
         try:
             # Test system health view
             result = await conn.fetch("SELECT * FROM system_health")
-            print(f"  ✓ System health query successful (returned {len(result)} rows)")
+            print(f"  [OK] System health query successful (returned {len(result)} rows)")
         except Exception as e:
-            print(f"  ✗ System health query failed: {e}")
+            print(f"  [X] System health query failed: {e}")
         
         # Test 5: Check indexes
         print("\n5. Testing index existence...")
@@ -126,7 +126,7 @@ async def test_database_schema():
         """
         
         result = await conn.fetchval(index_query)
-        print(f"  ✓ Found {result} indexes in the database")
+        print(f"  [OK] Found {result} indexes in the database")
         
         # Test 6: Check triggers
         print("\n6. Testing trigger existence...")
@@ -138,7 +138,7 @@ async def test_database_schema():
         """
         
         result = await conn.fetchval(trigger_query)
-        print(f"  ✓ Found {result} triggers in the database")
+        print(f"  [OK] Found {result} triggers in the database")
         
         # Test 7: Test data validation trigger
         print("\n7. Testing data validation...")
@@ -154,10 +154,10 @@ async def test_database_schema():
                 Decimal('-100'), Decimal('100.00'), datetime.now(), 
                 'test', 'test_agent', 'test')
             
-            print("  ✗ Data validation failed - invalid trade was allowed")
+            print("  [X] Data validation failed - invalid trade was allowed")
             
         except Exception as e:
-            print("  ✓ Data validation working - invalid trade rejected")
+            print("  [OK] Data validation working - invalid trade rejected")
         
         print("\n" + "=" * 60)
         print("Database schema test completed successfully!")
@@ -167,7 +167,7 @@ async def test_database_schema():
         return True
         
     except Exception as e:
-        print(f"\n✗ Database test failed: {e}")
+        print(f"\n[X] Database test failed: {e}")
         return False
 
 async def main():

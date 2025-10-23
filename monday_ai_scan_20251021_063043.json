@@ -1,0 +1,21 @@
+{
+  "timestamp": "20251021_063043",
+  "options_opportunities": 4,
+  "forex_opportunities": 0,
+  "futures_opportunities": 0,
+  "futures_enabled": false,
+  "top_recommendations": [
+    {
+      "symbol": "NVDA",
+      "asset_type": "OPTIONS",
+      "score": 8.56,
+      "confidence": 0.6100000000000001
+    },
+    {
+      "symbol": "AMZN",
+      "asset_type": "OPTIONS",
+      "score": 8.51,
+      "confidence": 0.56
+    }
+  ]
+}

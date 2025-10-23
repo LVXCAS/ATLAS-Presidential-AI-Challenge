@@ -92,13 +92,13 @@ def main():
     
     if emergency.stop_trading():
         status = emergency.get_status()
-        print("\n✅ EMERGENCY STOP ACTIVATED SUCCESSFULLY")
+        print("\n[OK] EMERGENCY STOP ACTIVATED SUCCESSFULLY")
         print(f"Status: {status['status']}")
         print(f"Trading Halted: {'YES' if status['trading_halted'] else 'NO'}")
         print(f"Positions Closed: {'YES' if status['positions_closed'] else 'NO'}")
         print("\nAll trading has been stopped and positions have been closed.")
     else:
-        print("\n❌ EMERGENCY STOP FAILED")
+        print("\n[X] EMERGENCY STOP FAILED")
         print("Please check the logs and take manual action if necessary.")
 
 if __name__ == "__main__":

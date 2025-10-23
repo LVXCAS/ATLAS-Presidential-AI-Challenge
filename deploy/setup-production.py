@@ -30,15 +30,15 @@ class ProductionSetup:
     async def deploy_production(self):
         """Complete production deployment process."""
         
-        logger.info("🚀 Starting Hive Trade v0.2 Production Deployment")
+        logger.info("[LAUNCH] Starting Hive Trade v0.2 Production Deployment")
         
         steps = [
-            ("🛠️  Setting up monitoring infrastructure", self.setup_monitoring),
-            ("🗄️  Optimizing database for real-time trading", self.optimize_database),
-            ("🐳 Starting production containers", self.start_containers),
-            ("🔍 Verifying services health", self.verify_services),
-            ("📊 Creating monitoring dashboards", self.setup_dashboards),
-            ("✅ Production deployment complete", self.deployment_summary)
+            ("[TOOLS]  Setting up monitoring infrastructure", self.setup_monitoring),
+            ("[INFO]️  Optimizing database for real-time trading", self.optimize_database),
+            ("[INFO] Starting production containers", self.start_containers),
+            ("[SEARCH] Verifying services health", self.verify_services),
+            ("[CHART] Creating monitoring dashboards", self.setup_dashboards),
+            ("[OK] Production deployment complete", self.deployment_summary)
         ]
         
         for step_name, step_func in steps:
@@ -46,7 +46,7 @@ class ProductionSetup:
                 logger.info(step_name)
                 await step_func()
             except Exception as e:
-                logger.error(f"❌ Failed at step '{step_name}': {e}")
+                logger.error(f"[X] Failed at step '{step_name}': {e}")
                 raise
     
     async def setup_monitoring(self):
@@ -83,13 +83,13 @@ class ProductionSetup:
         for subdir in subdirs:
             (monitoring_dir / subdir).mkdir(parents=True, exist_ok=True)
         
-        logger.info("📁 Created monitoring directory structure")
+        logger.info("[INFO] Created monitoring directory structure")
         
         # Start monitoring services
         compose_file = self.project_root / "monitoring" / "docker-compose.monitoring.yml"
         if compose_file.exists():
             await self._run_docker_compose("monitoring", "up -d")
-            logger.info("🔄 Started monitoring services")
+            logger.info("[INFO] Started monitoring services")
     
     async def _setup_monitoring_docker(self):
         """Setup monitoring using Docker Compose."""
@@ -102,7 +102,7 @@ class ProductionSetup:
             
             result = subprocess.run(cmd, capture_output=True, text=True, cwd=self.project_root)
             if result.returncode == 0:
-                logger.info("✅ Monitoring services started successfully")
+                logger.info("[OK] Monitoring services started successfully")
             else:
                 logger.error(f"Failed to start monitoring services: {result.stderr}")
     
@@ -117,14 +117,14 @@ class ProductionSetup:
             optimization_result = await apply_database_optimizations()
             
             if optimization_result.get('status') == 'optimized':
-                logger.info("✅ Database optimizations applied successfully")
+                logger.info("[OK] Database optimizations applied successfully")
                 self.services_status['database'] = 'optimized'
             else:
-                logger.warning("⚠️  Database optimization partially completed")
+                logger.warning("[WARN]  Database optimization partially completed")
                 self.services_status['database'] = 'partial'
                 
         except Exception as e:
-            logger.error(f"❌ Database optimization failed: {e}")
+            logger.error(f"[X] Database optimization failed: {e}")
             self.services_status['database'] = 'failed'
     
     async def start_containers(self):
@@ -133,7 +133,7 @@ class ProductionSetup:
         compose_file = self.project_root / "docker" / "docker-compose.yml"
         
         if not compose_file.exists():
-            logger.error("❌ Docker Compose file not found")
+            logger.error("[X] Docker Compose file not found")
             return
         
         # Start core services first
@@ -164,10 +164,10 @@ class ProductionSetup:
         )
         
         if result.returncode == 0:
-            logger.info(f"✅ Started {service_name}")
+            logger.info(f"[OK] Started {service_name}")
             self.services_status[service_name] = 'running'
         else:
-            logger.error(f"❌ Failed to start {service_name}: {result.stderr}")
+            logger.error(f"[X] Failed to start {service_name}: {result.stderr}")
             self.services_status[service_name] = 'failed'
             raise Exception(f"Service {service_name} failed to start")
     
@@ -186,13 +186,13 @@ class ProductionSetup:
         for service, endpoint in health_checks.items():
             try:
                 if await self._check_service_health(service, endpoint):
-                    logger.info(f"✅ {service} is healthy")
+                    logger.info(f"[OK] {service} is healthy")
                     self.services_status[service] = 'healthy'
                 else:
-                    logger.warning(f"⚠️  {service} health check failed")
+                    logger.warning(f"[WARN]  {service} health check failed")
                     self.services_status[service] = 'unhealthy'
             except Exception as e:
-                logger.error(f"❌ Could not check {service}: {e}")
+                logger.error(f"[X] Could not check {service}: {e}")
                 self.services_status[service] = 'unknown'
     
     async def _check_service_health(self, service: str, endpoint: str) -> bool:
@@ -229,7 +229,7 @@ class ProductionSetup:
         for dashboard in dashboards:
             try:
                 await self._create_dashboard(dashboard)
-                logger.info(f"📊 Created {dashboard} dashboard")
+                logger.info(f"[CHART] Created {dashboard} dashboard")
             except Exception as e:
                 logger.warning(f"Could not create {dashboard} dashboard: {e}")
     
@@ -281,30 +281,30 @@ class ProductionSetup:
         """Print deployment summary."""
         
         logger.info("\n" + "="*60)
-        logger.info("🎉 HIVE TRADE v0.2 PRODUCTION DEPLOYMENT SUMMARY")
+        logger.info("[PARTY] HIVE TRADE v0.2 PRODUCTION DEPLOYMENT SUMMARY")
         logger.info("="*60)
         
         # Service status summary
         healthy_services = sum(1 for status in self.services_status.values() if status in ['running', 'healthy', 'optimized'])
         total_services = len(self.services_status)
         
-        logger.info(f"📊 Services Status: {healthy_services}/{total_services} healthy")
+        logger.info(f"[CHART] Services Status: {healthy_services}/{total_services} healthy")
         
         for service, status in self.services_status.items():
             status_emoji = {
-                'running': '✅',
-                'healthy': '✅', 
-                'optimized': '✅',
-                'failed': '❌',
-                'unhealthy': '⚠️',
-                'unknown': '❓',
-                'partial': '⚠️'
-            }.get(status, '❓')
+                'running': '[OK]',
+                'healthy': '[OK]', 
+                'optimized': '[OK]',
+                'failed': '[X]',
+                'unhealthy': '[WARN]',
+                'unknown': '[INFO]',
+                'partial': '[WARN]'
+            }.get(status, '[INFO]')
             
             logger.info(f"   {status_emoji} {service}: {status}")
         
         # Access URLs
-        logger.info("\n🔗 Access URLs:")
+        logger.info("\n[INFO] Access URLs:")
         logger.info("   • Trading Dashboard:  http://localhost:3000")
         logger.info("   • Grafana:           http://localhost:3001 (admin/admin_password_123)")
         logger.info("   • Prometheus:        http://localhost:9090")
@@ -312,14 +312,14 @@ class ProductionSetup:
         logger.info("   • API Docs:         http://localhost:8001/docs")
         
         # Next steps
-        logger.info("\n🔧 Next Steps:")
+        logger.info("\n[TOOL] Next Steps:")
         logger.info("   1. Configure alert notifications in Grafana")
         logger.info("   2. Set up automated backups")
         logger.info("   3. Configure SSL certificates for production")
         logger.info("   4. Set up log retention policies")
         logger.info("   5. Configure firewall rules")
         
-        logger.info("\n✅ Production deployment completed successfully!")
+        logger.info("\n[OK] Production deployment completed successfully!")
         logger.info("="*60 + "\n")
 
 
@@ -331,10 +331,10 @@ async def main():
     try:
         await setup.deploy_production()
     except KeyboardInterrupt:
-        logger.info("🛑 Deployment interrupted by user")
+        logger.info("[INFO] Deployment interrupted by user")
         sys.exit(1)
     except Exception as e:
-        logger.error(f"💥 Deployment failed: {e}")
+        logger.error(f"[INFO] Deployment failed: {e}")
         sys.exit(1)
 
 

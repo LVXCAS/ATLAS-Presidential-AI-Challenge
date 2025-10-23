@@ -110,13 +110,13 @@ class DatabaseSchemaValidator:
                     'columns': len(columns),
                     'column_details': columns
                 }
-                logger.info(f"✓ Table {table_name} exists with {len(columns)} columns")
+                logger.info(f"[OK] Table {table_name} exists with {len(columns)} columns")
             else:
                 self.validation_results['tables'][table_name] = {
                     'exists': False,
                     'error': 'Table not found'
                 }
-                logger.error(f"✗ Table {table_name} not found")
+                logger.error(f"[X] Table {table_name} not found")
     
     async def get_table_columns(self, table_name: str) -> List[Dict]:
         """Get column information for a table."""
@@ -168,7 +168,7 @@ class DatabaseSchemaValidator:
         
         # Log summary
         total_indexes = sum(len(idxs) for idxs in table_indexes.values())
-        logger.info(f"✓ Found {total_indexes} indexes across {len(table_indexes)} tables")
+        logger.info(f"[OK] Found {total_indexes} indexes across {len(table_indexes)} tables")
     
     async def validate_functions(self):
         """Validate all required functions exist."""
@@ -203,7 +203,7 @@ class DatabaseSchemaValidator:
                 'type': func['routine_type'],
                 'return_type': func['return_type']
             }
-            logger.info(f"✓ Function {func['routine_name']} exists")
+            logger.info(f"[OK] Function {func['routine_name']} exists")
         
         # Check for missing functions
         existing_names = {f['routine_name'] for f in functions}
@@ -213,7 +213,7 @@ class DatabaseSchemaValidator:
                     'exists': False,
                     'error': 'Function not found'
                 }
-                logger.error(f"✗ Function {expected} not found")
+                logger.error(f"[X] Function {expected} not found")
     
     async def validate_triggers(self):
         """Validate all required triggers exist."""
@@ -247,7 +247,7 @@ class DatabaseSchemaValidator:
         self.validation_results['triggers'] = table_triggers
         
         total_triggers = sum(len(trigs) for trigs in table_triggers.values())
-        logger.info(f"✓ Found {total_triggers} triggers across {len(table_triggers)} tables")
+        logger.info(f"[OK] Found {total_triggers} triggers across {len(table_triggers)} tables")
     
     async def validate_hypertables(self):
         """Validate TimescaleDB hypertables are properly configured."""
@@ -286,7 +286,7 @@ class DatabaseSchemaValidator:
                     'compression': ht['compression_enabled'],
                     'replication_factor': ht['replication_factor']
                 }
-                logger.info(f"✓ Hypertable {ht['hypertable_name']} configured with {ht['num_chunks']} chunks")
+                logger.info(f"[OK] Hypertable {ht['hypertable_name']} configured with {ht['num_chunks']} chunks")
             
         except Exception as e:
             logger.warning(f"Could not validate hypertables: {e}")
@@ -317,7 +317,7 @@ class DatabaseSchemaValidator:
                     'job_id': policy['job_id'],
                     'config': policy['config']
                 }
-                logger.info(f"✓ Retention policy configured for {table_name}")
+                logger.info(f"[OK] Retention policy configured for {table_name}")
             
         except Exception as e:
             logger.warning(f"Could not validate retention policies: {e}")
@@ -377,7 +377,7 @@ class DatabaseSchemaValidator:
                         'success': True,
                         'test_id': result['id']
                     }
-                    logger.info(f"✓ Data insertion test passed for {table_name}")
+                    logger.info(f"[OK] Data insertion test passed for {table_name}")
                 else:
                     raise Exception("No ID returned from insert")
                     
@@ -386,7 +386,7 @@ class DatabaseSchemaValidator:
                     'success': False,
                     'error': str(e)
                 }
-                logger.error(f"✗ Data insertion test failed for {table_name}: {e}")
+                logger.error(f"[X] Data insertion test failed for {table_name}: {e}")
     
     async def test_query_performance(self):
         """Test query performance on key tables."""
@@ -424,14 +424,14 @@ class DatabaseSchemaValidator:
                     'duration_ms': duration_ms,
                     'row_count': len(result)
                 }
-                logger.info(f"✓ Query {test_name} completed in {duration_ms:.2f}ms ({len(result)} rows)")
+                logger.info(f"[OK] Query {test_name} completed in {duration_ms:.2f}ms ({len(result)} rows)")
                 
             except Exception as e:
                 self.validation_results['performance_tests'][test_name] = {
                     'success': False,
                     'error': str(e)
                 }
-                logger.error(f"✗ Query {test_name} failed: {e}")
+                logger.error(f"[X] Query {test_name} failed: {e}")
     
     async def test_data_integrity(self):
         """Test data integrity constraints and triggers."""
@@ -469,7 +469,7 @@ class DatabaseSchemaValidator:
                 'success': False,
                 'error': 'Invalid trade was allowed'
             }
-            logger.error("✗ Trade validation trigger failed - invalid trade was allowed")
+            logger.error("[X] Trade validation trigger failed - invalid trade was allowed")
             
         except Exception as e:
             # This is expected - the trigger should prevent invalid data
@@ -477,7 +477,7 @@ class DatabaseSchemaValidator:
                 'success': True,
                 'error_caught': str(e)
             }
-            logger.info("✓ Trade validation trigger working - invalid trade rejected")
+            logger.info("[OK] Trade validation trigger working - invalid trade rejected")
         
         # Test audit trail trigger
         try:
@@ -522,13 +522,13 @@ class DatabaseSchemaValidator:
                     'success': True,
                     'audit_id': audit_record['id']
                 }
-                logger.info("✓ Audit trail trigger working - position creation logged")
+                logger.info("[OK] Audit trail trigger working - position creation logged")
             else:
                 self.validation_results['data_integrity_tests']['audit_trail'] = {
                     'success': False,
                     'error': 'No audit record created'
                 }
-                logger.error("✗ Audit trail trigger failed - no record created")
+                logger.error("[X] Audit trail trigger failed - no record created")
             
             # Clean up
             await self.db_manager.execute("DELETE FROM positions WHERE id = $1", position_id)
@@ -538,7 +538,7 @@ class DatabaseSchemaValidator:
                 'success': False,
                 'error': str(e)
             }
-            logger.error(f"✗ Audit trail test failed: {e}")
+            logger.error(f"[X] Audit trail test failed: {e}")
     
     def generate_validation_summary(self) -> Dict[str, Any]:
         """Generate a comprehensive validation summary."""
@@ -607,7 +607,7 @@ async def main():
         if summary['overall_status'] == 'FAIL':
             print("\nFailed Tests:")
             for test in summary.get('failed_tests', []):
-                print(f"  ✗ {test}")
+                print(f"  [X] {test}")
         
         print("\n" + "="*80)
         

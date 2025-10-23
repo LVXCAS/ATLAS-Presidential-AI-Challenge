@@ -25,8 +25,22 @@ logger = logging.getLogger(__name__)
 class ValidatedStrategySystem:
     """Unified system executing only backtested and validated strategies"""
 
-    def __init__(self, use_paper=True):
-        load_dotenv('.env.paper' if use_paper else '.env')
+    def __init__(self, use_paper=True, force_main_account=False):
+        """
+        Initialize validated strategy system
+
+        Args:
+            use_paper: Use paper trading account (default: True)
+            force_main_account: Force use of main .env file regardless of use_paper setting
+                               (for production scanners that need main account)
+        """
+        # ACCOUNT ROUTING FIX: Allow forcing main account for production scanners
+        if force_main_account:
+            # Load main .env with override to ensure correct account
+            load_dotenv(override=True)
+        else:
+            # Load appropriate env file based on use_paper setting
+            load_dotenv('.env.paper' if use_paper else '.env', override=True)
 
         self.api = tradeapi.REST(
             os.getenv('ALPACA_API_KEY'),
@@ -34,6 +48,8 @@ class ValidatedStrategySystem:
             os.getenv('ALPACA_BASE_URL'),
             api_version='v2'
         )
+
+        self.account_mode = 'MAIN_ACCOUNT' if force_main_account else ('PAPER' if use_paper else 'LIVE')
 
         self.validated_strategies = {
             'intel_style': {

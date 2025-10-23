@@ -20,7 +20,7 @@ async def init_database_schema():
     try:
         # Connect to database
         conn = await asyncpg.connect(DATABASE_URL)
-        print("✓ Database connection successful")
+        print("[OK] Database connection successful")
         
         # Get the project root directory
         project_root = Path(__file__).parent.parent
@@ -37,7 +37,7 @@ async def init_database_schema():
             sql_path = database_init_dir / sql_file
             
             if not sql_path.exists():
-                print(f"  ✗ SQL file not found: {sql_path}")
+                print(f"  [X] SQL file not found: {sql_path}")
                 continue
             
             print(f"\n  Executing {sql_file}...")
@@ -59,10 +59,10 @@ async def init_database_schema():
                             if "already exists" not in str(e).lower():
                                 print(f"    Warning: Statement {i+1} failed: {e}")
                 
-                print(f"  ✓ {sql_file} executed successfully ({len(statements)} statements)")
+                print(f"  [OK] {sql_file} executed successfully ({len(statements)} statements)")
                 
             except Exception as e:
-                print(f"  ✗ Failed to execute {sql_file}: {e}")
+                print(f"  [X] Failed to execute {sql_file}: {e}")
         
         # Verify schema creation
         print("\n  Verifying schema creation...")
@@ -72,28 +72,28 @@ async def init_database_schema():
             SELECT COUNT(*) FROM information_schema.tables 
             WHERE table_schema = 'public'
         """)
-        print(f"  ✓ Created {table_count} tables")
+        print(f"  [OK] Created {table_count} tables")
         
         # Count functions
         function_count = await conn.fetchval("""
             SELECT COUNT(*) FROM information_schema.routines 
             WHERE routine_schema = 'public'
         """)
-        print(f"  ✓ Created {function_count} functions")
+        print(f"  [OK] Created {function_count} functions")
         
         # Count indexes
         index_count = await conn.fetchval("""
             SELECT COUNT(*) FROM pg_indexes 
             WHERE schemaname = 'public'
         """)
-        print(f"  ✓ Created {index_count} indexes")
+        print(f"  [OK] Created {index_count} indexes")
         
         # Count triggers
         trigger_count = await conn.fetchval("""
             SELECT COUNT(*) FROM information_schema.triggers 
             WHERE trigger_schema = 'public'
         """)
-        print(f"  ✓ Created {trigger_count} triggers")
+        print(f"  [OK] Created {trigger_count} triggers")
         
         print("\n" + "=" * 60)
         print("Database schema initialization completed successfully!")
@@ -103,7 +103,7 @@ async def init_database_schema():
         return True
         
     except Exception as e:
-        print(f"\n✗ Database initialization failed: {e}")
+        print(f"\n[X] Database initialization failed: {e}")
         return False
 
 async def main():

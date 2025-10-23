@@ -50,7 +50,7 @@ class TradeLoggingAuditDemo:
     
     async def start_demo(self):
         """Start the trade logging and audit trail demo"""
-        print("🚀 TRADE LOGGING AND AUDIT TRAIL DEMO - Task 8.2")
+        print("[LAUNCH] TRADE LOGGING AND AUDIT TRAIL DEMO - Task 8.2")
         print("=" * 80)
         
         try:
@@ -82,7 +82,7 @@ class TradeLoggingAuditDemo:
             print("\n7. Stopping Agent...")
             await self.agent.stop()
             
-            print("\n✅ Trade Logging and Audit Trail Demo completed successfully!")
+            print("\n[OK] Trade Logging and Audit Trail Demo completed successfully!")
             
         except Exception as e:
             logger.error(f"Demo failed: {e}")
@@ -91,7 +91,7 @@ class TradeLoggingAuditDemo:
     
     async def _simulate_trading_activity(self):
         """Simulate realistic trading activity"""
-        print("   📊 Simulating trade execution and logging...")
+        print("   [CHART] Simulating trade execution and logging...")
         
         # Generate sample trades
         num_trades = 25
@@ -109,7 +109,7 @@ class TradeLoggingAuditDemo:
             # Small delay to simulate real-time activity
             await asyncio.sleep(0.1)
         
-        print(f"   ✅ {num_trades} trades logged successfully")
+        print(f"   [OK] {num_trades} trades logged successfully")
     
     def _generate_sample_trade(self, trade_num: int) -> Dict[str, Any]:
         """Generate realistic sample trade data"""
@@ -248,7 +248,7 @@ class TradeLoggingAuditDemo:
     
     async def _test_reconciliation(self):
         """Test position reconciliation functionality"""
-        print("   🔄 Testing position reconciliation...")
+        print("   [INFO] Testing position reconciliation...")
         
         # Generate sample broker and system positions
         broker_positions = {}
@@ -300,7 +300,7 @@ class TradeLoggingAuditDemo:
     
     async def _generate_reports(self):
         """Generate comprehensive trade reports"""
-        print("   📊 Generating trade reports...")
+        print("   [CHART] Generating trade reports...")
         
         # Generate 24-hour report
         end_date = datetime.now()
@@ -331,7 +331,7 @@ class TradeLoggingAuditDemo:
     
     async def _test_backup_recovery(self):
         """Test backup and recovery functionality"""
-        print("   💾 Testing backup and recovery...")
+        print("   [INFO] Testing backup and recovery...")
         
         # Create a test file for backup
         test_file = Path("test_backup_data.txt")
@@ -367,21 +367,21 @@ class TradeLoggingAuditDemo:
                     print(f"      Restoration verified: {restored_file.stat().st_size} bytes")
                     restored_file.unlink()  # Clean up
                 else:
-                    print("      ❌ Restoration verification failed")
+                    print("      [X] Restoration verification failed")
             else:
-                print("      ❌ Backup restoration failed")
+                print("      [X] Backup restoration failed")
             
             # Clean up test file
             test_file.unlink()
             
         except Exception as e:
-            print(f"      ❌ Backup test failed: {e}")
+            print(f"      [X] Backup test failed: {e}")
             if test_file.exists():
                 test_file.unlink()
     
     async def _display_audit_trail(self):
         """Display comprehensive audit trail"""
-        print("   🔍 Displaying audit trail...")
+        print("   [SEARCH] Displaying audit trail...")
         
         # Get recent audit events
         end_date = datetime.now()
@@ -424,14 +424,14 @@ async def main():
         await demo.start_demo()
         
         print("\n" + "=" * 80)
-        print("🎉 TRADE LOGGING AND AUDIT TRAIL DEMO COMPLETED SUCCESSFULLY!")
+        print("[PARTY] TRADE LOGGING AND AUDIT TRAIL DEMO COMPLETED SUCCESSFULLY!")
         print("=" * 80)
         print("\nTask 8.2 - Trade Logging and Audit Trail has been implemented and demonstrated:")
-        print("✅ Comprehensive trade logging with complete metadata")
-        print("✅ Audit trail for all system decisions and actions")
-        print("✅ Trade reconciliation and reporting")
-        print("✅ Data backup and recovery procedures")
-        print("✅ Regulatory compliance and data retention")
+        print("[OK] Comprehensive trade logging with complete metadata")
+        print("[OK] Audit trail for all system decisions and actions")
+        print("[OK] Trade reconciliation and reporting")
+        print("[OK] Data backup and recovery procedures")
+        print("[OK] Regulatory compliance and data retention")
         
         print("\nThe trade logging and audit trail system is now ready for production use!")
         print("It provides comprehensive compliance, operational integrity, and regulatory reporting capabilities.")
@@ -439,7 +439,7 @@ async def main():
         return True
         
     except Exception as e:
-        print(f"\n❌ Demo failed: {e}")
+        print(f"\n[X] Demo failed: {e}")
         logger.error(f"Demo execution failed: {e}", exc_info=True)
         return False
 

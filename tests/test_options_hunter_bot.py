@@ -77,7 +77,7 @@ async def test_options_hunter_bot():
         
         print("\n" + "=" * 40)
         print("OPTIONS HUNTER BOT TEST COMPLETED")
-        print("✅ Bot is ready for live trading!")
+        print("[OK] Bot is ready for live trading!")
         
         return True
         

@@ -505,8 +505,13 @@ class GPUAITradingAgent:
         state_tensor = torch.FloatTensor(state).unsqueeze(0).to(self.device)
 
         with torch.no_grad():
+            # Set to eval mode to handle batch norm with single sample
+            self.q_network.eval()
             q_values = self.q_network(state_tensor)
             action = q_values.argmax().item()
+            # Set back to train mode if needed
+            if training:
+                self.q_network.train()
 
         return action
 
@@ -721,7 +726,7 @@ if __name__ == "__main__":
             if torch.cuda.is_available():
                 print(f">> GPU memory used: {results['performance_metrics']['gpu_memory_used_gb']:.2f} GB")
 
-            print(f">> AI Agent ready for live trading! 🤖")
+            print(f">> AI Agent ready for live trading! [BOT]")
 
         else:
             print(">> Failed to download training data")

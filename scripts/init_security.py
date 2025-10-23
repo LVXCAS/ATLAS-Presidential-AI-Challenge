@@ -29,13 +29,13 @@ logger = logging.getLogger(__name__)
 
 def initialize_security_system():
     """Initialize the security system."""
-    print("🔐 LangGraph Trading System - Security Initialization")
+    print("[SECURE] LangGraph Trading System - Security Initialization")
     print("=" * 60)
     
     # Check if master password is set
     master_password = os.getenv("TRADING_SYSTEM_MASTER_PASSWORD")
     if not master_password:
-        print("\n⚠️  Master password not found in environment variables.")
+        print("\n[WARN]  Master password not found in environment variables.")
         print("Please set TRADING_SYSTEM_MASTER_PASSWORD in your .env file")
         
         # Prompt for master password
@@ -45,12 +45,12 @@ def initialize_security_system():
             
             if password1 == password2:
                 if len(password1) < 12:
-                    print("❌ Password must be at least 12 characters long")
+                    print("[X] Password must be at least 12 characters long")
                     continue
                 master_password = password1
                 break
             else:
-                print("❌ Passwords don't match. Please try again.")
+                print("[X] Passwords don't match. Please try again.")
         
         # Update .env file
         env_file = project_root / ".env"
@@ -61,29 +61,29 @@ def initialize_security_system():
             with open(env_file, "w") as f:
                 f.write(f"TRADING_SYSTEM_MASTER_PASSWORD={master_password}\n")
         
-        print("✅ Master password saved to .env file")
+        print("[OK] Master password saved to .env file")
     
     try:
         # Initialize security manager
-        print("\n🔧 Initializing security manager...")
+        print("\n[TOOL] Initializing security manager...")
         security_manager = get_security_manager()
         
         # Initialize environment manager
-        print("🔧 Initializing environment manager...")
+        print("[TOOL] Initializing environment manager...")
         env_manager = get_env_manager()
         
         # Validate configuration
-        print("🔧 Validating configuration...")
+        print("[TOOL] Validating configuration...")
         validation_results = env_manager.validate_configuration()
         
-        print("\n📊 Configuration Validation Results:")
+        print("\n[CHART] Configuration Validation Results:")
         print("-" * 40)
         for component, is_valid in validation_results.items():
-            status = "✅ VALID" if is_valid else "❌ INVALID"
+            status = "[OK] VALID" if is_valid else "[X] INVALID"
             print(f"{component:20} {status}")
         
         # List stored API keys
-        print("\n🔑 Stored API Keys:")
+        print("\n[INFO] Stored API Keys:")
         print("-" * 40)
         api_keys = security_manager.secret_manager.list_api_keys()
         if api_keys:
@@ -93,51 +93,51 @@ def initialize_security_system():
             print("No API keys stored yet")
         
         # Test authentication
-        print("\n🔐 Testing Authentication System:")
+        print("\n[SECURE] Testing Authentication System:")
         print("-" * 40)
         
         # Test admin login
         admin_token = security_manager.authenticate_user("admin", "admin123")
         if admin_token:
-            print("✅ Admin authentication: SUCCESS")
+            print("[OK] Admin authentication: SUCCESS")
             
             # Test authorization
             can_manage = security_manager.authorize_action(admin_token, "system.manage")
             can_trade = security_manager.authorize_action(admin_token, "trading.execute")
             
-            print(f"✅ Admin system.manage permission: {'GRANTED' if can_manage else 'DENIED'}")
-            print(f"✅ Admin trading.execute permission: {'GRANTED' if can_trade else 'DENIED'}")
+            print(f"[OK] Admin system.manage permission: {'GRANTED' if can_manage else 'DENIED'}")
+            print(f"[OK] Admin trading.execute permission: {'GRANTED' if can_trade else 'DENIED'}")
         else:
-            print("❌ Admin authentication: FAILED")
+            print("[X] Admin authentication: FAILED")
         
         # Test trader login
         trader_token = security_manager.authenticate_user("trader", "trader123")
         if trader_token:
-            print("✅ Trader authentication: SUCCESS")
+            print("[OK] Trader authentication: SUCCESS")
             
             # Test authorization
             can_manage = security_manager.authorize_action(trader_token, "system.manage")
             can_trade = security_manager.authorize_action(trader_token, "trading.execute")
             
-            print(f"✅ Trader system.manage permission: {'DENIED' if not can_manage else 'GRANTED'}")
-            print(f"✅ Trader trading.execute permission: {'GRANTED' if can_trade else 'DENIED'}")
+            print(f"[OK] Trader system.manage permission: {'DENIED' if not can_manage else 'GRANTED'}")
+            print(f"[OK] Trader trading.execute permission: {'GRANTED' if can_trade else 'DENIED'}")
         else:
-            print("❌ Trader authentication: FAILED")
+            print("[X] Trader authentication: FAILED")
         
         # Test encryption
-        print("\n🔒 Testing Encryption System:")
+        print("\n[LOCK] Testing Encryption System:")
         print("-" * 40)
         test_data = "This is sensitive trading data"
         encrypted = security_manager.encrypt_sensitive_data(test_data)
         decrypted = security_manager.decrypt_sensitive_data(encrypted)
         
         if decrypted == test_data:
-            print("✅ Encryption/Decryption: SUCCESS")
+            print("[OK] Encryption/Decryption: SUCCESS")
         else:
-            print("❌ Encryption/Decryption: FAILED")
+            print("[X] Encryption/Decryption: FAILED")
         
-        print("\n🎉 Security system initialization completed successfully!")
-        print("\n📝 Next Steps:")
+        print("\n[PARTY] Security system initialization completed successfully!")
+        print("\n[NOTE] Next Steps:")
         print("1. Update your .env file with real API keys")
         print("2. Change default passwords for admin and trader users")
         print("3. Review and customize RBAC permissions as needed")
@@ -147,7 +147,7 @@ def initialize_security_system():
         
     except Exception as e:
         logger.error(f"Security initialization failed: {e}")
-        print(f"\n❌ Security initialization failed: {e}")
+        print(f"\n[X] Security initialization failed: {e}")
         return False
 
 
@@ -157,7 +157,7 @@ def show_security_status():
         env_manager = get_env_manager()
         validation_results = env_manager.validate_configuration()
         
-        print("🔐 Security System Status")
+        print("[SECURE] Security System Status")
         print("=" * 40)
         
         total_components = len(validation_results)
@@ -169,11 +169,11 @@ def show_security_status():
         
         print("\nComponent Status:")
         for component, is_valid in validation_results.items():
-            status = "✅" if is_valid else "❌"
+            status = "[OK]" if is_valid else "[X]"
             print(f"  {status} {component}")
         
     except Exception as e:
-        print(f"❌ Failed to get security status: {e}")
+        print(f"[X] Failed to get security status: {e}")
 
 
 def main():

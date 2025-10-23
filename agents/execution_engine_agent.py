@@ -9,6 +9,16 @@ This module implements a sophisticated execution engine agent using LangGraph fo
 - TWAP, VWAP, Implementation Shortfall algorithms
 """
 
+import sys
+import os
+from pathlib import Path
+
+# Add project root to Python path to ensure local config is imported
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
+
 import asyncio
 import logging
 import math

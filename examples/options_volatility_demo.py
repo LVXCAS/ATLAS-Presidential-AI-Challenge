@@ -35,12 +35,12 @@ from agents.options_volatility_agent import (
 def print_header(title: str):
     """Print formatted header"""
     print("\n" + "=" * 60)
-    print(f"🎯 {title}")
+    print(f"[TARGET] {title}")
     print("=" * 60)
 
 def print_subheader(title: str):
     """Print formatted subheader"""
-    print(f"\n📊 {title}")
+    print(f"\n[CHART] {title}")
     print("-" * 40)
 
 def create_realistic_options_chain(symbol: str, underlying_price: float, scenario: str = "normal") -> list:
@@ -154,15 +154,15 @@ async def demo_iv_surface_analysis():
             skew_analysis = iv_analysis['skew_analysis']
             arbitrage_opps = iv_analysis['arbitrage_opportunities']
             
-            print(f"📈 Surface Points: {iv_analysis['surface_points']}")
-            print(f"📊 Average IV: {metrics['average_iv']:.1%}")
-            print(f"📏 IV Range: {metrics['min_iv']:.1%} - {metrics['max_iv']:.1%}")
-            print(f"🔍 Skew Anomalies: {len([s for s in skew_analysis if s.is_anomalous])}")
-            print(f"⚡ Arbitrage Opportunities: {len(arbitrage_opps)}")
+            print(f"[UP] Surface Points: {iv_analysis['surface_points']}")
+            print(f"[CHART] Average IV: {metrics['average_iv']:.1%}")
+            print(f"[INFO] IV Range: {metrics['min_iv']:.1%} - {metrics['max_iv']:.1%}")
+            print(f"[SEARCH] Skew Anomalies: {len([s for s in skew_analysis if s.is_anomalous])}")
+            print(f"[FAST] Arbitrage Opportunities: {len(arbitrage_opps)}")
             
             # Show skew details
             if skew_analysis:
-                print("\n🔄 Volatility Skew Analysis:")
+                print("\n[INFO] Volatility Skew Analysis:")
                 for skew in skew_analysis[:2]:  # Show first 2
                     print(f"  Expiration: {skew.expiration.strftime('%Y-%m-%d')}")
                     print(f"  Skew Slope: {skew.skew_slope:.3f}")
@@ -171,14 +171,14 @@ async def demo_iv_surface_analysis():
             
             # Show arbitrage opportunities
             if arbitrage_opps:
-                print("\n💰 Arbitrage Opportunities:")
+                print("\n[MONEY] Arbitrage Opportunities:")
                 for opp in arbitrage_opps[:2]:  # Show first 2
                     print(f"  Type: {opp['type']}")
                     print(f"  Strike: ${opp['strike']:.2f}")
                     print(f"  IV Difference: {opp['iv_difference']:.1%}")
                     print(f"  Confidence: {opp['confidence']:.1%}")
         else:
-            print(f"❌ Error: {iv_analysis['error']}")
+            print(f"[X] Error: {iv_analysis['error']}")
 
 async def demo_earnings_integration():
     """Demo earnings calendar integration"""
@@ -197,15 +197,15 @@ async def demo_earnings_integration():
         earnings_event = await agent.integrate_earnings_calendar(symbol, options_data)
         
         if earnings_event:
-            print(f"📅 Earnings Date: {earnings_event.earnings_date.strftime('%Y-%m-%d')}")
-            print(f"⏰ Days to Earnings: {earnings_event.days_to_earnings}")
-            print(f"📊 Expected Move: {earnings_event.expected_move:.1%}")
-            print(f"📈 IV Rank: {earnings_event.iv_rank:.1%}")
-            print(f"📊 IV Percentile: {earnings_event.iv_percentile:.0f}th")
-            print(f"🎯 Recommended Strategy: {earnings_event.strategy_recommendation.value}")
-            print(f"📚 Historical Moves: {[f'{m:.1%}' for m in earnings_event.historical_earnings_moves]}")
+            print(f"[CAL] Earnings Date: {earnings_event.earnings_date.strftime('%Y-%m-%d')}")
+            print(f"[CLOCK] Days to Earnings: {earnings_event.days_to_earnings}")
+            print(f"[CHART] Expected Move: {earnings_event.expected_move:.1%}")
+            print(f"[UP] IV Rank: {earnings_event.iv_rank:.1%}")
+            print(f"[CHART] IV Percentile: {earnings_event.iv_percentile:.0f}th")
+            print(f"[TARGET] Recommended Strategy: {earnings_event.strategy_recommendation.value}")
+            print(f"[INFO] Historical Moves: {[f'{m:.1%}' for m in earnings_event.historical_earnings_moves]}")
         else:
-            print("📅 No upcoming earnings events detected")
+            print("[CAL] No upcoming earnings events detected")
 
 async def demo_greeks_calculation():
     """Demo Greeks calculation and risk management"""
@@ -226,35 +226,35 @@ async def demo_greeks_calculation():
         # Take some positions from the chain
         portfolio_positions.extend(options_data[:5])  # 5 positions per symbol
     
-    print(f"📊 Portfolio Size: {len(portfolio_positions)} positions")
-    print(f"🏢 Symbols: {', '.join(symbols)}")
+    print(f"[CHART] Portfolio Size: {len(portfolio_positions)} positions")
+    print(f"[INFO] Symbols: {', '.join(symbols)}")
     
     # Calculate portfolio Greeks
     greeks_risk = await agent.calculate_greeks_risk(portfolio_positions)
     
     print_subheader("Portfolio Greeks Analysis")
-    print(f"🔺 Total Delta: {greeks_risk.total_delta:.2f}")
-    print(f"🔄 Total Gamma: {greeks_risk.total_gamma:.4f}")
-    print(f"⏰ Total Theta: ${greeks_risk.total_theta:.2f}/day")
-    print(f"📊 Total Vega: ${greeks_risk.total_vega:.2f}")
-    print(f"💰 Total Rho: ${greeks_risk.total_rho:.2f}")
+    print(f"[INFO] Total Delta: {greeks_risk.total_delta:.2f}")
+    print(f"[INFO] Total Gamma: {greeks_risk.total_gamma:.4f}")
+    print(f"[CLOCK] Total Theta: ${greeks_risk.total_theta:.2f}/day")
+    print(f"[CHART] Total Vega: ${greeks_risk.total_vega:.2f}")
+    print(f"[MONEY] Total Rho: ${greeks_risk.total_rho:.2f}")
     
     print_subheader("Risk Assessment")
-    print(f"⚖️ Delta Neutral: {'Yes' if greeks_risk.delta_neutral else 'No'}")
-    print(f"⚠️ Gamma Risk Level: {greeks_risk.gamma_risk_level.upper()}")
-    print(f"📈 Vega Exposure: ${greeks_risk.vega_exposure:.2f}")
+    print(f"[BALANCE] Delta Neutral: {'Yes' if greeks_risk.delta_neutral else 'No'}")
+    print(f"[WARN] Gamma Risk Level: {greeks_risk.gamma_risk_level.upper()}")
+    print(f"[UP] Vega Exposure: ${greeks_risk.vega_exposure:.2f}")
     print(f"⏳ Daily Theta Decay: ${greeks_risk.theta_decay_daily:.2f}")
     
     # Risk recommendations
     print_subheader("Risk Management Recommendations")
     if not greeks_risk.delta_neutral:
-        print("🔄 Consider delta hedging to neutralize directional risk")
+        print("[INFO] Consider delta hedging to neutralize directional risk")
     if greeks_risk.gamma_risk_level == "high":
-        print("⚠️ High gamma exposure - monitor for large price moves")
+        print("[WARN] High gamma exposure - monitor for large price moves")
     if greeks_risk.vega_exposure > 500:
-        print("📊 High vega exposure - vulnerable to volatility changes")
+        print("[CHART] High vega exposure - vulnerable to volatility changes")
     if greeks_risk.theta_decay_daily < -100:
-        print("⏰ Significant time decay - consider rolling positions")
+        print("[CLOCK] Significant time decay - consider rolling positions")
 
 async def demo_volatility_regime_detection():
     """Demo volatility regime detection"""
@@ -274,10 +274,10 @@ async def demo_volatility_regime_detection():
         
         # Get regime description
         regime_descriptions = {
-            VolatilityRegime.LOW_VOL: "📉 Low volatility - consider buying premium",
-            VolatilityRegime.NORMAL_VOL: "📊 Normal volatility - balanced strategies",
-            VolatilityRegime.HIGH_VOL: "📈 High volatility - consider selling premium",
-            VolatilityRegime.EXTREME_VOL: "🚨 Extreme volatility - defensive strategies"
+            VolatilityRegime.LOW_VOL: "[DOWN] Low volatility - consider buying premium",
+            VolatilityRegime.NORMAL_VOL: "[CHART] Normal volatility - balanced strategies",
+            VolatilityRegime.HIGH_VOL: "[UP] High volatility - consider selling premium",
+            VolatilityRegime.EXTREME_VOL: "[ALERT] Extreme volatility - defensive strategies"
         }
         
         print(f"{symbol:>6}: {regime.value.replace('_', ' ').title()}")
@@ -313,10 +313,10 @@ async def demo_signal_generation():
         signals = await agent.generate_options_signals(symbol, market_data)
         
         if signals:
-            print(f"🎯 Generated {len(signals)} trading signals")
+            print(f"[TARGET] Generated {len(signals)} trading signals")
             
             for i, signal in enumerate(signals, 1):
-                print(f"\n📊 Signal #{i}: {signal.signal_type.upper()}")
+                print(f"\n[CHART] Signal #{i}: {signal.signal_type.upper()}")
                 print(f"   Strategy: {signal.strategy.value.replace('_', ' ').title()}")
                 print(f"   Strength: {signal.value:.2f} ({signal.value * 100:+.0f}%)")
                 print(f"   Confidence: {signal.confidence:.1%}")
@@ -330,12 +330,12 @@ async def demo_signal_generation():
                 print(f"   Expected Return: {signal.expected_return:.1%}")
                 print(f"   Max Risk: {signal.max_risk:.1%}")
                 
-                print("   📝 Top Reasons:")
+                print("   [NOTE] Top Reasons:")
                 for reason in signal.top_3_reasons:
                     print(f"      {reason['rank']}. {reason['factor']}: {reason['explanation']}")
                     print(f"         Confidence: {reason['confidence']:.1%}")
         else:
-            print("📭 No signals generated for current market conditions")
+            print("[INFO] No signals generated for current market conditions")
 
 async def demo_langgraph_integration():
     """Demo LangGraph integration"""
@@ -355,20 +355,20 @@ async def demo_langgraph_integration():
         'risk_metrics': {'var': 5000, 'max_drawdown': 0.05}
     }
     
-    print("📥 Input State:")
+    print("[INFO] Input State:")
     print(f"   Market Data: {len(state['market_data'])} symbols")
     print(f"   Existing Signals: {len(state['signals'])} agent types")
     
     # Process through LangGraph node
     result_state = await options_volatility_agent_node(state)
     
-    print("\n📤 Output State:")
+    print("\n[INFO] Output State:")
     print(f"   Options Signals: {len(result_state['signals']['options_volatility'])} signals")
     print(f"   Analysis Timestamp: {result_state['options_analysis']['timestamp']}")
     
     # Show signal summary
     if result_state['signals']['options_volatility']:
-        print("\n📊 Generated Signals Summary:")
+        print("\n[CHART] Generated Signals Summary:")
         signal_types = {}
         strategies = {}
         
@@ -389,7 +389,7 @@ async def demo_langgraph_integration():
 
 async def main():
     """Main demo function"""
-    print("🚀 OPTIONS VOLATILITY AGENT COMPREHENSIVE DEMO")
+    print("[LAUNCH] OPTIONS VOLATILITY AGENT COMPREHENSIVE DEMO")
     print("This demo showcases all major capabilities of the Options Volatility Agent")
     
     try:
@@ -402,11 +402,11 @@ async def main():
         await demo_langgraph_integration()
         
         print_header("DEMO COMPLETED SUCCESSFULLY")
-        print("✅ All Options Volatility Agent features demonstrated")
-        print("🎯 The agent is ready for integration into the trading system")
+        print("[OK] All Options Volatility Agent features demonstrated")
+        print("[TARGET] The agent is ready for integration into the trading system")
         
     except Exception as e:
-        print(f"\n❌ Demo failed with error: {e}")
+        print(f"\n[X] Demo failed with error: {e}")
         import traceback
         traceback.print_exc()
 

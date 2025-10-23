@@ -6,15 +6,20 @@ This script demonstrates the capabilities of the News and Sentiment Analysis Age
 including news ingestion, sentiment analysis, and event detection.
 """
 
+import sys
+import os
+from pathlib import Path
+
+# Add project root to Python path to ensure local config is imported
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
 import asyncio
 import logging
-import sys
 from datetime import datetime, timedelta
 from typing import List, Dict, Any
 import json
-
-# Add project root to path
-sys.path.append('.')
 
 from agents.news_sentiment_agent import (
     create_news_sentiment_agent,
@@ -38,14 +43,14 @@ class NewsSentimentDemo:
     
     async def setup(self):
         """Initialize the agent"""
-        logger.info("🚀 Initializing News and Sentiment Analysis Agent...")
+        logger.info("[LAUNCH] Initializing News and Sentiment Analysis Agent...")
         
         try:
             self.agent = await create_news_sentiment_agent()
-            logger.info("✅ Agent initialized successfully!")
+            logger.info("[OK] Agent initialized successfully!")
             return True
         except Exception as e:
-            logger.error(f"❌ Failed to initialize agent: {e}")
+            logger.error(f"[X] Failed to initialize agent: {e}")
             return False
     
     def print_separator(self, title: str):
@@ -60,7 +65,7 @@ class NewsSentimentDemo:
             print("No sentiment analyses found.")
             return
         
-        print(f"\n📊 SENTIMENT ANALYSIS RESULTS ({len(analyses)} analyses)")
+        print(f"\n[CHART] SENTIMENT ANALYSIS RESULTS ({len(analyses)} analyses)")
         print("-" * 60)
         
         # Group by symbol
@@ -72,14 +77,14 @@ class NewsSentimentDemo:
             by_symbol[symbol].append(analysis)
         
         for symbol, symbol_analyses in by_symbol.items():
-            print(f"\n🏢 {symbol}:")
+            print(f"\n[INFO] {symbol}:")
             
             # Calculate average sentiment
             avg_composite = sum(a['composite_score'] for a in symbol_analyses) / len(symbol_analyses)
             avg_confidence = sum(a['confidence_level'] for a in symbol_analyses) / len(symbol_analyses)
             
             sentiment_label = "POSITIVE" if avg_composite > 0.5 else "NEGATIVE" if avg_composite < -0.5 else "NEUTRAL"
-            sentiment_emoji = "📈" if avg_composite > 0.5 else "📉" if avg_composite < -0.5 else "➡️"
+            sentiment_emoji = "[UP]" if avg_composite > 0.5 else "[DOWN]" if avg_composite < -0.5 else "[INFO]️"
             
             print(f"   Overall Sentiment: {sentiment_emoji} {sentiment_label} ({avg_composite:.2f})")
             print(f"   Average Confidence: {avg_confidence:.1%}")
@@ -100,24 +105,24 @@ class NewsSentimentDemo:
             print("No market events detected.")
             return
         
-        print(f"\n🚨 DETECTED MARKET EVENTS ({len(events)} events)")
+        print(f"\n[ALERT] DETECTED MARKET EVENTS ({len(events)} events)")
         print("-" * 60)
         
         for i, event in enumerate(events, 1):
             event_emoji = {
-                'earnings': '💰',
-                'merger_acquisition': '🤝',
-                'regulatory': '⚖️',
-                'economic_data': '📊',
-                'company_news': '📰',
-                'market_moving': '🌊'
-            }.get(event['event_type'], '📢')
+                'earnings': '[MONEY]',
+                'merger_acquisition': '[INFO]',
+                'regulatory': '[BALANCE]',
+                'economic_data': '[CHART]',
+                'company_news': '[INFO]',
+                'market_moving': '[INFO]'
+            }.get(event['event_type'], '[ANNOUNCE]')
             
             direction_emoji = {
-                'bullish': '🐂',
-                'bearish': '🐻',
-                'neutral': '➡️'
-            }.get(event['predicted_direction'], '❓')
+                'bullish': '[INFO]',
+                'bearish': '[INFO]',
+                'neutral': '[INFO]️'
+            }.get(event['predicted_direction'], '[INFO]')
             
             print(f"\n{i}. {event_emoji} {event['title']}")
             print(f"   Type: {event['event_type'].replace('_', ' ').title()}")
@@ -133,7 +138,7 @@ class NewsSentimentDemo:
     
     def print_statistics(self, stats: Dict[str, Any]):
         """Print processing statistics"""
-        print(f"\n📈 PROCESSING STATISTICS")
+        print(f"\n[UP] PROCESSING STATISTICS")
         print("-" * 40)
         
         print(f"Symbols Requested: {stats.get('symbols_requested', 0)}")
@@ -147,9 +152,9 @@ class NewsSentimentDemo:
         if stats.get('sentiment_distribution'):
             dist = stats['sentiment_distribution']
             print(f"\nSentiment Distribution:")
-            print(f"  📈 Positive: {dist.get('positive', 0)}")
-            print(f"  ➡️ Neutral: {dist.get('neutral', 0)}")
-            print(f"  📉 Negative: {dist.get('negative', 0)}")
+            print(f"  [UP] Positive: {dist.get('positive', 0)}")
+            print(f"  [INFO]️ Neutral: {dist.get('neutral', 0)}")
+            print(f"  [DOWN] Negative: {dist.get('negative', 0)}")
         
         if stats.get('average_confidence'):
             print(f"Average Confidence: {stats['average_confidence']:.1%}")
@@ -173,7 +178,7 @@ class NewsSentimentDemo:
             )
             
             if result['success']:
-                print("✅ Analysis completed successfully!")
+                print("[OK] Analysis completed successfully!")
                 
                 self.print_statistics(result['statistics'])
                 self.print_sentiment_analysis(result['sentiment_analyses'])
@@ -181,11 +186,11 @@ class NewsSentimentDemo:
                 
                 return result
             else:
-                print(f"❌ Analysis failed: {result.get('errors', [])}")
+                print(f"[X] Analysis failed: {result.get('errors', [])}")
                 return None
                 
         except Exception as e:
-            print(f"❌ Demo failed: {e}")
+            print(f"[X] Demo failed: {e}")
             return None
     
     async def demo_comprehensive_analysis(self):
@@ -219,7 +224,7 @@ class NewsSentimentDemo:
             )
             
             if result['success']:
-                print("✅ Comprehensive analysis completed!")
+                print("[OK] Comprehensive analysis completed!")
                 
                 self.print_statistics(result['statistics'])
                 
@@ -229,12 +234,12 @@ class NewsSentimentDemo:
                     # Sort by composite score
                     sorted_analyses = sorted(analyses, key=lambda x: x['composite_score'], reverse=True)
                     
-                    print(f"\n🏆 TOP 5 MOST POSITIVE SENTIMENTS")
+                    print(f"\n[WIN] TOP 5 MOST POSITIVE SENTIMENTS")
                     print("-" * 50)
                     for i, analysis in enumerate(sorted_analyses[:5], 1):
                         print(f"{i}. {analysis['symbol']}: {analysis['composite_score']:.2f} ({analysis['composite_label']})")
                     
-                    print(f"\n⚠️ TOP 5 MOST NEGATIVE SENTIMENTS")
+                    print(f"\n[WARN] TOP 5 MOST NEGATIVE SENTIMENTS")
                     print("-" * 50)
                     for i, analysis in enumerate(sorted_analyses[-5:], 1):
                         print(f"{i}. {analysis['symbol']}: {analysis['composite_score']:.2f} ({analysis['composite_label']})")
@@ -243,11 +248,11 @@ class NewsSentimentDemo:
                 
                 return result
             else:
-                print(f"❌ Analysis failed: {result.get('errors', [])}")
+                print(f"[X] Analysis failed: {result.get('errors', [])}")
                 return None
                 
         except Exception as e:
-            print(f"❌ Demo failed: {e}")
+            print(f"[X] Demo failed: {e}")
             return None
     
     async def demo_event_detection(self):
@@ -269,7 +274,7 @@ class NewsSentimentDemo:
             )
             
             if result['success']:
-                print("✅ Event detection completed!")
+                print("[OK] Event detection completed!")
                 
                 events = result['detected_events']
                 
@@ -282,7 +287,7 @@ class NewsSentimentDemo:
                             by_type[event_type] = []
                         by_type[event_type].append(event)
                     
-                    print(f"\n📊 EVENT SUMMARY BY TYPE")
+                    print(f"\n[CHART] EVENT SUMMARY BY TYPE")
                     print("-" * 40)
                     for event_type, type_events in by_type.items():
                         print(f"{event_type.replace('_', ' ').title()}: {len(type_events)} events")
@@ -291,7 +296,7 @@ class NewsSentimentDemo:
                     high_impact_events = [e for e in events if e['impact_score'] >= 0.7]
                     
                     if high_impact_events:
-                        print(f"\n🚨 HIGH-IMPACT EVENTS (Impact Score ≥ 0.7)")
+                        print(f"\n[ALERT] HIGH-IMPACT EVENTS (Impact Score ≥ 0.7)")
                         print("-" * 60)
                         
                         for event in high_impact_events:
@@ -306,11 +311,11 @@ class NewsSentimentDemo:
                 
                 return result
             else:
-                print(f"❌ Event detection failed: {result.get('errors', [])}")
+                print(f"[X] Event detection failed: {result.get('errors', [])}")
                 return None
                 
         except Exception as e:
-            print(f"❌ Demo failed: {e}")
+            print(f"[X] Demo failed: {e}")
             return None
     
     async def demo_performance_test(self):
@@ -348,14 +353,14 @@ class NewsSentimentDemo:
             total_time = (end_time - start_time).total_seconds()
             
             if result['success']:
-                print("✅ Performance test completed!")
+                print("[OK] Performance test completed!")
                 
                 stats = result['statistics']
                 articles_processed = stats.get('articles_processed', 0)
                 sentiment_analyses = len(result.get('sentiment_analyses', []))
                 events_detected = len(result.get('detected_events', []))
                 
-                print(f"\n⚡ PERFORMANCE METRICS")
+                print(f"\n[FAST] PERFORMANCE METRICS")
                 print("-" * 40)
                 print(f"Total Processing Time: {total_time:.2f} seconds")
                 print(f"Articles Processed: {articles_processed}")
@@ -368,33 +373,33 @@ class NewsSentimentDemo:
                 
                 # Performance assessment
                 if articles_processed >= 50:
-                    print("🎉 EXCELLENT: Processed substantial number of articles")
+                    print("[PARTY] EXCELLENT: Processed substantial number of articles")
                 elif articles_processed >= 20:
-                    print("✅ GOOD: Processed reasonable number of articles")
+                    print("[OK] GOOD: Processed reasonable number of articles")
                 elif articles_processed >= 10:
-                    print("⚠️ MODERATE: Processed some articles")
+                    print("[WARN] MODERATE: Processed some articles")
                 else:
-                    print("❌ LOW: Few articles processed (may be due to limited news)")
+                    print("[X] LOW: Few articles processed (may be due to limited news)")
                 
                 if total_time <= 60:
-                    print("🚀 FAST: Completed within 1 minute")
+                    print("[LAUNCH] FAST: Completed within 1 minute")
                 elif total_time <= 180:
-                    print("✅ REASONABLE: Completed within 3 minutes")
+                    print("[OK] REASONABLE: Completed within 3 minutes")
                 else:
-                    print("⏰ SLOW: Took longer than expected")
+                    print("[CLOCK] SLOW: Took longer than expected")
                 
                 return result
             else:
-                print(f"❌ Performance test failed: {result.get('errors', [])}")
+                print(f"[X] Performance test failed: {result.get('errors', [])}")
                 return None
                 
         except Exception as e:
-            print(f"❌ Performance test failed: {e}")
+            print(f"[X] Performance test failed: {e}")
             return None
     
     async def run_all_demos(self):
         """Run all demonstration scenarios"""
-        print("🎬 NEWS AND SENTIMENT ANALYSIS AGENT - COMPREHENSIVE DEMO")
+        print("[ACTION] NEWS AND SENTIMENT ANALYSIS AGENT - COMPREHENSIVE DEMO")
         print("=" * 80)
         print("This demo showcases the capabilities of the News and Sentiment Analysis Agent")
         print("including news ingestion, sentiment analysis, and event detection.")
@@ -402,7 +407,7 @@ class NewsSentimentDemo:
         
         # Setup
         if not await self.setup():
-            print("❌ Failed to initialize agent. Aborting demo.")
+            print("[X] Failed to initialize agent. Aborting demo.")
             return False
         
         demos = [
@@ -415,19 +420,19 @@ class NewsSentimentDemo:
         results = {}
         
         for demo_name, demo_func in demos:
-            print(f"\n🎯 Starting {demo_name}...")
+            print(f"\n[TARGET] Starting {demo_name}...")
             
             try:
                 result = await demo_func()
                 results[demo_name] = result
                 
                 if result:
-                    print(f"✅ {demo_name} completed successfully!")
+                    print(f"[OK] {demo_name} completed successfully!")
                 else:
-                    print(f"⚠️ {demo_name} completed with issues.")
+                    print(f"[WARN] {demo_name} completed with issues.")
                 
             except Exception as e:
-                print(f"❌ {demo_name} failed: {e}")
+                print(f"[X] {demo_name} failed: {e}")
                 results[demo_name] = None
         
         # Final summary
@@ -440,15 +445,15 @@ class NewsSentimentDemo:
         
         for demo_name, result in results.items():
             if result and result.get('success'):
-                print(f"✅ {demo_name}")
+                print(f"[OK] {demo_name}")
             else:
-                print(f"❌ {demo_name}")
+                print(f"[X] {demo_name}")
         
         if successful_demos == total_demos:
-            print("\n🎉 ALL DEMOS COMPLETED SUCCESSFULLY!")
+            print("\n[PARTY] ALL DEMOS COMPLETED SUCCESSFULLY!")
             print("The News and Sentiment Analysis Agent is working correctly.")
         else:
-            print(f"\n⚠️ {total_demos - successful_demos} DEMOS HAD ISSUES")
+            print(f"\n[WARN] {total_demos - successful_demos} DEMOS HAD ISSUES")
             print("Please check the logs for details.")
         
         # Save demo results
@@ -462,7 +467,7 @@ class NewsSentimentDemo:
         with open('news_sentiment_demo_results.json', 'w') as f:
             json.dump(demo_summary, f, indent=2, default=str)
         
-        print(f"\n📄 Demo results saved to news_sentiment_demo_results.json")
+        print(f"\n[INFO] Demo results saved to news_sentiment_demo_results.json")
         
         return successful_demos == total_demos
 
@@ -479,7 +484,7 @@ async def main():
         return 1
     
     except Exception as e:
-        print(f"\n❌ Demo execution failed: {e}")
+        print(f"\n[X] Demo execution failed: {e}")
         return 1
 
 if __name__ == "__main__":

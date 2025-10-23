@@ -852,12 +852,12 @@ class StreamlitDashboard:
         """Run the Streamlit dashboard"""
         st.set_page_config(
             page_title="HiveTrading Performance Dashboard",
-            page_icon="📊",
+            page_icon="[CHART]",
             layout="wide",
             initial_sidebar_state="expanded"
         )
 
-        st.title("🚀 HiveTrading Advanced Performance Dashboard")
+        st.title("[LAUNCH] HiveTrading Advanced Performance Dashboard")
 
         # Sidebar configuration
         self._setup_sidebar()
@@ -921,7 +921,7 @@ class StreamlitDashboard:
     def _display_alerts(self, alerts: List[Dict[str, Any]]):
         """Display system alerts"""
         if alerts:
-            st.header("🚨 Active Alerts")
+            st.header("[ALERT] Active Alerts")
 
             for alert in alerts:
                 if alert['severity'] == 'high':
@@ -975,13 +975,13 @@ class StreamlitDashboard:
 
         with col5:
             health_color = {
-                "Healthy": "🟢",
-                "Warning": "🟡",
-                "Critical": "🔴"
+                "Healthy": "[GREEN]",
+                "Warning": "[YELLOW]",
+                "Critical": "[RED]"
             }
             st.metric(
                 "System Health",
-                f"{health_color.get(metrics.system_health, '⚪')} {metrics.system_health}",
+                f"{health_color.get(metrics.system_health, '[INFO]')} {metrics.system_health}",
                 help="Overall system health status"
             )
 

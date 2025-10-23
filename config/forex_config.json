@@ -1,0 +1,52 @@
+{
+  "account": {
+    "account_id": "YOUR_OANDA_ACCOUNT_ID",
+    "api_key": "YOUR_OANDA_API_KEY",
+    "practice": true,
+    "paper_trading": false
+  },
+  "trading": {
+    "pairs": ["EUR_USD", "USD_JPY"],
+    "timeframe": "M1",
+    "scan_interval": 1,
+    "max_positions": 3,
+    "max_daily_trades": 50,
+    "risk_per_trade": 0.01,
+    "account_size": 10000
+  },
+  "strategy": {
+    "name": "FOREX_V4_OPTIMIZED",
+    "ema_fast": 10,
+    "ema_slow": 21,
+    "ema_trend": 200,
+    "rsi_period": 14,
+    "adx_period": 14,
+    "min_score": 8.0
+  },
+  "risk_management": {
+    "max_total_risk": 0.05,
+    "consecutive_loss_limit": 3,
+    "max_daily_loss": 0.10,
+    "trailing_stop": true,
+    "trailing_distance": 0.5
+  },
+  "position_management": {
+    "check_interval": 300,
+    "atr_stop_multiplier": 2.0,
+    "risk_reward_ratio": 2.0
+  },
+  "logging": {
+    "trade_log_dir": "forex_trades",
+    "system_log_dir": "logs",
+    "save_frequency": 300
+  },
+  "notifications": {
+    "enable_console": true,
+    "enable_file": true,
+    "enable_email": false
+  },
+  "emergency": {
+    "stop_file": "STOP_FOREX_TRADING.txt",
+    "check_stop_file": true
+  }
+}

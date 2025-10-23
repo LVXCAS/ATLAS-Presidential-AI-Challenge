@@ -46,7 +46,7 @@ class BrokerIntegrationDemo:
     
     async def run_demo(self):
         """Run the complete broker integration demo"""
-        print("🚀 Starting Broker Integration Demo")
+        print("[LAUNCH] Starting Broker Integration Demo")
         print("=" * 60)
         
         try:
@@ -71,15 +71,15 @@ class BrokerIntegrationDemo:
             # 7. Error Handling
             await self.demo_error_handling()
             
-            print("\n✅ Broker Integration Demo completed successfully!")
+            print("\n[OK] Broker Integration Demo completed successfully!")
             
         except Exception as e:
             logger.error(f"Demo failed: {e}")
-            print(f"\n❌ Demo failed: {e}")
+            print(f"\n[X] Demo failed: {e}")
     
     async def demo_health_check(self):
         """Demonstrate broker health check"""
-        print("\n📊 1. Broker Health Check")
+        print("\n[CHART] 1. Broker Health Check")
         print("-" * 30)
         
         health_status = await self.broker.health_check()
@@ -94,15 +94,15 @@ class BrokerIntegrationDemo:
             print(f"Errors: {health_status['errors']}")
         
         if health_status['connection_status'] != 'healthy':
-            print("⚠️  Warning: Broker connection is not healthy")
+            print("[WARN]  Warning: Broker connection is not healthy")
             return False
         
-        print("✅ Broker connection is healthy")
+        print("[OK] Broker connection is healthy")
         return True
     
     async def demo_account_info(self):
         """Demonstrate account information retrieval"""
-        print("\n💰 2. Account Information")
+        print("\n[MONEY] 2. Account Information")
         print("-" * 30)
         
         account_info = await self.broker.get_account_info()
@@ -116,11 +116,11 @@ class BrokerIntegrationDemo:
             print(f"Pattern Day Trader: {account_info['pattern_day_trader']}")
             print(f"Day Trade Count: {account_info['daytrade_count']}")
         else:
-            print("❌ Failed to retrieve account information")
+            print("[X] Failed to retrieve account information")
     
     async def demo_current_positions(self):
         """Demonstrate current positions retrieval"""
-        print("\n📈 3. Current Positions")
+        print("\n[UP] 3. Current Positions")
         print("-" * 30)
         
         positions = await self.broker.get_positions()
@@ -152,7 +152,7 @@ class BrokerIntegrationDemo:
     
     async def demo_order_lifecycle(self):
         """Demonstrate complete order lifecycle management"""
-        print("\n📋 4. Order Lifecycle Management")
+        print("\n[INFO] 4. Order Lifecycle Management")
         print("-" * 30)
         
         # Test different order types
@@ -164,7 +164,7 @@ class BrokerIntegrationDemo:
     
     async def demo_market_order(self):
         """Demonstrate market order submission"""
-        print("\n🎯 Market Order Example")
+        print("\n[TARGET] Market Order Example")
         
         try:
             # Submit a small market order
@@ -177,7 +177,7 @@ class BrokerIntegrationDemo:
             
             self.submitted_orders.append(order_response.id)
             
-            print(f"✅ Market order submitted successfully")
+            print(f"[OK] Market order submitted successfully")
             print(f"  Order ID: {order_response.id}")
             print(f"  Symbol: {order_response.symbol}")
             print(f"  Side: {order_response.side.value}")
@@ -186,11 +186,11 @@ class BrokerIntegrationDemo:
             print(f"  Created: {order_response.created_at}")
             
         except Exception as e:
-            print(f"❌ Market order failed: {e}")
+            print(f"[X] Market order failed: {e}")
     
     async def demo_limit_order(self):
         """Demonstrate limit order submission"""
-        print("\n💲 Limit Order Example")
+        print("\n[INFO] Limit Order Example")
         
         try:
             # Submit a limit order below current market price
@@ -205,7 +205,7 @@ class BrokerIntegrationDemo:
             
             self.submitted_orders.append(order_response.id)
             
-            print(f"✅ Limit order submitted successfully")
+            print(f"[OK] Limit order submitted successfully")
             print(f"  Order ID: {order_response.id}")
             print(f"  Symbol: {order_response.symbol}")
             print(f"  Side: {order_response.side.value}")
@@ -215,11 +215,11 @@ class BrokerIntegrationDemo:
             print(f"  Time in Force: {order_response.time_in_force.value}")
             
         except Exception as e:
-            print(f"❌ Limit order failed: {e}")
+            print(f"[X] Limit order failed: {e}")
     
     async def demo_stop_loss_order(self):
         """Demonstrate stop loss order submission"""
-        print("\n🛑 Stop Loss Order Example")
+        print("\n[INFO] Stop Loss Order Example")
         
         try:
             # Submit a stop loss order
@@ -233,7 +233,7 @@ class BrokerIntegrationDemo:
             
             self.submitted_orders.append(order_response.id)
             
-            print(f"✅ Stop loss order submitted successfully")
+            print(f"[OK] Stop loss order submitted successfully")
             print(f"  Order ID: {order_response.id}")
             print(f"  Symbol: {order_response.symbol}")
             print(f"  Side: {order_response.side.value}")
@@ -243,11 +243,11 @@ class BrokerIntegrationDemo:
             print(f"  Time in Force: {order_response.time_in_force.value}")
             
         except Exception as e:
-            print(f"❌ Stop loss order failed: {e}")
+            print(f"[X] Stop loss order failed: {e}")
     
     async def demo_order_monitoring(self):
         """Demonstrate order status monitoring"""
-        print("\n👀 Order Status Monitoring")
+        print("\n[INFO] Order Status Monitoring")
         
         if not self.submitted_orders:
             print("No orders to monitor")
@@ -266,24 +266,24 @@ class BrokerIntegrationDemo:
                         print(f"  Filled At: {order_status.filled_at}")
                     
                     if order_status.status == OrderStatus.REJECTED:
-                        print(f"  ❌ Order was rejected")
+                        print(f"  [X] Order was rejected")
                     elif order_status.status == OrderStatus.FILLED:
-                        print(f"  ✅ Order was filled")
+                        print(f"  [OK] Order was filled")
                     elif order_status.status == OrderStatus.PARTIALLY_FILLED:
-                        print(f"  🔄 Order is partially filled")
+                        print(f"  [INFO] Order is partially filled")
                     else:
                         print(f"  ⏳ Order is pending")
                 else:
-                    print(f"❌ Could not retrieve status for order {order_id}")
+                    print(f"[X] Could not retrieve status for order {order_id}")
                 
                 print()
                 
             except Exception as e:
-                print(f"❌ Error monitoring order {order_id}: {e}")
+                print(f"[X] Error monitoring order {order_id}: {e}")
     
     async def demo_order_cancellation(self):
         """Demonstrate order cancellation"""
-        print("\n❌ Order Cancellation Example")
+        print("\n[X] Order Cancellation Example")
         
         # Get all open orders
         open_orders = await self.broker.get_all_orders(status='open', limit=10)
@@ -300,7 +300,7 @@ class BrokerIntegrationDemo:
             success = await self.broker.cancel_order(order_to_cancel.id)
             
             if success:
-                print(f"✅ Order canceled successfully")
+                print(f"[OK] Order canceled successfully")
                 
                 # Check updated status
                 await asyncio.sleep(1)  # Wait a moment
@@ -308,13 +308,13 @@ class BrokerIntegrationDemo:
                 if updated_status:
                     print(f"  Updated Status: {updated_status.status.value}")
             else:
-                print(f"❌ Failed to cancel order")
+                print(f"[X] Failed to cancel order")
         else:
             print("No open orders to cancel")
     
     async def demo_position_reconciliation(self):
         """Demonstrate position reconciliation"""
-        print("\n🔄 5. Position Reconciliation")
+        print("\n[INFO] 5. Position Reconciliation")
         print("-" * 30)
         
         reconciliation_report = await self.broker.reconcile_positions()
@@ -325,11 +325,11 @@ class BrokerIntegrationDemo:
         print(f"Total Unrealized P&L: ${reconciliation_report['total_unrealized_pl']:.2f}")
         
         if reconciliation_report['discrepancies']:
-            print(f"\n⚠️  Found {len(reconciliation_report['discrepancies'])} discrepancies:")
+            print(f"\n[WARN]  Found {len(reconciliation_report['discrepancies'])} discrepancies:")
             for discrepancy in reconciliation_report['discrepancies']:
                 print(f"  - {discrepancy}")
         else:
-            print("\n✅ No discrepancies found")
+            print("\n[OK] No discrepancies found")
         
         if reconciliation_report['positions']:
             print(f"\nPosition Details:")
@@ -338,7 +338,7 @@ class BrokerIntegrationDemo:
     
     async def demo_trade_reporting(self):
         """Demonstrate trade reporting"""
-        print("\n📊 6. Trade Reporting")
+        print("\n[CHART] 6. Trade Reporting")
         print("-" * 30)
         
         # Generate report for last 7 days
@@ -369,7 +369,7 @@ class BrokerIntegrationDemo:
     
     async def demo_error_handling(self):
         """Demonstrate error handling scenarios"""
-        print("\n⚠️  7. Error Handling Examples")
+        print("\n[WARN]  7. Error Handling Examples")
         print("-" * 30)
         
         # Test invalid symbol
@@ -383,10 +383,10 @@ class BrokerIntegrationDemo:
             )
             
             await self.broker.submit_order(invalid_order)
-            print("❌ Expected error but order succeeded")
+            print("[X] Expected error but order succeeded")
             
         except Exception as e:
-            print(f"✅ Correctly handled invalid symbol error: {e}")
+            print(f"[OK] Correctly handled invalid symbol error: {e}")
         
         # Test invalid quantity
         print("\nTesting invalid quantity order...")
@@ -399,10 +399,10 @@ class BrokerIntegrationDemo:
             )
             
             await self.broker.submit_order(invalid_order)
-            print("❌ Expected error but order succeeded")
+            print("[X] Expected error but order succeeded")
             
         except Exception as e:
-            print(f"✅ Correctly handled invalid quantity error: {e}")
+            print(f"[OK] Correctly handled invalid quantity error: {e}")
         
         # Test getting non-existent order
         print("\nTesting non-existent order status...")
@@ -410,18 +410,18 @@ class BrokerIntegrationDemo:
         order_status = await self.broker.get_order_status(fake_order_id)
         
         if order_status is None:
-            print(f"✅ Correctly handled non-existent order")
+            print(f"[OK] Correctly handled non-existent order")
         else:
-            print(f"❌ Expected None but got order status")
+            print(f"[X] Expected None but got order status")
         
         # Test getting non-existent position
         print("\nTesting non-existent position...")
         position = await self.broker.get_position('NONEXISTENT')
         
         if position is None:
-            print(f"✅ Correctly handled non-existent position")
+            print(f"[OK] Correctly handled non-existent position")
         else:
-            print(f"❌ Expected None but got position")
+            print(f"[X] Expected None but got position")
         
         # Show error log
         if self.broker.error_log:
@@ -436,7 +436,7 @@ class BrokerIntegrationDemo:
     
     async def cleanup_demo_orders(self):
         """Clean up any remaining demo orders"""
-        print("\n🧹 Cleaning up demo orders...")
+        print("\n[INFO] Cleaning up demo orders...")
         
         # Cancel any remaining open orders from this demo
         open_orders = await self.broker.get_all_orders(status='open', limit=50)
@@ -449,9 +449,9 @@ class BrokerIntegrationDemo:
             for order in demo_orders:
                 success = await self.broker.cancel_order(order.id)
                 if success:
-                    print(f"  ✅ Canceled {order.symbol} {order.side.value} order")
+                    print(f"  [OK] Canceled {order.symbol} {order.side.value} order")
                 else:
-                    print(f"  ❌ Failed to cancel {order.symbol} {order.side.value} order")
+                    print(f"  [X] Failed to cancel {order.symbol} {order.side.value} order")
         else:
             print("No demo orders to clean up")
 

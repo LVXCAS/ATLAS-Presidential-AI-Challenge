@@ -396,11 +396,11 @@ class PerformanceDashboard:
         for alert in dashboard_data.alerts:
             alert_text = f"[{alert.timestamp.strftime('%Y-%m-%d %H:%M:%S')}] "
             if alert.severity == "critical":
-                alert_text += "🔴 CRITICAL: "
+                alert_text += "[RED] CRITICAL: "
             elif alert.severity == "error":
-                alert_text += "❌ ERROR: "
+                alert_text += "[X] ERROR: "
             elif alert.severity == "warning":
-                alert_text += "⚠️ WARNING: "
+                alert_text += "[WARN] WARNING: "
             else:
                 alert_text += "ℹ️ INFO: "
             

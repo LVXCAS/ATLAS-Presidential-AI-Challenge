@@ -45,7 +45,7 @@ class RiskManagerValidator:
     
     def log_validation(self, test_name: str, passed: bool, details: str = ""):
         """Log validation result"""
-        status = "✅ PASS" if passed else "❌ FAIL"
+        status = "[OK] PASS" if passed else "[X] FAIL"
         print(f"{status} {test_name}")
         if details:
             print(f"    {details}")
@@ -450,35 +450,35 @@ class RiskManagerValidator:
         failed_tests = total_tests - passed_tests
         
         print(f"\nTotal Tests: {total_tests}")
-        print(f"Passed: {passed_tests} ✅")
-        print(f"Failed: {failed_tests} ❌")
+        print(f"Passed: {passed_tests} [OK]")
+        print(f"Failed: {failed_tests} [X]")
         print(f"Success Rate: {(passed_tests/total_tests)*100:.1f}%")
         
         if failed_tests > 0:
-            print(f"\n❌ FAILED TESTS:")
+            print(f"\n[X] FAILED TESTS:")
             for result in self.validation_results:
                 if not result['passed']:
                     print(f"   • {result['test']}: {result['details']}")
         
-        print(f"\n📋 VALIDATION CATEGORIES:")
-        print("• Initialization and Configuration ✅")
-        print("• Portfolio Risk Monitoring ✅")
-        print("• Position Limit Checks ✅")
-        print("• Emergency Stop Functionality ✅")
-        print("• Risk Calculations ✅")
-        print("• Database Integration ✅")
-        print("• LangGraph Workflow ✅")
+        print(f"\n[INFO] VALIDATION CATEGORIES:")
+        print("• Initialization and Configuration [OK]")
+        print("• Portfolio Risk Monitoring [OK]")
+        print("• Position Limit Checks [OK]")
+        print("• Emergency Stop Functionality [OK]")
+        print("• Risk Calculations [OK]")
+        print("• Database Integration [OK]")
+        print("• LangGraph Workflow [OK]")
         
         overall_success = (passed_tests / total_tests) >= 0.8  # 80% pass rate
-        status = "✅ VALIDATION PASSED" if overall_success else "❌ VALIDATION FAILED"
+        status = "[OK] VALIDATION PASSED" if overall_success else "[X] VALIDATION FAILED"
         print(f"\n{status}")
         
         return overall_success
     
     async def run_validation(self):
         """Run complete validation suite"""
-        print("🔍 Starting Risk Manager Agent Validation...")
-        print(f"⏰ Validation started at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
+        print("[SEARCH] Starting Risk Manager Agent Validation...")
+        print(f"[CLOCK] Validation started at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
         
         try:
             await self.validate_initialization()
@@ -491,12 +491,12 @@ class RiskManagerValidator:
             
             success = self.print_validation_summary()
             
-            print(f"\n⏰ Validation completed at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
+            print(f"\n[CLOCK] Validation completed at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
             
             return success
             
         except Exception as e:
-            print(f"\n❌ Validation failed with error: {e}")
+            print(f"\n[X] Validation failed with error: {e}")
             import traceback
             traceback.print_exc()
             return False

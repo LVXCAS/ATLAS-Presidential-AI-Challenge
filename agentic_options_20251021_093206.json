@@ -1,0 +1,54 @@
+[
+  {
+    "symbol": "QQQ",
+    "price": 612.5499877929688,
+    "strategy": "BULL_PUT_SPREAD",
+    "score": 8.3,
+    "iv_rank": 80.6,
+    "volatility": 14.2,
+    "momentum": 2.76,
+    "trend": "BULLISH",
+    "volume_surge": 0.44,
+    "strikes": "$582.0-$600.0",
+    "timestamp": "2025-10-21T09:32:04.277421"
+  },
+  {
+    "symbol": "SPY",
+    "price": 672.7050170898438,
+    "strategy": "BULL_PUT_SPREAD",
+    "score": 8.2,
+    "iv_rank": 79.6,
+    "volatility": 11.0,
+    "momentum": 1.76,
+    "trend": "BULLISH",
+    "volume_surge": 0.35,
+    "strikes": "$639.0-$659.0",
+    "timestamp": "2025-10-21T09:32:04.218063"
+  },
+  {
+    "symbol": "BAC",
+    "price": 51.880001068115234,
+    "strategy": "BULL_PUT_SPREAD",
+    "score": 8.1,
+    "iv_rank": 78.2,
+    "volatility": 22.2,
+    "momentum": 0.35,
+    "trend": "BULLISH",
+    "volume_surge": 0.36,
+    "strikes": "$49.0-$51.0",
+    "timestamp": "2025-10-21T09:32:05.804504"
+  },
+  {
+    "symbol": "F",
+    "price": 12.595000267028809,
+    "strategy": "BULL_CALL_SPREAD",
+    "score": 6.8,
+    "iv_rank": 56.1,
+    "volatility": 26.5,
+    "momentum": 8.3,
+    "trend": "BULLISH",
+    "volume_surge": 1.62,
+    "strikes": "$13.0-$13.0",
+    "timestamp": "2025-10-21T09:32:06.147131"
+  }
+]

@@ -1,0 +1,151 @@
+{
+  "system_name": "Forex USD/JPY 63.3% Win Rate",
+  "version": "1.0",
+  "description": "Optimized EMA crossover for USD/JPY with 63.3% historical win rate",
+
+  "trading_pair": "USD_JPY",
+
+  "indicators": {
+    "ema_fast": {
+      "period": 10,
+      "description": "Fast EMA for crossover signals",
+      "safe_range": [8, 12]
+    },
+    "ema_slow": {
+      "period": 21,
+      "description": "Slow EMA (Fibonacci number)",
+      "safe_range": [18, 25]
+    },
+    "ema_trend": {
+      "period": 200,
+      "description": "Long-term trend filter",
+      "safe_range": [150, 250]
+    },
+    "rsi_period": {
+      "period": 14,
+      "description": "RSI calculation period",
+      "safe_range": [12, 16]
+    },
+    "adx_period": {
+      "period": 14,
+      "description": "ADX for trend strength",
+      "safe_range": [12, 16]
+    }
+  },
+
+  "entry_filters": {
+    "rsi_long_lower": {
+      "value": 52,
+      "description": "Minimum RSI for long entries",
+      "safe_range": [48, 55]
+    },
+    "rsi_long_upper": {
+      "value": 72,
+      "description": "Maximum RSI for long entries (avoid overbought)",
+      "safe_range": [70, 80]
+    },
+    "rsi_short_lower": {
+      "value": 28,
+      "description": "Minimum RSI for short entries (avoid oversold)",
+      "safe_range": [20, 30]
+    },
+    "rsi_short_upper": {
+      "value": 48,
+      "description": "Maximum RSI for short entries",
+      "safe_range": [45, 52]
+    },
+    "adx_threshold": {
+      "value": 25.0,
+      "description": "Minimum trend strength (ADX > 25 = trending)",
+      "safe_range": [20, 30]
+    },
+    "min_ema_separation_pct": {
+      "value": 0.00015,
+      "description": "Minimum separation between fast/slow EMA (0.015%)",
+      "safe_range": [0.0001, 0.0003]
+    },
+    "score_threshold": {
+      "value": 2.0,
+      "description": "Minimum quality score for trade entry",
+      "safe_range": [7.0, 9.0],
+      "note": "Lower = more trades but lower quality, Higher = fewer but better trades"
+    }
+  },
+
+  "trading_hours": {
+    "start_utc": "07:00",
+    "end_utc": "20:00",
+    "timezone": "UTC",
+    "description": "London + NY session (highest liquidity)",
+    "note": "Only trades during these hours"
+  },
+
+  "risk_management": {
+    "risk_per_trade": {
+      "value": 0.01,
+      "description": "1% of account per trade",
+      "safe_range": [0.005, 0.02]
+    },
+    "atr_stop_multiplier": {
+      "value": 2.0,
+      "description": "Stop loss = 2x ATR",
+      "safe_range": [1.5, 3.0]
+    },
+    "risk_reward_ratio": {
+      "value": 2.0,
+      "description": "Target = 2x stop distance",
+      "safe_range": [1.5, 3.0]
+    },
+    "max_positions": {
+      "value": 1,
+      "description": "Only 1 USD/JPY position at a time",
+      "safe_range": [1, 2]
+    }
+  },
+
+  "volatility_regime": {
+    "atr_percentile_min": {
+      "value": 30,
+      "description": "Avoid dead markets (below 30th percentile)",
+      "safe_range": [20, 40]
+    },
+    "atr_percentile_max": {
+      "value": 85,
+      "description": "Avoid chaotic markets (above 85th percentile)",
+      "safe_range": [80, 95]
+    }
+  },
+
+  "execution": {
+    "scan_interval_seconds": 300,
+    "order_type": "market",
+    "slippage_buffer_pips": 2,
+    "max_spread_pips": 3
+  },
+
+  "account_requirements": {
+    "minimum_balance": 5000,
+    "recommended_balance": 10000,
+    "currency": "USD"
+  },
+
+  "performance_targets": {
+    "win_rate": 0.633,
+    "profit_factor": 2.1,
+    "sharpe_ratio": 1.8,
+    "max_drawdown": 0.15,
+    "monthly_return_target": 0.10
+  },
+
+  "logging": {
+    "log_level": "INFO",
+    "log_file": "logs/forex_usd_jpy_YYYYMMDD.log",
+    "trade_log": "trades/forex_usd_jpy_trades.json",
+    "save_signals": true
+  },
+
+  "mode": {
+    "paper_trading": true,
+    "note": "Set to false for live trading (BE CAREFUL!)"
+  }
+}

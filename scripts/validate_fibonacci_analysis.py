@@ -649,14 +649,14 @@ class FibonacciValidationSuite:
         print(f"\nOVERALL VALIDATION: {'PASS' if all_passed else 'FAIL'}")
         
         if all_passed:
-            print("\n✓ Fibonacci Analysis Library is ready for production use")
-            print("✓ All mathematical calculations are accurate")
-            print("✓ Performance requirements are met")
-            print("✓ Edge cases are handled properly")
-            print("✓ Integration interfaces are ready")
+            print("\n[OK] Fibonacci Analysis Library is ready for production use")
+            print("[OK] All mathematical calculations are accurate")
+            print("[OK] Performance requirements are met")
+            print("[OK] Edge cases are handled properly")
+            print("[OK] Integration interfaces are ready")
         else:
-            print("\n✗ Fibonacci Analysis Library has validation failures")
-            print("✗ Review failed tests before production deployment")
+            print("\n[X] Fibonacci Analysis Library has validation failures")
+            print("[X] Review failed tests before production deployment")
         
         return all_passed
 

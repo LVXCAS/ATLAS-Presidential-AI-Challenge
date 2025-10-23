@@ -2,6 +2,15 @@
 Database connection and management for the LangGraph Trading System.
 """
 
+import sys
+import os
+from pathlib import Path
+
+# Add project root to Python path to ensure local config is imported
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
 import asyncio
 from contextlib import asynccontextmanager
 from typing import Optional, AsyncGenerator
@@ -126,7 +135,7 @@ class DatabaseManager:
             return
             
         try:
-            logger.info("🔧 Applying production database optimizations...")
+            logger.info("[TOOL] Applying production database optimizations...")
             
             # Apply PostgreSQL optimizations
             await db_optimizer.optimize_postgres_settings(self.postgres_engine)
@@ -134,10 +143,10 @@ class DatabaseManager:
             await db_optimizer.create_performance_views(self.postgres_engine)
             
             self._optimized = True
-            logger.info("✅ Database optimizations applied successfully")
+            logger.info("[OK] Database optimizations applied successfully")
             
         except Exception as e:
-            logger.warning(f"⚠️  Could not apply all database optimizations: {e}")
+            logger.warning(f"[WARN]  Could not apply all database optimizations: {e}")
     
     async def get_performance_metrics(self) -> dict:
         """Get database performance metrics."""

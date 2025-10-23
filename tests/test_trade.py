@@ -48,8 +48,8 @@ def test_trade_execution():
         print(f"Side: {order.side}")
         print(f"Status: {order.status}")
         
-        print(f"\n✅ TRADE EXECUTION CONFIRMED!")
-        print(f"🔗 Check your order at: https://app.alpaca.markets/paper/dashboard/orders")
+        print(f"\n[OK] TRADE EXECUTION CONFIRMED!")
+        print(f"[INFO] Check your order at: https://app.alpaca.markets/paper/dashboard/orders")
         
         return True
         
@@ -61,8 +61,8 @@ if __name__ == "__main__":
     success = test_trade_execution()
     print("\n" + "=" * 50)
     if success:
-        print("✅ Your bot CAN make trades on your Alpaca account!")
+        print("[OK] Your bot CAN make trades on your Alpaca account!")
     else:
-        print("❌ Trade execution test failed")
+        print("[X] Trade execution test failed")
     
     input("Press Enter to close...")

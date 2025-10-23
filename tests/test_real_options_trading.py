@@ -305,17 +305,17 @@ async def main():
     test_results = []
     
     # Test 1: Basic options broker functionality
-    print("\n🔸 PHASE 1: Options Broker Testing")
+    print("\n[INFO] PHASE 1: Options Broker Testing")
     result1 = await test_options_broker()
     test_results.append(("Options Broker", result1))
     
     # Test 2: Options trader integration
-    print("\n🔸 PHASE 2: Options Trader Integration")
+    print("\n[INFO] PHASE 2: Options Trader Integration")
     result2 = await test_options_trader_integration()
     test_results.append(("Options Trader", result2))
     
     # Test 3: Multiple strategies
-    print("\n🔸 PHASE 3: Strategy Selection Testing")
+    print("\n[INFO] PHASE 3: Strategy Selection Testing")
     result3 = await test_multiple_strategies()
     test_results.append(("Strategy Selection", result3))
     
@@ -334,12 +334,12 @@ async def main():
     print(f"\nOverall: {passed}/{len(test_results)} tests passed")
     
     if passed == len(test_results):
-        print("\n🎉 ALL TESTS PASSED!")
-        print("✅ The system can now buy and sell real options contracts!")
-        print("✅ Multiple options strategies are working!")
-        print("✅ Position tracking and P&L calculation working!")
+        print("\n[PARTY] ALL TESTS PASSED!")
+        print("[OK] The system can now buy and sell real options contracts!")
+        print("[OK] Multiple options strategies are working!")
+        print("[OK] Position tracking and P&L calculation working!")
     else:
-        print(f"\n⚠️  {len(test_results) - passed} tests failed")
+        print(f"\n[WARN]  {len(test_results) - passed} tests failed")
     
     print("=" * 70)
 

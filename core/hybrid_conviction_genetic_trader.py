@@ -281,7 +281,7 @@ class HybridConvictionGeneticTrader:
 
             # Apply additional safety check
             if allocation > max_single_position:
-                print(f"⚠ WARNING: {opp['symbol']} allocation capped at {max_single_position:.0%} (was {allocation:.0%})")
+                print(f"[WARN] WARNING: {opp['symbol']} allocation capped at {max_single_position:.0%} (was {allocation:.0%})")
                 allocation = max_single_position
 
             position_value = available_capital * allocation

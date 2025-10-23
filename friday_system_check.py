@@ -41,29 +41,29 @@ def check_imports():
         import lightgbm as lgb
         import torch
         from sklearn.ensemble import RandomForestClassifier
-        print(f"{Fore.GREEN}  ✓ XGBoost v{xgb.__version__}")
-        print(f"{Fore.GREEN}  ✓ LightGBM v{lgb.__version__}")
-        print(f"{Fore.GREEN}  ✓ PyTorch v{torch.__version__}")
+        print(f"{Fore.GREEN}  [OK] XGBoost v{xgb.__version__}")
+        print(f"{Fore.GREEN}  [OK] LightGBM v{lgb.__version__}")
+        print(f"{Fore.GREEN}  [OK] PyTorch v{torch.__version__}")
 
         # Check GPU
         if torch.cuda.is_available():
-            print(f"{Fore.GREEN}  ✓ GPU: {torch.cuda.get_device_name(0)}")
+            print(f"{Fore.GREEN}  [OK] GPU: {torch.cuda.get_device_name(0)}")
         else:
-            print(f"{Fore.YELLOW}  ⚠ GPU not available (CPU mode)")
+            print(f"{Fore.YELLOW}  [WARN] GPU not available (CPU mode)")
 
         checks_passed += 1
     except Exception as e:
-        print(f"{Fore.RED}  ✗ ML/DL systems FAILED: {e}")
+        print(f"{Fore.RED}  [X] ML/DL systems FAILED: {e}")
 
     # 3. RL libraries
     print(f"\n{Fore.YELLOW}[3/10] Checking RL systems...")
     checks_total += 1
     try:
         from stable_baselines3 import PPO, A2C, DQN
-        print(f"{Fore.GREEN}  ✓ Stable-Baselines3 (PPO, A2C, DQN)")
+        print(f"{Fore.GREEN}  [OK] Stable-Baselines3 (PPO, A2C, DQN)")
         checks_passed += 1
     except Exception as e:
-        print(f"{Fore.RED}  ✗ RL systems FAILED: {e}")
+        print(f"{Fore.RED}  [X] RL systems FAILED: {e}")
 
     # 4. Technical indicators
     print(f"\n{Fore.YELLOW}[4/10] Checking technical indicators...")
@@ -71,11 +71,11 @@ def check_imports():
     try:
         import pandas_ta as pta
         import ta
-        print(f"{Fore.GREEN}  ✓ pandas-ta (150+ indicators)")
-        print(f"{Fore.GREEN}  ✓ ta library")
+        print(f"{Fore.GREEN}  [OK] pandas-ta (150+ indicators)")
+        print(f"{Fore.GREEN}  [OK] ta library")
         checks_passed += 1
     except Exception as e:
-        print(f"{Fore.RED}  ✗ Technical indicators FAILED: {e}")
+        print(f"{Fore.RED}  [X] Technical indicators FAILED: {e}")
 
     # 5. Alpaca API
     print(f"\n{Fore.YELLOW}[5/10] Checking Alpaca connection...")
@@ -88,17 +88,17 @@ def check_imports():
         secret_key = os.getenv('ALPACA_SECRET_KEY')
 
         if not api_key or not secret_key:
-            print(f"{Fore.RED}  ✗ API keys not found in .env.paper")
+            print(f"{Fore.RED}  [X] API keys not found in .env.paper")
         else:
             client = TradingClient(api_key, secret_key, paper=True)
             account = client.get_account()
 
-            print(f"{Fore.GREEN}  ✓ Alpaca API connected")
-            print(f"{Fore.GREEN}  ✓ Account value: ${float(account.portfolio_value):,.2f}")
-            print(f"{Fore.GREEN}  ✓ Cash available: ${float(account.cash):,.2f}")
+            print(f"{Fore.GREEN}  [OK] Alpaca API connected")
+            print(f"{Fore.GREEN}  [OK] Account value: ${float(account.portfolio_value):,.2f}")
+            print(f"{Fore.GREEN}  [OK] Cash available: ${float(account.cash):,.2f}")
             checks_passed += 1
     except Exception as e:
-        print(f"{Fore.RED}  ✗ Alpaca connection FAILED: {e}")
+        print(f"{Fore.RED}  [X] Alpaca connection FAILED: {e}")
 
     # 6. Time series momentum
     print(f"\n{Fore.YELLOW}[6/10] Checking time series momentum...")
@@ -106,10 +106,10 @@ def check_imports():
     try:
         from time_series_momentum_strategy import TimeSeriesMomentumStrategy
         momentum = TimeSeriesMomentumStrategy()
-        print(f"{Fore.GREEN}  ✓ Time series momentum strategy loaded")
+        print(f"{Fore.GREEN}  [OK] Time series momentum strategy loaded")
         checks_passed += 1
     except Exception as e:
-        print(f"{Fore.RED}  ✗ Momentum strategy FAILED: {e}")
+        print(f"{Fore.RED}  [X] Momentum strategy FAILED: {e}")
 
     # 7. Options validator
     print(f"\n{Fore.YELLOW}[7/10] Checking options validator...")
@@ -117,10 +117,10 @@ def check_imports():
     try:
         from enhanced_options_validator import EnhancedOptionsValidator
         validator = EnhancedOptionsValidator()
-        print(f"{Fore.GREEN}  ✓ Black-Scholes options validator loaded")
+        print(f"{Fore.GREEN}  [OK] Black-Scholes options validator loaded")
         checks_passed += 1
     except Exception as e:
-        print(f"{Fore.RED}  ✗ Options validator FAILED: {e}")
+        print(f"{Fore.RED}  [X] Options validator FAILED: {e}")
 
     # 8. Portfolio manager
     print(f"\n{Fore.YELLOW}[8/10] Checking portfolio manager...")
@@ -128,10 +128,10 @@ def check_imports():
     try:
         from enhanced_portfolio_manager import EnhancedPortfolioManager
         portfolio = EnhancedPortfolioManager()
-        print(f"{Fore.GREEN}  ✓ Portfolio manager loaded")
+        print(f"{Fore.GREEN}  [OK] Portfolio manager loaded")
         checks_passed += 1
     except Exception as e:
-        print(f"{Fore.RED}  ✗ Portfolio manager FAILED: {e}")
+        print(f"{Fore.RED}  [X] Portfolio manager FAILED: {e}")
 
     # 9. Continuous scanner
     print(f"\n{Fore.YELLOW}[9/10] Checking continuous scanner...")
@@ -140,22 +140,22 @@ def check_imports():
         # Don't import to avoid running it, just check file exists
         import os
         if os.path.exists('continuous_week1_scanner.py'):
-            print(f"{Fore.GREEN}  ✓ continuous_week1_scanner.py exists")
+            print(f"{Fore.GREEN}  [OK] continuous_week1_scanner.py exists")
             checks_passed += 1
         else:
-            print(f"{Fore.RED}  ✗ continuous_week1_scanner.py not found")
+            print(f"{Fore.RED}  [X] continuous_week1_scanner.py not found")
     except Exception as e:
-        print(f"{Fore.RED}  ✗ Scanner check FAILED: {e}")
+        print(f"{Fore.RED}  [X] Scanner check FAILED: {e}")
 
     # 10. Mission control
     print(f"\n{Fore.YELLOW}[10/10] Checking mission control logger...")
     checks_total += 1
     try:
         from mission_control_logger import MissionControlLogger
-        print(f"{Fore.GREEN}  ✓ Mission control logger loaded")
+        print(f"{Fore.GREEN}  [OK] Mission control logger loaded")
         checks_passed += 1
     except Exception as e:
-        print(f"{Fore.RED}  ✗ Mission control FAILED: {e}")
+        print(f"{Fore.RED}  [X] Mission control FAILED: {e}")
 
     # Summary
     print(f"\n{Fore.CYAN}{'='*70}")
@@ -163,13 +163,13 @@ def check_imports():
     print(f"{Fore.CYAN}{'='*70}\n")
 
     if checks_passed == checks_total:
-        print(f"{Fore.GREEN}{Style.BRIGHT}✓ ALL SYSTEMS READY ({checks_passed}/{checks_total})")
+        print(f"{Fore.GREEN}{Style.BRIGHT}[OK] ALL SYSTEMS READY ({checks_passed}/{checks_total})")
         print(f"{Fore.GREEN}{'='*70}\n")
         print(f"{Fore.WHITE}Launch command: {Fore.YELLOW}FRIDAY_LAUNCH.bat")
         print(f"{Fore.WHITE}Or manually: {Fore.YELLOW}python continuous_week1_scanner.py\n")
         return True
     else:
-        print(f"{Fore.RED}{Style.BRIGHT}✗ SOME SYSTEMS FAILED ({checks_passed}/{checks_total})")
+        print(f"{Fore.RED}{Style.BRIGHT}[X] SOME SYSTEMS FAILED ({checks_passed}/{checks_total})")
         print(f"{Fore.RED}{'='*70}\n")
         print(f"{Fore.YELLOW}Fix errors above before launching scanner\n")
         return False

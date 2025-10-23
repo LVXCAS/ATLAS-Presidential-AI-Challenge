@@ -107,18 +107,18 @@ def test_position_manager():
             print(f"    Exit needed: {should_exit} - {exit_reason if exit_reason else 'No'} - {detail}")
         
     except Exception as e:
-        print(f"✗ Error testing exit conditions: {e}")
+        print(f"[X] Error testing exit conditions: {e}")
     
     # Test 3: Portfolio summary
     print("\nTest 3: Portfolio summary...")
     try:
         summary = manager.get_portfolio_summary()
-        print(f"✓ Total positions: {summary['stock_positions']['total_positions']}")
-        print(f"✓ Total unrealized P&L: ${summary['stock_positions']['total_unrealized_pnl']:.2f}")
-        print(f"✓ Performance: {summary['performance']['total_trades']} trades, "
+        print(f"[OK] Total positions: {summary['stock_positions']['total_positions']}")
+        print(f"[OK] Total unrealized P&L: ${summary['stock_positions']['total_unrealized_pnl']:.2f}")
+        print(f"[OK] Performance: {summary['performance']['total_trades']} trades, "
               f"{summary['performance']['win_rate']:.1f}% win rate")
     except Exception as e:
-        print(f"✗ Error getting portfolio summary: {e}")
+        print(f"[X] Error getting portfolio summary: {e}")
     
     print("\nPosition manager tests completed.\n")
 
@@ -151,7 +151,7 @@ def test_risk_manager():
                 print(f"      Risk Score: {risk_assessment.overall_risk_score:.2f}, "
                       f"Recommendation: {risk_assessment.recommendation}")
             except Exception as e:
-                print(f"    ✗ Error sizing {stock['symbol']}: {e}")
+                print(f"    [X] Error sizing {stock['symbol']}: {e}")
         
         # Test 2: Risk limits
         print(f"  Risk limits:")
@@ -187,24 +187,24 @@ async def test_integrated_system():
         )
         
         if position_id:
-            print(f"✓ Executed managed trade: {position_id}")
+            print(f"[OK] Executed managed trade: {position_id}")
             
             # Simulate price movement and monitoring
             await position_manager.update_position_prices({'AAPL': 165.0})  # 10% gain
             actions = await position_manager.monitor_positions()
             
             if actions:
-                print(f"✓ Position monitoring triggered {len(actions)} actions")
+                print(f"[OK] Position monitoring triggered {len(actions)} actions")
                 for action in actions:
                     print(f"    {action['action']}: {action['symbol']} - {action['reason']}")
             else:
                 print("  No exit actions needed yet")
                 
         else:
-            print("✗ Failed to execute managed trade")
+            print("[X] Failed to execute managed trade")
             
     except Exception as e:
-        print(f"✗ Error in integrated system test: {e}")
+        print(f"[X] Error in integrated system test: {e}")
     
     # Test options trade simulation
     print("\nTesting options integration...")
@@ -218,7 +218,7 @@ async def test_integrated_system():
         )
         
         if options_id:
-            print(f"✓ Executed options strategy: {options_id}")
+            print(f"[OK] Executed options strategy: {options_id}")
         else:
             print("  No suitable options strategy found")
             
@@ -239,9 +239,9 @@ def test_configuration():
         from agents.position_manager import PositionManager
         from agents.risk_management import RiskManager
         from agents.broker_integration import AlpacaBrokerIntegration
-        print("✓ All modules imported successfully")
+        print("[OK] All modules imported successfully")
     except Exception as e:
-        print(f"✗ Import error: {e}")
+        print(f"[X] Import error: {e}")
         return False
     
     # Test basic instantiation
@@ -249,12 +249,12 @@ def test_configuration():
         options_trader = OptionsTrader(None)
         position_manager = PositionManager(None)
         risk_manager = RiskManager()
-        print("✓ All components instantiated successfully")
+        print("[OK] All components instantiated successfully")
     except Exception as e:
-        print(f"✗ Instantiation error: {e}")
+        print(f"[X] Instantiation error: {e}")
         return False
     
-    print("✓ System configuration tests passed\n")
+    print("[OK] System configuration tests passed\n")
     return True
 
 async def main():

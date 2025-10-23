@@ -1,0 +1,91 @@
+{
+  "date": "20251016",
+  "executions": [
+    {
+      "symbol": "TSLA",
+      "strategy": "BULL_PUT_SPREAD",
+      "asset_type": "OPTIONS",
+      "entry_time": "2025-10-16T06:30:37.666624",
+      "entry_price": 435.19000244140625,
+      "sell_strike": 410.0,
+      "buy_strike": 390.0,
+      "num_contracts": 1,
+      "expected_credit": 600.0,
+      "max_risk": 1400.0,
+      "expiration": "2025-11-21T06:30:36.987404",
+      "expiration_date": "2025-11-21",
+      "status": "OPEN",
+      "paper_trade": true,
+      "ai_score": 8.734102508195258,
+      "ai_confidence": 0.56,
+      "orders": [
+        {
+          "leg": "BUY_PUT",
+          "symbol": "TSLA251121P00390000",
+          "strike": 390.0,
+          "qty": 1,
+          "order_id": "f332ea89-69dc-4c1f-a976-6dd163c1f808",
+          "status": "pending_new"
+        },
+        {
+          "leg": "SELL_PUT",
+          "symbol": "TSLA251121P00410000",
+          "strike": 410.0,
+          "qty": 1,
+          "order_id": "6aedeba8-b3e9-4784-9e9e-95ac3e2d9bb5",
+          "status": "pending_new"
+        }
+      ],
+      "alpaca_order_ids": [
+        "f332ea89-69dc-4c1f-a976-6dd163c1f808",
+        "6aedeba8-b3e9-4784-9e9e-95ac3e2d9bb5"
+      ],
+      "real_execution": true,
+      "buy_put_symbol": "TSLA251121P00390000",
+      "sell_put_symbol": "TSLA251121P00410000"
+    },
+    {
+      "symbol": "IWM",
+      "strategy": "BULL_PUT_SPREAD",
+      "asset_type": "OPTIONS",
+      "entry_time": "2025-10-16T06:30:37.864167",
+      "entry_price": 250.97000122070312,
+      "sell_strike": 240.0,
+      "buy_strike": 230.0,
+      "num_contracts": 1,
+      "expected_credit": 300.0,
+      "max_risk": 700.0,
+      "expiration": "2025-11-21T06:30:37.680336",
+      "expiration_date": "2025-11-21",
+      "status": "OPEN",
+      "paper_trade": true,
+      "ai_score": 8.36,
+      "ai_confidence": 0.56,
+      "orders": [
+        {
+          "leg": "BUY_PUT",
+          "symbol": "IWM251121P00230000",
+          "strike": 230.0,
+          "qty": 1,
+          "order_id": "4c3cd749-99d6-4c7e-9333-e8ed973af15b",
+          "status": "pending_new"
+        },
+        {
+          "leg": "SELL_PUT",
+          "symbol": "IWM251121P00240000",
+          "strike": 240.0,
+          "qty": 1,
+          "order_id": "8fee9cb7-8b35-47ef-8e60-6d7d233f6bb5",
+          "status": "pending_new"
+        }
+      ],
+      "alpaca_order_ids": [
+        "4c3cd749-99d6-4c7e-9333-e8ed973af15b",
+        "8fee9cb7-8b35-47ef-8e60-6d7d233f6bb5"
+      ],
+      "real_execution": true,
+      "buy_put_symbol": "IWM251121P00230000",
+      "sell_put_symbol": "IWM251121P00240000"
+    }
+  ]
+}

@@ -2,6 +2,15 @@
 Database optimization configurations for real-time trading performance.
 """
 
+import sys
+import os
+from pathlib import Path
+
+# Add project root to Python path to ensure local config is imported
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
 import asyncio
 from typing import Dict, Any, Optional
 from sqlalchemy import create_engine, text, pool
@@ -440,7 +449,7 @@ db_optimizer = DatabaseOptimizer()
 
 async def apply_database_optimizations():
     """Apply all database optimizations."""
-    logger.info("🔧 Applying database optimizations for real-time trading...")
+    logger.info("[TOOL] Applying database optimizations for real-time trading...")
     
     try:
         # Create optimized engines
@@ -452,7 +461,7 @@ async def apply_database_optimizations():
         await db_optimizer.create_database_indexes(postgres_engine)
         await db_optimizer.create_performance_views(postgres_engine)
         
-        logger.info("✅ Database optimizations applied successfully")
+        logger.info("[OK] Database optimizations applied successfully")
         
         return {
             'postgres_engine': postgres_engine,
@@ -461,7 +470,7 @@ async def apply_database_optimizations():
         }
         
     except Exception as e:
-        logger.error(f"❌ Failed to apply database optimizations: {e}")
+        logger.error(f"[X] Failed to apply database optimizations: {e}")
         raise
 
 
@@ -480,11 +489,11 @@ async def monitor_database_health():
             # Log critical metrics
             if metrics.get('postgres_connections'):
                 active_conn = sum(c['connections'] for c in metrics['postgres_connections'] if c['state'] == 'active')
-                logger.info(f"📊 Active PostgreSQL connections: {active_conn}")
+                logger.info(f"[CHART] Active PostgreSQL connections: {active_conn}")
             
             if analysis.get('cache_performance'):
                 hit_ratio = analysis['cache_performance'].get('hit_ratio', 0)
-                logger.info(f"📊 Database cache hit ratio: {hit_ratio:.2f}%")
+                logger.info(f"[CHART] Database cache hit ratio: {hit_ratio:.2f}%")
             
             # Sleep before next check
             await asyncio.sleep(60)  # Check every minute

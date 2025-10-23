@@ -7,7 +7,7 @@ class HiveTest(QCAlgorithm):
 
     def initialize(self):
         """Initialize the Hive Trading test algorithm"""
-        self.debug("🚀 HIVE TRADING EMPIRE - LEAN INTEGRATION TEST")
+        self.debug("[LAUNCH] HIVE TRADING EMPIRE - LEAN INTEGRATION TEST")
         self.debug("============================================")
         
         # Set basic parameters for testing
@@ -19,8 +19,8 @@ class HiveTest(QCAlgorithm):
         spy = self.add_equity("SPY", Resolution.DAILY)
         spy.set_data_normalization_mode(DataNormalizationMode.RAW)
         
-        self.debug(f"✅ Algorithm initialized with ${self.portfolio.cash} cash")
-        self.debug("🎯 Testing Hive Trading system integration with LEAN")
+        self.debug(f"[OK] Algorithm initialized with ${self.portfolio.cash} cash")
+        self.debug("[TARGET] Testing Hive Trading system integration with LEAN")
         
         # Track our state
         self.first_trade = True
@@ -35,8 +35,8 @@ class HiveTest(QCAlgorithm):
         
         # Simple buy and hold test strategy
         if not self.portfolio.invested and self.first_trade:
-            self.debug(f"📊 SPY Price: ${spy_bar.close:.2f}")
-            self.debug("💰 Executing first trade - Buying SPY")
+            self.debug(f"[CHART] SPY Price: ${spy_bar.close:.2f}")
+            self.debug("[MONEY] Executing first trade - Buying SPY")
             
             # Buy SPY with all available cash
             self.set_holdings("SPY", 1.0)
@@ -46,8 +46,8 @@ class HiveTest(QCAlgorithm):
         elif self.portfolio.invested and self.trade_count == 1:
             # Show portfolio status
             pnl = self.portfolio.total_portfolio_value - self.portfolio.cash
-            self.debug(f"💼 Portfolio Value: ${self.portfolio.total_portfolio_value:.2f}")
-            self.debug(f"📈 Unrealized P&L: ${pnl:.2f}")
+            self.debug(f"[BUSINESS] Portfolio Value: ${self.portfolio.total_portfolio_value:.2f}")
+            self.debug(f"[UP] Unrealized P&L: ${pnl:.2f}")
             
             # Increment trade count to avoid spam
             self.trade_count += 1
@@ -55,15 +55,15 @@ class HiveTest(QCAlgorithm):
     def on_order_event(self, order_event):
         """Handle order execution events"""
         if order_event.status == OrderStatus.FILLED:
-            self.debug(f"✅ Order Filled: {order_event.symbol} - {order_event.direction} - {order_event.fill_quantity} shares @ ${order_event.fill_price}")
+            self.debug(f"[OK] Order Filled: {order_event.symbol} - {order_event.direction} - {order_event.fill_quantity} shares @ ${order_event.fill_price}")
             
     def on_end_of_algorithm(self):
         """Called when algorithm finishes"""
         final_value = self.portfolio.total_portfolio_value
         total_return = (final_value / 100000 - 1) * 100
         
-        self.debug("🏁 ALGORITHM COMPLETE")
+        self.debug("[INFO] ALGORITHM COMPLETE")
         self.debug("==================")
-        self.debug(f"💰 Final Portfolio Value: ${final_value:.2f}")
-        self.debug(f"📊 Total Return: {total_return:.2f}%")
-        self.debug("🎉 HIVE TRADING EMPIRE - LEAN INTEGRATION SUCCESS!")
+        self.debug(f"[MONEY] Final Portfolio Value: ${final_value:.2f}")
+        self.debug(f"[CHART] Total Return: {total_return:.2f}%")
+        self.debug("[PARTY] HIVE TRADING EMPIRE - LEAN INTEGRATION SUCCESS!")

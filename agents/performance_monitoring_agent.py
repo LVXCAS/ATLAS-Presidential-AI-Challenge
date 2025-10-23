@@ -13,6 +13,15 @@ Requirements: Requirement 9 (Monitoring and Observability)
 Task: 8.1 Performance Monitoring
 """
 
+import sys
+import os
+from pathlib import Path
+
+# Add project root to Python path to ensure local config is imported
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
 import asyncio
 import logging
 import time
@@ -23,7 +32,6 @@ from enum import Enum
 import json
 import numpy as np
 import pandas as pd
-from pathlib import Path
 import psutil
 import threading
 from collections import defaultdict, deque

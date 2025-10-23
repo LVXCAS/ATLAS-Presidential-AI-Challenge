@@ -5,6 +5,15 @@ This agent handles autonomous news ingestion, sentiment analysis using FinBERT a
 event detection, and impact prediction with PostgreSQL storage.
 """
 
+import sys
+import os
+from pathlib import Path
+
+# Add project root to Python path to ensure local config is imported
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
 import asyncio
 import logging
 from datetime import datetime, timedelta

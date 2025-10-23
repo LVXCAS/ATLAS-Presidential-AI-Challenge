@@ -322,10 +322,10 @@ def save_demo_results(results, scenario_results, chart_paths):
         with open(main_results_file, 'w') as f:
             json.dump(results_dict, f, indent=2, default=str)
         
-        print(f"✓ Main results saved to: {main_results_file}")
+        print(f"[OK] Main results saved to: {main_results_file}")
         
     except Exception as e:
-        print(f"✗ Error saving main results: {e}")
+        print(f"[X] Error saving main results: {e}")
     
     # Save scenario results separately
     scenario_results_file = "demo_scenario_results.json"
@@ -360,10 +360,10 @@ def save_demo_results(results, scenario_results, chart_paths):
         with open(scenario_results_file, 'w') as f:
             json.dump(scenario_dict, f, indent=2, default=str)
         
-        print(f"✓ Scenario results saved to: {scenario_results_file}")
+        print(f"[OK] Scenario results saved to: {scenario_results_file}")
         
     except Exception as e:
-        print(f"✗ Error saving scenario results: {e}")
+        print(f"[X] Error saving scenario results: {e}")
     
     # Save summary report
     summary_file = "demo_summary_report.md"
@@ -373,15 +373,15 @@ def save_demo_results(results, scenario_results, chart_paths):
             f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n")
             f.write(results.summary_report)
         
-        print(f"✓ Summary report saved to: {summary_file}")
+        print(f"[OK] Summary report saved to: {summary_file}")
         
     except Exception as e:
-        print(f"✗ Error saving summary report: {e}")
+        print(f"[X] Error saving summary report: {e}")
 
 
 def main():
     """Main demo execution"""
-    print("🚀 MULTI-STRATEGY BACKTESTING DEMO - Task 7.3")
+    print("[LAUNCH] MULTI-STRATEGY BACKTESTING DEMO - Task 7.3")
     print("Testing comprehensive multi-strategy backtesting capabilities...")
     
     try:
@@ -398,26 +398,26 @@ def main():
         save_demo_results(results, scenario_results, chart_paths)
         
         print("\n" + "=" * 80)
-        print("🎉 DEMO COMPLETED SUCCESSFULLY!")
+        print("[PARTY] DEMO COMPLETED SUCCESSFULLY!")
         print("=" * 80)
         print("\nTask 7.3 - Multi-Strategy Backtesting has been implemented and demonstrated:")
-        print("✅ Individual agent testing on historical data")
-        print("✅ Signal fusion validation across different market regimes")
-        print("✅ Synthetic scenario testing (trend, mean-revert, news shock, etc.)")
-        print("✅ Strategy performance attribution reports")
-        print("✅ Performance visualization charts")
-        print("✅ Comprehensive risk analysis")
-        print("✅ Market regime analysis")
+        print("[OK] Individual agent testing on historical data")
+        print("[OK] Signal fusion validation across different market regimes")
+        print("[OK] Synthetic scenario testing (trend, mean-revert, news shock, etc.)")
+        print("[OK] Strategy performance attribution reports")
+        print("[OK] Performance visualization charts")
+        print("[OK] Comprehensive risk analysis")
+        print("[OK] Market regime analysis")
         
-        print(f"\n📊 Generated {len(chart_paths)} performance charts")
-        print(f"📈 Tested {len(results.individual_agent_results)} trading agents")
-        print(f"🎭 Tested {len(results.scenario_results)} synthetic scenarios")
-        print(f"📋 Generated comprehensive performance reports")
+        print(f"\n[CHART] Generated {len(chart_paths)} performance charts")
+        print(f"[UP] Tested {len(results.individual_agent_results)} trading agents")
+        print(f"[INFO] Tested {len(results.scenario_results)} synthetic scenarios")
+        print(f"[INFO] Generated comprehensive performance reports")
         
         print("\nThe system is now ready for live trading validation!")
         
     except Exception as e:
-        print(f"\n❌ Demo failed with error: {e}")
+        print(f"\n[X] Demo failed with error: {e}")
         logger.error(f"Demo execution failed: {e}", exc_info=True)
         return False
     

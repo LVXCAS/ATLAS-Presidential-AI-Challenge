@@ -20,8 +20,8 @@ load_dotenv()
 
 # Configure Streamlit page
 st.set_page_config(
-    page_title="🚀 Autonomous Trading Dashboard",
-    page_icon="🤖",
+    page_title="[LAUNCH] Autonomous Trading Dashboard",
+    page_icon="[BOT]",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -60,19 +60,19 @@ def get_portfolio_data():
 
             # Determine status
             if pnl_pct >= 5.0:
-                status = "🚀 AGGRESSIVE SCALE TARGET"
+                status = "[LAUNCH] AGGRESSIVE SCALE TARGET"
                 status_color = "green"
             elif pnl_pct >= 3.0:
-                status = "📈 SCALE TARGET"
+                status = "[UP] SCALE TARGET"
                 status_color = "blue"
             elif pnl_pct >= 2.5:
-                status = "⚡ APPROACHING SCALE"
+                status = "[FAST] APPROACHING SCALE"
                 status_color = "orange"
             elif pnl_pct > 0:
-                status = "✅ PROFITABLE"
+                status = "[OK] PROFITABLE"
                 status_color = "lightgreen"
             else:
-                status = "⚠️ MONITOR"
+                status = "[WARN] MONITOR"
                 status_color = "red"
 
             position_data.append({
@@ -123,7 +123,7 @@ def get_system_status():
     """Get autonomous system status"""
 
     # Check if autonomous system is running
-    autonomous_status = "🟢 ACTIVE" if os.path.exists('../truly_autonomous.log') else "🔴 OFFLINE"
+    autonomous_status = "[GREEN] ACTIVE" if os.path.exists('../truly_autonomous.log') else "[RED] OFFLINE"
 
     # Check last autonomous activity
     try:
@@ -135,14 +135,14 @@ def get_system_status():
 
     # Check R&D system
     rd_files = [f for f in os.listdir('..') if 'elite_strategies' in f]
-    rd_status = f"🟢 ACTIVE ({len(rd_files)} strategies)" if rd_files else "🔴 OFFLINE"
+    rd_status = f"[GREEN] ACTIVE ({len(rd_files)} strategies)" if rd_files else "[RED] OFFLINE"
 
     return {
         'autonomous_system': autonomous_status,
         'last_activity': last_activity,
         'rd_system': rd_status,
-        'rebalancer': "🟢 OPERATIONAL (Last: 10:39 AM)",
-        'risk_management': "🟢 ACTIVE"
+        'rebalancer': "[GREEN] OPERATIONAL (Last: 10:39 AM)",
+        'risk_management': "[GREEN] ACTIVE"
     }
 
 def calculate_monthly_target_progress(daily_pnl_pct):
@@ -162,7 +162,7 @@ def calculate_monthly_target_progress(daily_pnl_pct):
     return monthly_projection, progress
 
 # DASHBOARD LAYOUT
-st.title("🚀 Autonomous Trading Dashboard")
+st.title("[LAUNCH] Autonomous Trading Dashboard")
 st.markdown("**Real-time Command Center for Your Trading Empire**")
 
 # Auto-refresh every 30 seconds
@@ -174,7 +174,7 @@ if current_time - st.session_state.last_refresh > 30:
     st.rerun()
 
 # Sidebar - System Controls
-st.sidebar.header("🤖 System Controls")
+st.sidebar.header("[BOT] System Controls")
 st.sidebar.markdown("**Autonomous Systems Status**")
 
 system_status = get_system_status()
@@ -186,7 +186,7 @@ st.sidebar.write(f"**Risk Management:** {system_status['risk_management']}")
 st.sidebar.markdown("---")
 st.sidebar.markdown(f"**Last Update:** {datetime.now().strftime('%H:%M:%S PT')}")
 
-if st.sidebar.button("🔄 Force Refresh"):
+if st.sidebar.button("[INFO] Force Refresh"):
     st.rerun()
 
 # Main Dashboard
@@ -226,7 +226,7 @@ if portfolio_data:
         )
 
     # Position Analysis
-    st.header("📊 Position Analysis")
+    st.header("[CHART] Position Analysis")
 
     # Create position DataFrame
     df_positions = pd.DataFrame(portfolio_data['positions'])
@@ -276,7 +276,7 @@ if portfolio_data:
         st.plotly_chart(fig, use_container_width=True)
 
     # Recent Trading Activity
-    st.header("📈 Recent Trading Activity")
+    st.header("[UP] Recent Trading Activity")
 
     trades = get_recent_trades()
     if trades:
@@ -286,7 +286,7 @@ if portfolio_data:
         st.info("No recent trades found")
 
     # Autonomous Intelligence Panel
-    st.header("🧠 Autonomous Intelligence")
+    st.header("[AI] Autonomous Intelligence")
 
     col1, col2 = st.columns(2)
 
@@ -296,18 +296,18 @@ if portfolio_data:
         # Portfolio volatility
         volatility = abs(portfolio_data['daily_pnl_pct'])
         if volatility >= 2.0:
-            st.warning(f"🔥 RAPID MONITORING MODE: {volatility:.1f}% volatility")
+            st.warning(f"[FIRE] RAPID MONITORING MODE: {volatility:.1f}% volatility")
         else:
-            st.success(f"📊 Normal monitoring: {volatility:.1f}% volatility")
+            st.success(f"[CHART] Normal monitoring: {volatility:.1f}% volatility")
 
         # Scale opportunities
         scale_count = len([p for p in portfolio_data['positions'] if p['P&L%'] >= 3.0])
         if scale_count > 0:
-            st.info(f"🎯 {scale_count} positions ready for scaling")
+            st.info(f"[TARGET] {scale_count} positions ready for scaling")
 
         # Buying power status
         if portfolio_data['buying_power'] > 5000:
-            st.success(f"💰 ${portfolio_data['buying_power']:,.0f} available for scaling")
+            st.success(f"[MONEY] ${portfolio_data['buying_power']:,.0f} available for scaling")
         else:
             st.warning("⏳ Waiting for settlement to create buying power")
 
@@ -319,11 +319,11 @@ if portfolio_data:
 
         for pos in portfolio_data['positions']:
             if pos['P&L%'] >= 5.0:
-                next_actions.append(f"🚀 Scale up {pos['Symbol']} aggressively (+{pos['P&L%']:.1f}%)")
+                next_actions.append(f"[LAUNCH] Scale up {pos['Symbol']} aggressively (+{pos['P&L%']:.1f}%)")
             elif pos['P&L%'] >= 3.0:
-                next_actions.append(f"📈 Scale up {pos['Symbol']} (+{pos['P&L%']:.1f}%)")
+                next_actions.append(f"[UP] Scale up {pos['Symbol']} (+{pos['P&L%']:.1f}%)")
             elif pos['P&L%'] <= -2.0:
-                next_actions.append(f"⚠️ Consider trimming {pos['Symbol']} ({pos['P&L%']:.1f}%)")
+                next_actions.append(f"[WARN] Consider trimming {pos['Symbol']} ({pos['P&L%']:.1f}%)")
 
         if next_actions:
             for action in next_actions[:5]:  # Show top 5
@@ -337,4 +337,4 @@ else:
 
 # Footer
 st.markdown("---")
-st.markdown("**🤖 Autonomous Trading Dashboard** | Last updated: " + datetime.now().strftime('%Y-%m-%d %H:%M:%S PT'))
+st.markdown("**[BOT] Autonomous Trading Dashboard** | Last updated: " + datetime.now().strftime('%Y-%m-%d %H:%M:%S PT'))

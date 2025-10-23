@@ -39,18 +39,18 @@ class ValidationResult:
     def add_success(self, test_name: str):
         """Add successful test"""
         self.tests_passed += 1
-        print(f"✅ {test_name}")
+        print(f"[OK] {test_name}")
     
     def add_failure(self, test_name: str, error: str):
         """Add failed test"""
         self.tests_failed += 1
         self.errors.append(f"{test_name}: {error}")
-        print(f"❌ {test_name}: {error}")
+        print(f"[X] {test_name}: {error}")
     
     def add_warning(self, test_name: str, warning: str):
         """Add warning"""
         self.warnings.append(f"{test_name}: {warning}")
-        print(f"⚠️  {test_name}: {warning}")
+        print(f"[WARN]  {test_name}: {warning}")
     
     def print_summary(self):
         """Print validation summary"""
@@ -67,12 +67,12 @@ class ValidationResult:
         print(f"Warnings: {len(self.warnings)}")
         
         if self.errors:
-            print(f"\n❌ FAILURES:")
+            print(f"\n[X] FAILURES:")
             for error in self.errors:
                 print(f"  • {error}")
         
         if self.warnings:
-            print(f"\n⚠️  WARNINGS:")
+            print(f"\n[WARN]  WARNINGS:")
             for warning in self.warnings:
                 print(f"  • {warning}")
         
@@ -81,7 +81,7 @@ class ValidationResult:
 
 async def validate_signal_fusion(result: ValidationResult):
     """Validate signal fusion functionality"""
-    print("\n🔄 Validating Signal Fusion...")
+    print("\n[INFO] Validating Signal Fusion...")
     
     try:
         agent = PortfolioAllocatorAgent()
@@ -157,7 +157,7 @@ async def validate_signal_fusion(result: ValidationResult):
 
 async def validate_explainability_engine(result: ValidationResult):
     """Validate explainability engine"""
-    print("\n🧠 Validating Explainability Engine...")
+    print("\n[AI] Validating Explainability Engine...")
     
     try:
         engine = ExplainabilityEngine()
@@ -253,7 +253,7 @@ async def validate_explainability_engine(result: ValidationResult):
 
 async def validate_conflict_resolution(result: ValidationResult):
     """Validate conflict resolution"""
-    print("\n⚔️ Validating Conflict Resolution...")
+    print("\n[INFO]️ Validating Conflict Resolution...")
     
     try:
         resolver = ConflictResolver()
@@ -336,7 +336,7 @@ async def validate_conflict_resolution(result: ValidationResult):
 
 async def validate_regime_detection(result: ValidationResult):
     """Validate regime detection and weighting"""
-    print("\n🌍 Validating Regime Detection...")
+    print("\n[INFO] Validating Regime Detection...")
     
     try:
         detector = RegimeDetector()
@@ -386,7 +386,7 @@ async def validate_regime_detection(result: ValidationResult):
 
 async def validate_langgraph_workflow(result: ValidationResult):
     """Validate LangGraph workflow integration"""
-    print("\n🔄 Validating LangGraph Workflow...")
+    print("\n[INFO] Validating LangGraph Workflow...")
     
     try:
         agent = PortfolioAllocatorAgent()
@@ -450,7 +450,7 @@ async def validate_langgraph_workflow(result: ValidationResult):
 
 async def validate_performance_requirements(result: ValidationResult):
     """Validate performance requirements"""
-    print("\n⚡ Validating Performance Requirements...")
+    print("\n[FAST] Validating Performance Requirements...")
     
     try:
         agent = PortfolioAllocatorAgent()
@@ -512,7 +512,7 @@ async def validate_performance_requirements(result: ValidationResult):
 
 async def validate_error_handling(result: ValidationResult):
     """Validate error handling"""
-    print("\n🛡️ Validating Error Handling...")
+    print("\n[INFO]️ Validating Error Handling...")
     
     try:
         agent = PortfolioAllocatorAgent()
@@ -566,7 +566,7 @@ async def validate_error_handling(result: ValidationResult):
 
 async def main():
     """Run all validation tests"""
-    print("🚀 Portfolio Allocator Agent Validation")
+    print("[LAUNCH] Portfolio Allocator Agent Validation")
     print("=" * 80)
     
     result = ValidationResult()
@@ -584,9 +584,9 @@ async def main():
     success = result.print_summary()
     
     if success:
-        print("\n🎉 All validations passed! Portfolio Allocator Agent is ready for integration.")
+        print("\n[PARTY] All validations passed! Portfolio Allocator Agent is ready for integration.")
     else:
-        print("\n❌ Some validations failed. Please review and fix the issues.")
+        print("\n[X] Some validations failed. Please review and fix the issues.")
     
     return success
 

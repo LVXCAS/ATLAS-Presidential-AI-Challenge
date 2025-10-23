@@ -1,0 +1,19 @@
+{
+  "baseline_parameters": {
+    "ema_fast": 10,
+    "ema_slow": 21,
+    "ema_trend": 200,
+    "rsi_period": 14,
+    "adx_period": 14
+  },
+  "current_parameters": {
+    "ema_fast": 10,
+    "ema_slow": 21,
+    "ema_trend": 200,
+    "rsi_period": 14,
+    "adx_period": 14
+  },
+  "parameter_history": [],
+  "optimization_count": 0,
+  "last_optimization": null
+}

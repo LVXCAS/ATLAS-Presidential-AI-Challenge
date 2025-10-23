@@ -193,6 +193,11 @@ data/backtest_results/
 *.hdf5
 *.parquet
 
+# Position monitoring logs
+position_*.log
+position_*.json
+positions_snapshot_*.json
+
 # Logs
 logs/
 *.log

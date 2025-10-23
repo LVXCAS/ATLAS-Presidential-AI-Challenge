@@ -227,10 +227,10 @@ class UnifiedTradingDashboard:
         
         # Add sample alerts
         sample_alerts = [
-            "⚠️ WARNING: High latency in signal generation (1250ms)",
+            "[WARN] WARNING: High latency in signal generation (1250ms)",
             "ℹ️ INFO: New momentum signal generated for AAPL",
-            "✅ SUCCESS: Position updated for GOOGL",
-            "⚠️ WARNING: Low confidence in mean reversion signal"
+            "[OK] SUCCESS: Position updated for GOOGL",
+            "[WARN] WARNING: Low confidence in mean reversion signal"
         ]
         for alert in sample_alerts:
             self.alerts_listbox.insert(tk.END, alert)

@@ -719,18 +719,18 @@ class TomorrowReadyValidator:
         recommendations = []
 
         if critical_errors:
-            recommendations.append("🚨 CRITICAL: Fix critical errors before trading")
+            recommendations.append("[ALERT] CRITICAL: Fix critical errors before trading")
 
         if errors:
-            recommendations.append("❌ Fix system errors before live trading")
+            recommendations.append("[X] Fix system errors before live trading")
 
         if warnings:
-            recommendations.append("⚠️ Review warnings and consider fixes")
+            recommendations.append("[WARN] Review warnings and consider fixes")
 
         if ready_for_trading:
-            recommendations.append("✅ System ready for trading operations")
-            recommendations.append("📊 Monitor system health during trading hours")
-            recommendations.append("🔄 Validate broker connections before market open")
+            recommendations.append("[OK] System ready for trading operations")
+            recommendations.append("[CHART] Monitor system health during trading hours")
+            recommendations.append("[INFO] Validate broker connections before market open")
 
         return SystemHealthReport(
             overall_status=overall_status,
@@ -748,7 +748,7 @@ class TomorrowReadyDeployment:
     async def prepare_for_tomorrow(self) -> SystemHealthReport:
         """Complete preparation for tomorrow's trading"""
 
-        logging.info("🚀 Starting Tomorrow-Ready deployment preparation")
+        logging.info("[LAUNCH] Starting Tomorrow-Ready deployment preparation")
 
         # Run validation
         health_report = await self.validator.run_complete_validation()
@@ -765,23 +765,23 @@ class TomorrowReadyDeployment:
         """Print formatted health report"""
 
         print("\n" + "="*80)
-        print("🏁 TOMORROW-READY TRADING SYSTEM VALIDATION REPORT")
+        print("[INFO] TOMORROW-READY TRADING SYSTEM VALIDATION REPORT")
         print("="*80)
 
         # Overall status
         status_emoji = {
-            SystemStatus.READY: "✅",
-            SystemStatus.WARNING: "⚠️",
-            SystemStatus.ERROR: "❌",
-            SystemStatus.NOT_READY: "🚫"
+            SystemStatus.READY: "[OK]",
+            SystemStatus.WARNING: "[WARN]",
+            SystemStatus.ERROR: "[X]",
+            SystemStatus.NOT_READY: "[INFO]"
         }
 
-        print(f"\n📊 OVERALL STATUS: {status_emoji[report.overall_status]} {report.overall_status.value.upper()}")
-        print(f"🎯 READY FOR TRADING: {'✅ YES' if report.ready_for_trading else '❌ NO'}")
-        print(f"⏰ VALIDATION TIME: {report.timestamp.strftime('%Y-%m-%d %H:%M:%S UTC')}")
+        print(f"\n[CHART] OVERALL STATUS: {status_emoji[report.overall_status]} {report.overall_status.value.upper()}")
+        print(f"[TARGET] READY FOR TRADING: {'[OK] YES' if report.ready_for_trading else '[X] NO'}")
+        print(f"[CLOCK] VALIDATION TIME: {report.timestamp.strftime('%Y-%m-%d %H:%M:%S UTC')}")
 
         # Component breakdown
-        print(f"\n📋 COMPONENT VALIDATION RESULTS:")
+        print(f"\n[INFO] COMPONENT VALIDATION RESULTS:")
         print("-" * 60)
 
         components = {}
@@ -792,19 +792,19 @@ class TomorrowReadyDeployment:
 
         for component, results in components.items():
             component_status = max([r.status for r in results], key=lambda x: list(SystemStatus).index(x))
-            print(f"\n🔧 {component.upper().replace('_', ' ')}: {status_emoji[component_status]} {component_status.value}")
+            print(f"\n[TOOL] {component.upper().replace('_', ' ')}: {status_emoji[component_status]} {component_status.value}")
 
             for result in results:
                 severity_emoji = {
                     ValidationSeverity.INFO: "ℹ️",
-                    ValidationSeverity.WARNING: "⚠️",
-                    ValidationSeverity.ERROR: "❌",
-                    ValidationSeverity.CRITICAL: "🚨"
+                    ValidationSeverity.WARNING: "[WARN]",
+                    ValidationSeverity.ERROR: "[X]",
+                    ValidationSeverity.CRITICAL: "[ALERT]"
                 }
                 print(f"   {severity_emoji[result.severity]} {result.check_name}: {result.message}")
 
         # Recommendations
-        print(f"\n💡 RECOMMENDATIONS:")
+        print(f"\n[IDEA] RECOMMENDATIONS:")
         print("-" * 40)
         for i, rec in enumerate(report.recommendations, 1):
             print(f"{i}. {rec}")
@@ -857,21 +857,21 @@ def create_premarket_checklist() -> List[str]:
     """Create pre-market validation checklist"""
 
     return [
-        "☐ Verify broker API connections are active",
-        "☐ Confirm account balances and buying power",
-        "☐ Check for any account restrictions or blocks",
-        "☐ Validate market data feeds are streaming",
-        "☐ Review overnight news and market events",
-        "☐ Confirm risk limits and position sizes",
-        "☐ Check system performance and resources",
-        "☐ Verify monitoring and alert systems",
-        "☐ Review strategy performance from previous day",
-        "☐ Confirm backup systems are operational",
-        "☐ Check market calendar for holidays/early closes",
-        "☐ Validate paper trading is working correctly",
-        "☐ Review and acknowledge any system warnings",
-        "☐ Confirm emergency shutdown procedures",
-        "☐ Set appropriate position limits for the day"
+        "[INFO] Verify broker API connections are active",
+        "[INFO] Confirm account balances and buying power",
+        "[INFO] Check for any account restrictions or blocks",
+        "[INFO] Validate market data feeds are streaming",
+        "[INFO] Review overnight news and market events",
+        "[INFO] Confirm risk limits and position sizes",
+        "[INFO] Check system performance and resources",
+        "[INFO] Verify monitoring and alert systems",
+        "[INFO] Review strategy performance from previous day",
+        "[INFO] Confirm backup systems are operational",
+        "[INFO] Check market calendar for holidays/early closes",
+        "[INFO] Validate paper trading is working correctly",
+        "[INFO] Review and acknowledge any system warnings",
+        "[INFO] Confirm emergency shutdown procedures",
+        "[INFO] Set appropriate position limits for the day"
     ]
 
 # Example usage
@@ -891,13 +891,13 @@ async def main():
     health_report = await deployment.prepare_for_tomorrow()
 
     # Print pre-market checklist
-    print("\n📋 PRE-MARKET CHECKLIST:")
+    print("\n[INFO] PRE-MARKET CHECKLIST:")
     print("-" * 40)
     checklist = create_premarket_checklist()
     for item in checklist:
         print(item)
 
-    print(f"\n🎯 SYSTEM STATUS: {'READY FOR TRADING' if health_report.ready_for_trading else 'NOT READY - FIX ISSUES FIRST'}")
+    print(f"\n[TARGET] SYSTEM STATUS: {'READY FOR TRADING' if health_report.ready_for_trading else 'NOT READY - FIX ISSUES FIRST'}")
 
     return health_report
 

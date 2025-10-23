@@ -122,7 +122,7 @@ class OptionsVolatilityAgentValidator:
     
     async def validate_iv_surface_analysis(self) -> dict:
         """Validate IV surface analysis functionality"""
-        logger.info("🔍 Validating IV Surface Analysis...")
+        logger.info("[SEARCH] Validating IV Surface Analysis...")
         
         results = {}
         
@@ -154,7 +154,7 @@ class OptionsVolatilityAgentValidator:
                        f"{results[symbol]['skew_anomalies']} anomalies detected")
         
         overall_success = all(r['success'] for r in results.values())
-        logger.info(f"✅ IV Surface Analysis: {'PASSED' if overall_success else 'FAILED'}")
+        logger.info(f"[OK] IV Surface Analysis: {'PASSED' if overall_success else 'FAILED'}")
         
         return {
             'test_name': 'IV Surface Analysis',
@@ -164,7 +164,7 @@ class OptionsVolatilityAgentValidator:
     
     async def validate_earnings_integration(self) -> dict:
         """Validate earnings calendar integration"""
-        logger.info("📅 Validating Earnings Calendar Integration...")
+        logger.info("[CAL] Validating Earnings Calendar Integration...")
         
         results = {}
         
@@ -200,7 +200,7 @@ class OptionsVolatilityAgentValidator:
             logger.info(f"  {symbol}: {'Earnings detected' if results[symbol]['has_earnings'] else 'No earnings'}")
         
         overall_success = all(r['success'] for r in results.values())
-        logger.info(f"✅ Earnings Integration: {'PASSED' if overall_success else 'FAILED'}")
+        logger.info(f"[OK] Earnings Integration: {'PASSED' if overall_success else 'FAILED'}")
         
         return {
             'test_name': 'Earnings Calendar Integration',
@@ -210,7 +210,7 @@ class OptionsVolatilityAgentValidator:
     
     async def validate_greeks_calculation(self) -> dict:
         """Validate Greeks calculation and risk management"""
-        logger.info("🧮 Validating Greeks Calculation...")
+        logger.info("[INFO] Validating Greeks Calculation...")
         
         results = {}
         
@@ -247,7 +247,7 @@ class OptionsVolatilityAgentValidator:
                        f"Vega={greeks_risk.total_vega:.2f}, Risk={greeks_risk.gamma_risk_level}")
         
         overall_success = all(r['success'] for r in results.values())
-        logger.info(f"✅ Greeks Calculation: {'PASSED' if overall_success else 'FAILED'}")
+        logger.info(f"[OK] Greeks Calculation: {'PASSED' if overall_success else 'FAILED'}")
         
         return {
             'test_name': 'Greeks Calculation',
@@ -257,7 +257,7 @@ class OptionsVolatilityAgentValidator:
     
     async def validate_volatility_regime_detection(self) -> dict:
         """Validate volatility regime detection"""
-        logger.info("📊 Validating Volatility Regime Detection...")
+        logger.info("[CHART] Validating Volatility Regime Detection...")
         
         results = {}
         
@@ -276,7 +276,7 @@ class OptionsVolatilityAgentValidator:
             logger.info(f"  {symbol}: {regime.value if success else 'FAILED'}")
         
         overall_success = all(r['success'] for r in results.values())
-        logger.info(f"✅ Volatility Regime Detection: {'PASSED' if overall_success else 'FAILED'}")
+        logger.info(f"[OK] Volatility Regime Detection: {'PASSED' if overall_success else 'FAILED'}")
         
         return {
             'test_name': 'Volatility Regime Detection',
@@ -286,7 +286,7 @@ class OptionsVolatilityAgentValidator:
     
     async def validate_signal_generation(self) -> dict:
         """Validate options signal generation with explainability"""
-        logger.info("🎯 Validating Signal Generation...")
+        logger.info("[TARGET] Validating Signal Generation...")
         
         results = {}
         
@@ -333,7 +333,7 @@ class OptionsVolatilityAgentValidator:
             logger.info(f"  {symbol}: {len(signals)} signals generated")
         
         overall_success = all(r['success'] for r in results.values())
-        logger.info(f"✅ Signal Generation: {'PASSED' if overall_success else 'FAILED'}")
+        logger.info(f"[OK] Signal Generation: {'PASSED' if overall_success else 'FAILED'}")
         
         return {
             'test_name': 'Signal Generation',
@@ -343,7 +343,7 @@ class OptionsVolatilityAgentValidator:
     
     async def validate_langgraph_integration(self) -> dict:
         """Validate LangGraph integration"""
-        logger.info("🔗 Validating LangGraph Integration...")
+        logger.info("[INFO] Validating LangGraph Integration...")
         
         # Mock LangGraph state
         state = {
@@ -375,7 +375,7 @@ class OptionsVolatilityAgentValidator:
             success = False
             signals_count = 0
         
-        logger.info(f"✅ LangGraph Integration: {'PASSED' if success else 'FAILED'}")
+        logger.info(f"[OK] LangGraph Integration: {'PASSED' if success else 'FAILED'}")
         
         return {
             'test_name': 'LangGraph Integration',
@@ -388,7 +388,7 @@ class OptionsVolatilityAgentValidator:
     
     async def run_comprehensive_validation(self) -> dict:
         """Run comprehensive validation of all functionality"""
-        logger.info("🚀 Starting Comprehensive Options Volatility Agent Validation")
+        logger.info("[LAUNCH] Starting Comprehensive Options Volatility Agent Validation")
         logger.info("=" * 60)
         
         validation_tests = [
@@ -427,12 +427,12 @@ class OptionsVolatilityAgentValidator:
         overall_success = success_rate >= 80  # 80% pass rate required
         
         logger.info("=" * 60)
-        logger.info(f"🎯 VALIDATION SUMMARY")
+        logger.info(f"[TARGET] VALIDATION SUMMARY")
         logger.info(f"Total Tests: {total_tests}")
         logger.info(f"Passed: {passed_tests}")
         logger.info(f"Failed: {total_tests - passed_tests}")
         logger.info(f"Success Rate: {success_rate:.1f}%")
-        logger.info(f"Overall Result: {'✅ PASSED' if overall_success else '❌ FAILED'}")
+        logger.info(f"Overall Result: {'[OK] PASSED' if overall_success else '[X] FAILED'}")
         
         return {
             'overall_success': overall_success,

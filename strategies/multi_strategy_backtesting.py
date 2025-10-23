@@ -1290,11 +1290,11 @@ Tested {len(scenario_results)} synthetic scenarios:
 4. Monitor correlation levels to maintain diversification benefits
 
 ## Validation Status
-✅ All strategies backtested successfully
-✅ Signal fusion validated across market regimes  
-✅ Synthetic scenarios completed
-✅ Performance attribution calculated
-✅ Risk metrics within acceptable ranges
+[OK] All strategies backtested successfully
+[OK] Signal fusion validated across market regimes  
+[OK] Synthetic scenarios completed
+[OK] Performance attribution calculated
+[OK] Risk metrics within acceptable ranges
 """
         
         return report

@@ -1,0 +1,301 @@
+================================================================================
+              PC-HIVE AUTO SCANNER - SETUP CHECKLIST
+           Complete This Once - Never Start Manually Again!
+================================================================================
+
+QUICK SETUP (5 Minutes):
+=========================
+
+□ STEP 1: Run Setup Script (REQUIRED)
+   ────────────────────────────────────
+   File: SETUP_AUTOMATED_STARTUP.bat
+   How:  Right-click → "Run as administrator"
+
+   What it does:
+   ✓ Creates scheduled task for 6:30 AM PT daily
+   ✓ Creates startup task for system reboot
+   ✓ Configures automatic execution
+
+   Expected result: "SETUP COMPLETE" message
+
+
+□ STEP 2: Verify Configuration
+   ─────────────────────────────
+   File: TEST_SETUP.bat
+   How:  Double-click to run
+
+   What it checks:
+   ✓ Python installation
+   ✓ Required packages
+   ✓ All files present
+   ✓ Scheduled tasks created
+   ✓ Scanner can run
+
+   Expected result: "All tests passed!"
+
+
+□ STEP 3: Check Status
+   ────────────────────
+   File: CHECK_SCANNER_STATUS.bat
+   How:  Double-click to run
+
+   What it shows:
+   ✓ Running processes
+   ✓ Scheduled tasks
+   ✓ Trade statistics
+   ✓ Log files
+
+   Expected result: Tasks shown as "Ready" or "Enabled"
+
+
+□ STEP 4: Test Manual Start (Optional)
+   ──────────────────────────────────────
+   File: START_TRADING.bat
+   How:  Double-click to run
+
+   What it does:
+   ✓ Starts scanner in visible window
+   ✓ Runs one scan cycle
+   ✓ Shows live output
+
+   Expected result: Scanner runs without errors
+
+   Note: Press Ctrl+C to stop after testing
+
+
+VERIFICATION CHECKLIST:
+=======================
+
+After setup, verify these items:
+
+SCHEDULED TASKS:
+□ Open Task Scheduler (taskschd.msc)
+□ Find "PC-HIVE Auto Scanner" - Status: Ready
+□ Find "PC-HIVE Auto Scanner - Startup" - Status: Ready
+□ Next run time shows: Tomorrow at 6:30 AM PT
+□ Tasks are ENABLED (not disabled)
+
+FILES EXIST:
+□ START_TRADING.bat
+□ START_TRADING_BACKGROUND.bat
+□ CHECK_SCANNER_STATUS.bat
+□ STOP_SCANNER.bat
+□ EMERGENCY_STOP.bat
+□ VIEW_LATEST_LOG.bat
+□ TEST_SETUP.bat
+□ AUTOMATED_STARTUP_README.md
+□ QUICK_START_AUTOMATION.txt
+
+DIRECTORIES:
+□ logs/ directory created (or will be created on first run)
+
+PYTHON ENVIRONMENT:
+□ Python 3.8+ installed
+□ Package: schedule
+□ Package: pandas
+□ Package: alpaca-trade-api
+□ Package: other dependencies from requirements.txt
+
+CONFIGURATION:
+□ Alpaca API keys configured
+□ .env file has credentials
+□ Options trading approved on account
+
+
+DAILY OPERATION CHECKLIST:
+===========================
+
+MORNING (Automated - No Action Required):
+□ 6:30 AM PT - Scanner starts automatically
+□ Market scan executes
+□ Trades placed if opportunities found (score >= 8.0)
+□ Activity logged to logs/scanner_*.log
+
+YOUR PART (Optional but Recommended):
+□ Run CHECK_SCANNER_STATUS.bat to verify running
+□ Check Alpaca dashboard for positions
+□ Review VIEW_LATEST_LOG.bat if needed
+□ Monitor total trades executed
+
+
+WEEKLY CHECKLIST:
+=================
+
+□ Monday - Verify scanner ran successfully
+□ Check total trades for the week
+□ Review logs for any errors
+□ Verify scheduled tasks still enabled
+
+
+MONTHLY CHECKLIST:
+==================
+
+□ Review all logs in logs/ directory
+□ Check total_trades in auto_scanner_status.json
+□ Verify Task Scheduler tasks still active
+□ Review performance on Alpaca dashboard
+□ Delete old log files if needed (keep last 30 days)
+
+
+TROUBLESHOOTING CHECKLIST:
+===========================
+
+IF SCANNER NOT RUNNING:
+□ Run CHECK_SCANNER_STATUS.bat
+□ Check Task Scheduler - tasks enabled?
+□ Was PC on at 6:30 AM PT?
+□ Run START_TRADING.bat manually to test
+□ Check VIEW_LATEST_LOG.bat for errors
+
+IF NO TRADES EXECUTED:
+□ Check auto_scanner_status.json - trades_today count
+□ Review logs - were opportunities found?
+□ Verify score threshold (must be >= 8.0)
+□ Check daily limit (max 4 trades/day)
+□ Confirm market hours (6:30 AM - 1:00 PM PT, M-F)
+
+IF PYTHON ERRORS:
+□ Run TEST_SETUP.bat
+□ Check Python version: python --version
+□ Reinstall packages: pip install -r requirements.txt
+□ Verify .env file has API keys
+
+IF TASK SCHEDULER ERRORS:
+□ Re-run SETUP_AUTOMATED_STARTUP.bat as administrator
+□ Check Windows Event Viewer for task errors
+□ Verify user account has necessary permissions
+
+
+EMERGENCY PROCEDURES:
+=====================
+
+TO STOP ALL TRADING IMMEDIATELY:
+□ Double-click EMERGENCY_STOP.bat
+□ Verify all processes killed
+□ Check scheduled tasks disabled
+□ Review emergency_stop.flag created
+
+TO RESUME AFTER EMERGENCY STOP:
+□ Delete emergency_stop.flag file
+□ Run SETUP_AUTOMATED_STARTUP.bat as administrator
+□ Run CHECK_SCANNER_STATUS.bat to verify
+□ Optionally run START_TRADING.bat to test
+
+
+SUCCESS CRITERIA:
+=================
+
+You'll know setup is successful when:
+
+✓ SETUP_AUTOMATED_STARTUP.bat completed without errors
+✓ TEST_SETUP.bat shows "All tests passed!"
+✓ CHECK_SCANNER_STATUS.bat shows tasks scheduled
+✓ Task Scheduler shows both tasks enabled
+✓ Scanner runs at 6:30 AM PT automatically
+✓ Trades execute when opportunities found
+✓ Logs created in logs/ directory
+✓ auto_scanner_status.json updates daily
+
+
+IMPORTANT REMINDERS:
+====================
+
+⚠ Keep PC powered on at 6:30 AM PT
+  Scanner can't run if PC is off/sleeping
+
+⚠ Maintain internet connection
+  Required for market data and trade execution
+
+⚠ Check Alpaca account periodically
+  Verify trades, positions, and buying power
+
+⚠ Monitor logs regularly
+  Catch and fix issues early
+
+⚠ Don't delete running processes manually
+  Use STOP_SCANNER.bat instead
+
+
+WHAT'S AUTOMATED:
+=================
+
+✓ Daily scan at 6:30 AM PT
+✓ Market opportunity detection
+✓ Trade execution (if score >= 8.0)
+✓ Position tracking
+✓ Activity logging
+✓ Status updates
+✓ Daily limit enforcement
+✓ Market hours checking
+✓ Error recovery
+
+
+WHAT'S NOT AUTOMATED (Your Responsibility):
+============================================
+
+× Keep PC powered on
+× Monitor Alpaca account
+× Review performance
+× Check logs periodically
+× Manage positions if needed
+× Maintain sufficient buying power
+× Update configuration if needed
+
+
+FILE REFERENCE:
+===============
+
+SETUP & CONFIGURATION:
+  SETUP_AUTOMATED_STARTUP.bat  → Run once to configure
+  TEST_SETUP.bat               → Verify setup
+
+DAILY USE:
+  START_TRADING.bat            → Manual start (visible)
+  CHECK_SCANNER_STATUS.bat     → Check if running
+  VIEW_LATEST_LOG.bat          → View latest activity
+
+CONTROL:
+  STOP_SCANNER.bat             → Stop gracefully
+  EMERGENCY_STOP.bat           → Emergency kill
+
+DOCUMENTATION:
+  AUTOMATED_STARTUP_README.md  → Complete guide
+  QUICK_START_AUTOMATION.txt   → Quick reference
+  AUTOMATION_SUMMARY.txt       → Implementation details
+  AUTOMATION_WORKFLOW.txt      → Visual workflows
+  SETUP_CHECKLIST.txt          → This checklist
+
+
+NEXT STEPS:
+===========
+
+After completing this checklist:
+
+1. You're done! Scanner is fully automated
+2. Keep PC on daily at 6:30 AM PT
+3. Check status occasionally
+4. Review trades on Alpaca
+5. Enjoy automated trading!
+
+
+SUPPORT:
+========
+
+Need help?
+  → Read AUTOMATED_STARTUP_README.md
+  → Run TEST_SETUP.bat for diagnostics
+  → Check VIEW_LATEST_LOG.bat for errors
+  → Verify scheduled tasks in taskschd.msc
+
+
+================================================================================
+                    SETUP COMPLETE - HAPPY TRADING!
+================================================================================
+
+You will never have to manually start the scanner again!
+Just keep your PC on and it will trade automatically every day at 6:30 AM PT.
+
+Check the box next to each item as you complete it.
+When all boxes are checked, you're ready for fully automated trading!
+
+================================================================================

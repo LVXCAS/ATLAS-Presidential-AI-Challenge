@@ -43,12 +43,12 @@ class MeanReversionValidator:
     def __init__(self):
         self.agent = MeanReversionTradingAgent()
         self.validation_results = []
-        print("🔍 Mean Reversion Trading Agent Validation")
+        print("[SEARCH] Mean Reversion Trading Agent Validation")
         print("=" * 50)
     
     def log_result(self, test_name: str, passed: bool, details: str = ""):
         """Log validation result"""
-        status = "✅ PASS" if passed else "❌ FAIL"
+        status = "[OK] PASS" if passed else "[X] FAIL"
         self.validation_results.append({
             'test': test_name,
             'passed': passed,
@@ -136,7 +136,7 @@ class MeanReversionValidator:
     
     def validate_bollinger_band_analyzer(self):
         """Validate Bollinger Band analyzer"""
-        print("\n📊 Validating Bollinger Band Analyzer")
+        print("\n[CHART] Validating Bollinger Band Analyzer")
         print("-" * 35)
         
         analyzer = BollingerBandAnalyzer()
@@ -181,7 +181,7 @@ class MeanReversionValidator:
     
     def validate_zscore_analyzer(self):
         """Validate Z-Score analyzer"""
-        print("\n📈 Validating Z-Score Analyzer")
+        print("\n[UP] Validating Z-Score Analyzer")
         print("-" * 28)
         
         analyzer = ZScoreAnalyzer()
@@ -219,7 +219,7 @@ class MeanReversionValidator:
     
     def validate_pairs_trading_analyzer(self):
         """Validate Pairs Trading analyzer"""
-        print("\n🔗 Validating Pairs Trading Analyzer")
+        print("\n[INFO] Validating Pairs Trading Analyzer")
         print("-" * 33)
         
         analyzer = PairsTradingAnalyzer(cointegration_threshold=0.1)
@@ -267,7 +267,7 @@ class MeanReversionValidator:
     
     def validate_fibonacci_calculator(self):
         """Validate Fibonacci target calculator"""
-        print("\n🌀 Validating Fibonacci Target Calculator")
+        print("\n[INFO] Validating Fibonacci Target Calculator")
         print("-" * 37)
         
         calculator = FibonacciTargetCalculator()
@@ -323,7 +323,7 @@ class MeanReversionValidator:
     
     def validate_sentiment_divergence_detector(self):
         """Validate sentiment divergence detector"""
-        print("\n💭 Validating Sentiment Divergence Detector")
+        print("\n[INFO] Validating Sentiment Divergence Detector")
         print("-" * 40)
         
         detector = SentimentDivergenceDetector()
@@ -371,7 +371,7 @@ class MeanReversionValidator:
     
     def validate_market_regime_detector(self):
         """Validate market regime detector"""
-        print("\n🌊 Validating Market Regime Detector")
+        print("\n[INFO] Validating Market Regime Detector")
         print("-" * 32)
         
         detector = MarketRegimeDetector()
@@ -424,7 +424,7 @@ class MeanReversionValidator:
     
     def validate_explainability_engine(self):
         """Validate explainability engine"""
-        print("\n🧠 Validating Explainability Engine")
+        print("\n[AI] Validating Explainability Engine")
         print("-" * 32)
         
         engine = ExplainabilityEngine()
@@ -500,7 +500,7 @@ class MeanReversionValidator:
     
     def validate_main_agent(self):
         """Validate the main Mean Reversion Trading Agent"""
-        print("\n🤖 Validating Main Mean Reversion Trading Agent")
+        print("\n[BOT] Validating Main Mean Reversion Trading Agent")
         print("-" * 45)
         
         # Test 1: Agent initialization
@@ -597,7 +597,7 @@ class MeanReversionValidator:
     
     def validate_requirements_compliance(self):
         """Validate compliance with task requirements"""
-        print("\n📋 Validating Requirements Compliance")
+        print("\n[INFO] Validating Requirements Compliance")
         print("-" * 35)
         
         # Requirement 1: LangGraph agent implementation
@@ -640,7 +640,7 @@ class MeanReversionValidator:
     
     def run_validation(self):
         """Run complete validation suite"""
-        print("🚀 Starting Mean Reversion Trading Agent Validation")
+        print("[LAUNCH] Starting Mean Reversion Trading Agent Validation")
         print("=" * 55)
         
         try:
@@ -663,7 +663,7 @@ class MeanReversionValidator:
             self.print_validation_summary()
             
         except Exception as e:
-            print(f"\n❌ Validation failed with error: {e}")
+            print(f"\n[X] Validation failed with error: {e}")
             import traceback
             traceback.print_exc()
             return False
@@ -673,7 +673,7 @@ class MeanReversionValidator:
     def print_validation_summary(self):
         """Print validation summary"""
         print("\n" + "=" * 55)
-        print("📊 VALIDATION SUMMARY")
+        print("[CHART] VALIDATION SUMMARY")
         print("=" * 55)
         
         total_tests = len(self.validation_results)
@@ -681,19 +681,19 @@ class MeanReversionValidator:
         failed_tests = total_tests - passed_tests
         
         print(f"Total Tests: {total_tests}")
-        print(f"Passed: {passed_tests} ✅")
-        print(f"Failed: {failed_tests} ❌")
+        print(f"Passed: {passed_tests} [OK]")
+        print(f"Failed: {failed_tests} [X]")
         print(f"Success Rate: {passed_tests/total_tests*100:.1f}%")
         
         if failed_tests > 0:
-            print(f"\n❌ Failed Tests:")
+            print(f"\n[X] Failed Tests:")
             for result in self.validation_results:
                 if not result['passed']:
                     print(f"   • {result['test']}")
                     if result['details']:
                         print(f"     {result['details']}")
         
-        print(f"\n🎯 Key Capabilities Validated:")
+        print(f"\n[TARGET] Key Capabilities Validated:")
         capabilities = [
             "Bollinger Band reversion detection",
             "Z-score mean reversion analysis", 
@@ -708,11 +708,11 @@ class MeanReversionValidator:
         ]
         
         for capability in capabilities:
-            print(f"   ✅ {capability}")
+            print(f"   [OK] {capability}")
         
         overall_success = failed_tests == 0
         status = "SUCCESS" if overall_success else "PARTIAL SUCCESS"
-        print(f"\n🏆 Overall Validation: {status}")
+        print(f"\n[WIN] Overall Validation: {status}")
         
         return overall_success
 
@@ -723,10 +723,10 @@ def main():
     success = validator.run_validation()
     
     if success:
-        print("\n🎉 Mean Reversion Trading Agent validation completed successfully!")
+        print("\n[PARTY] Mean Reversion Trading Agent validation completed successfully!")
         print("   The agent is ready for integration and deployment.")
     else:
-        print("\n⚠️  Mean Reversion Trading Agent validation completed with issues.")
+        print("\n[WARN]  Mean Reversion Trading Agent validation completed with issues.")
         print("   Please review failed tests before deployment.")
     
     return success

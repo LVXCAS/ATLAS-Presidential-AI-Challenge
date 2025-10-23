@@ -422,11 +422,11 @@ class BenchmarkValidator:
         print(f"OVERALL: {passed_tests}/{total_tests} tests passed ({overall_pass_rate:.1f}%)")
         
         if overall_pass_rate >= 90:
-            print("✅ VALIDATION SUCCESSFUL - Technical indicators are working correctly!")
+            print("[OK] VALIDATION SUCCESSFUL - Technical indicators are working correctly!")
         elif overall_pass_rate >= 75:
-            print("⚠️  VALIDATION PARTIAL - Some issues detected, review failed tests")
+            print("[WARN]  VALIDATION PARTIAL - Some issues detected, review failed tests")
         else:
-            print("❌ VALIDATION FAILED - Significant issues detected, requires investigation")
+            print("[X] VALIDATION FAILED - Significant issues detected, requires investigation")
         
         return overall_pass_rate
 

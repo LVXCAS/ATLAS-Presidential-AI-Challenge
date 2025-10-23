@@ -145,7 +145,7 @@ def demo_indicator_library():
     print("\nResults Summary:")
     for indicator_name, result in results.items():
         if result is not None:
-            print(f"  {indicator_name}: ✓ Calculated successfully")
+            print(f"  {indicator_name}: [OK] Calculated successfully")
             if hasattr(result.values, 'shape'):
                 if len(result.values.shape) == 1:
                     print(f"    Latest value: {result.values[-1]:.4f}")
@@ -154,7 +154,7 @@ def demo_indicator_library():
             else:
                 print(f"    Latest value: {result.values[-1]:.4f}")
         else:
-            print(f"  {indicator_name}: ✗ Failed to calculate")
+            print(f"  {indicator_name}: [X] Failed to calculate")
 
 
 def demo_parameter_optimization():
@@ -239,15 +239,15 @@ def demo_trading_signals():
     
     # EMA Crossover Signal
     if ema_20.values[-1] > ema_50.values[-1] and ema_20.values[-2] <= ema_50.values[-2]:
-        signals.append("🔵 EMA Bullish Crossover: EMA(20) crossed above EMA(50)")
+        signals.append("[INFO] EMA Bullish Crossover: EMA(20) crossed above EMA(50)")
     elif ema_20.values[-1] < ema_50.values[-1] and ema_20.values[-2] >= ema_50.values[-2]:
-        signals.append("🔴 EMA Bearish Crossover: EMA(20) crossed below EMA(50)")
+        signals.append("[RED] EMA Bearish Crossover: EMA(20) crossed below EMA(50)")
     
     # RSI Signals
     if rsi.values[-1] < 30:
-        signals.append(f"🟢 RSI Oversold: RSI = {rsi.values[-1]:.1f} (Buy signal)")
+        signals.append(f"[GREEN] RSI Oversold: RSI = {rsi.values[-1]:.1f} (Buy signal)")
     elif rsi.values[-1] > 70:
-        signals.append(f"🔴 RSI Overbought: RSI = {rsi.values[-1]:.1f} (Sell signal)")
+        signals.append(f"[RED] RSI Overbought: RSI = {rsi.values[-1]:.1f} (Sell signal)")
     
     # MACD Signals
     macd_line = macd.values[-1, 0]
@@ -256,9 +256,9 @@ def demo_trading_signals():
     prev_signal = macd.values[-2, 1]
     
     if macd_line > signal_line and prev_macd <= prev_signal:
-        signals.append("🔵 MACD Bullish Crossover: MACD crossed above signal line")
+        signals.append("[INFO] MACD Bullish Crossover: MACD crossed above signal line")
     elif macd_line < signal_line and prev_macd >= prev_signal:
-        signals.append("🔴 MACD Bearish Crossover: MACD crossed below signal line")
+        signals.append("[RED] MACD Bearish Crossover: MACD crossed below signal line")
     
     # Bollinger Bands Signals
     current_price = prices[-1]
@@ -266,9 +266,9 @@ def demo_trading_signals():
     lower_band = bb.values[-1, 2]
     
     if current_price <= lower_band:
-        signals.append(f"🟢 Bollinger Bands: Price touched lower band (${current_price:.2f} <= ${lower_band:.2f})")
+        signals.append(f"[GREEN] Bollinger Bands: Price touched lower band (${current_price:.2f} <= ${lower_band:.2f})")
     elif current_price >= upper_band:
-        signals.append(f"🔴 Bollinger Bands: Price touched upper band (${current_price:.2f} >= ${upper_band:.2f})")
+        signals.append(f"[RED] Bollinger Bands: Price touched upper band (${current_price:.2f} >= ${upper_band:.2f})")
     
     # Display signals
     print(f"Current Price: ${current_price:.2f}")
@@ -351,12 +351,12 @@ def main():
         print("DEMO COMPLETED SUCCESSFULLY!")
         print("=" * 60)
         print("\nKey Features Demonstrated:")
-        print("✓ All 5 technical indicators (EMA, RSI, MACD, Bollinger Bands, Z-Score)")
-        print("✓ Vectorized implementations for performance")
-        print("✓ Parameter optimization with grid search and random search")
-        print("✓ Trading signal generation")
-        print("✓ Performance characteristics")
-        print("✓ Comprehensive error handling and validation")
+        print("[OK] All 5 technical indicators (EMA, RSI, MACD, Bollinger Bands, Z-Score)")
+        print("[OK] Vectorized implementations for performance")
+        print("[OK] Parameter optimization with grid search and random search")
+        print("[OK] Trading signal generation")
+        print("[OK] Performance characteristics")
+        print("[OK] Comprehensive error handling and validation")
         
         print("\nNext Steps:")
         print("• Integrate indicators into trading strategies")

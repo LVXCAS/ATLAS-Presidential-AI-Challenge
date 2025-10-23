@@ -55,7 +55,7 @@ class SystemValidator:
         
     def log_result(self, test_name: str, passed: bool, details: str = "", error: str = None):
         """Log validation result"""
-        status = "✅ PASS" if passed else "❌ FAIL"
+        status = "[OK] PASS" if passed else "[X] FAIL"
         print(f"{status} {test_name}")
         if details:
             print(f"    {details}")
@@ -72,7 +72,7 @@ class SystemValidator:
     
     def log_bug_fix(self, bug_description: str, fix_applied: str):
         """Log bug fix applied"""
-        print(f"🔧 BUG FIX: {bug_description}")
+        print(f"[TOOL] BUG FIX: {bug_description}")
         print(f"    Fix: {fix_applied}")
         
         self.bug_fixes_applied.append({
@@ -83,7 +83,7 @@ class SystemValidator:
     
     async def test_agent_initialization(self):
         """Test all agent initializations"""
-        print("\n🧪 Testing Agent Initializations...")
+        print("\n[INFO] Testing Agent Initializations...")
         
         try:
             # Test Paper Trading Agent
@@ -117,7 +117,7 @@ class SystemValidator:
     
     async def test_paper_trading_stability(self):
         """Test paper trading system stability"""
-        print("\n🧪 Testing Paper Trading Stability...")
+        print("\n[INFO] Testing Paper Trading Stability...")
         
         try:
             config = PaperTradingConfig(
@@ -188,7 +188,7 @@ class SystemValidator:
     
     async def test_agent_interactions(self):
         """Test agent interactions and communication"""
-        print("\n🧪 Testing Agent Interactions...")
+        print("\n[INFO] Testing Agent Interactions...")
         
         try:
             # Initialize agents
@@ -225,7 +225,7 @@ class SystemValidator:
     
     async def test_error_handling(self):
         """Test system error handling and recovery"""
-        print("\n🧪 Testing Error Handling...")
+        print("\n[INFO] Testing Error Handling...")
         
         try:
             config = PaperTradingConfig()
@@ -279,7 +279,7 @@ class SystemValidator:
     
     async def test_performance_optimization(self):
         """Test and optimize performance bottlenecks"""
-        print("\n🧪 Testing Performance Optimization...")
+        print("\n[INFO] Testing Performance Optimization...")
         
         try:
             config = PaperTradingConfig()
@@ -337,7 +337,7 @@ class SystemValidator:
     
     async def test_extended_stability(self):
         """Test system stability over extended period"""
-        print("\n🧪 Testing Extended Stability...")
+        print("\n[INFO] Testing Extended Stability...")
         
         try:
             config = PaperTradingConfig(
@@ -424,7 +424,7 @@ class SystemValidator:
     
     async def apply_critical_bug_fixes(self):
         """Apply critical bug fixes identified during validation"""
-        print("\n🔧 Applying Critical Bug Fixes...")
+        print("\n[TOOL] Applying Critical Bug Fixes...")
         
         try:
             # Fix 1: Database serialization issues in trade logging
@@ -490,7 +490,7 @@ class SystemValidator:
             self.generate_validation_report()
             
         except Exception as e:
-            print(f"\n💥 Validation suite crashed: {e}")
+            print(f"\n[INFO] Validation suite crashed: {e}")
             traceback.print_exc()
             raise
     
@@ -506,25 +506,25 @@ class SystemValidator:
         failed_tests = total_tests - passed_tests
         success_rate = (passed_tests / total_tests) * 100 if total_tests > 0 else 0
         
-        print(f"\n📊 Test Summary:")
+        print(f"\n[CHART] Test Summary:")
         print(f"   Total Tests: {total_tests}")
         print(f"   Passed: {passed_tests}")
         print(f"   Failed: {failed_tests}")
         print(f"   Success Rate: {success_rate:.1f}%")
         
-        print(f"\n🔧 Bug Fixes Applied: {len(self.bug_fixes_applied)}")
+        print(f"\n[TOOL] Bug Fixes Applied: {len(self.bug_fixes_applied)}")
         for fix in self.bug_fixes_applied:
             print(f"   - {fix['bug']}")
             print(f"     → {fix['fix']}")
         
-        print(f"\n📈 Performance Metrics:")
+        print(f"\n[UP] Performance Metrics:")
         for metric, value in self.performance_metrics.items():
             if metric != 'timestamp':
                 print(f"   {metric}: {value}")
         
-        print(f"\n📋 Detailed Results:")
+        print(f"\n[INFO] Detailed Results:")
         for result in self.validation_results:
-            status = "✅ PASS" if result['passed'] else "❌ FAIL"
+            status = "[OK] PASS" if result['passed'] else "[X] FAIL"
             print(f"   {status} {result['test']}")
             if result['details']:
                 print(f"      {result['details']}")
@@ -532,20 +532,20 @@ class SystemValidator:
                 print(f"      Error: {result['error']}")
         
         # Overall assessment
-        print(f"\n🎯 Overall Assessment:")
+        print(f"\n[TARGET] Overall Assessment:")
         if success_rate >= 90:
-            print(f"   🟢 EXCELLENT - System ready for production")
+            print(f"   [GREEN] EXCELLENT - System ready for production")
         elif success_rate >= 80:
-            print(f"   🟡 GOOD - Minor issues to address")
+            print(f"   [YELLOW] GOOD - Minor issues to address")
         elif success_rate >= 70:
-            print(f"   🟠 MODERATE - Several issues need fixing")
+            print(f"   [INFO] MODERATE - Several issues need fixing")
         else:
-            print(f"   🔴 POOR - Major issues prevent production use")
+            print(f"   [RED] POOR - Major issues prevent production use")
         
         # Save results
         self.save_validation_results()
         
-        print(f"\n✅ System validation completed successfully!")
+        print(f"\n[OK] System validation completed successfully!")
         print(f"   Success rate: {success_rate:.1f}%")
         print(f"   Bug fixes applied: {len(self.bug_fixes_applied)}")
     
@@ -565,10 +565,10 @@ class SystemValidator:
             with open(filename, 'w') as f:
                 json.dump(results_data, f, indent=2, default=str)
             
-            print(f"\n📄 Validation results saved to: {filename}")
+            print(f"\n[INFO] Validation results saved to: {filename}")
             
         except Exception as e:
-            print(f"\n⚠️  Warning: Could not save validation results: {e}")
+            print(f"\n[WARN]  Warning: Could not save validation results: {e}")
 
 
 async def main():
@@ -578,19 +578,19 @@ async def main():
         await validator.run_comprehensive_validation()
         
         print("\n" + "=" * 80)
-        print("🎉 SYSTEM VALIDATION COMPLETED SUCCESSFULLY!")
+        print("[PARTY] SYSTEM VALIDATION COMPLETED SUCCESSFULLY!")
         print("=" * 80)
         print("\nTask 9.2 - System Validation and Bug Fixes has been completed:")
-        print("✅ Comprehensive system tests executed")
-        print("✅ Critical bugs identified and fixed")
-        print("✅ Agent interactions validated")
-        print("✅ Performance bottlenecks optimized")
-        print("✅ System stability verified")
+        print("[OK] Comprehensive system tests executed")
+        print("[OK] Critical bugs identified and fixed")
+        print("[OK] Agent interactions validated")
+        print("[OK] Performance bottlenecks optimized")
+        print("[OK] System stability verified")
         
         return True
         
     except Exception as e:
-        print(f"\n❌ Validation failed: {e}")
+        print(f"\n[X] Validation failed: {e}")
         traceback.print_exc()
         return False
 

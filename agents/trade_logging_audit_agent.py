@@ -13,6 +13,15 @@ Requirements: Requirement 14 (Regulatory Compliance and Reporting)
 Task: 8.2 Trade Logging and Audit Trail
 """
 
+import sys
+import os
+from pathlib import Path
+
+# Add project root to Python path to ensure local config is imported
+project_root = Path(__file__).resolve().parent.parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
+
 import asyncio
 import logging
 import time
@@ -23,7 +32,6 @@ from datetime import datetime, timedelta, timezone
 from typing import Dict, List, Optional, Any, Union, Tuple
 from dataclasses import dataclass, field, asdict
 from enum import Enum
-from pathlib import Path
 import sqlite3
 import shutil
 import gzip

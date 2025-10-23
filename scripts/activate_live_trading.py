@@ -153,7 +153,7 @@ def main():
     # Check system health
     print("\n=== System Health Check ===")
     if not activator.check_system_health():
-        print("\n❌ System health check failed. Please resolve issues before enabling live trading.")
+        print("\n[X] System health check failed. Please resolve issues before enabling live trading.")
         return
     
     # Confirm activation
@@ -169,11 +169,11 @@ def main():
     # Enable trading
     print("\nEnabling live trading...")
     if activator.enable_trading():
-        print("\n✅ Live trading is now ACTIVE")
+        print("\n[OK] Live trading is now ACTIVE")
         print("Monitor the system logs for trading activity and system status.")
         print("To stop trading, run: python scripts/emergency_stop.py")
     else:
-        print("\n❌ Failed to enable live trading. Check the logs for details.")
+        print("\n[X] Failed to enable live trading. Check the logs for details.")
 
 
 if __name__ == "__main__":

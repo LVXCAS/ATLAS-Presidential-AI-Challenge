@@ -68,7 +68,7 @@ class IntegratedTradingEmpire:
         print("DATA SOURCES ARCHITECTURE:")
         print("=" * 30)
         for source, config in data_sources.items():
-            status_symbol = "✓" if config['status'] == 'active' else "○"
+            status_symbol = "[OK]" if config['status'] == 'active' else "○"
             print(f"  {status_symbol} {source.upper()}: {config['status']}")
             for data_type in config['data_types']:
                 print(f"     - {data_type}")
@@ -98,12 +98,12 @@ class IntegratedTradingEmpire:
         print("=" * 25)
         print("GENERATIVE AGENTS:")
         for agent, config in ai_agents['generative_agents'].items():
-            status_symbol = "✓" if config['status'] == 'active' else "○"
+            status_symbol = "[OK]" if config['status'] == 'active' else "○"
             print(f"  {status_symbol} {agent}: {config['focus']} ({config['model']})")
 
         print("\nSPECIALIZED STRATEGY AGENTS:")
         for agent, config in ai_agents['specialized_agents'].items():
-            status_symbol = "✓" if config['status'] == 'active' else "○" if config['status'] == 'standby' else "✗"
+            status_symbol = "[OK]" if config['status'] == 'active' else "○" if config['status'] == 'standby' else "[X]"
             print(f"  {status_symbol} {agent}: {config['strategy']} -> {config['target_roi']}")
         print()
 
@@ -143,7 +143,7 @@ class IntegratedTradingEmpire:
         print("=" * 35)
         for system, config in risk_systems.items():
             status = config.get('status', 'unknown')
-            status_symbol = "✓" if status == 'active' else "○"
+            status_symbol = "[OK]" if status == 'active' else "○"
             print(f"  {status_symbol} {system.replace('_', ' ').title()}: {status}")
         print()
 
@@ -177,7 +177,7 @@ class IntegratedTradingEmpire:
         print("=" * 35)
         for system, config in execution_systems.items():
             status = config.get('status', 'unknown')
-            status_symbol = "✓" if status == 'active' else "○"
+            status_symbol = "[OK]" if status == 'active' else "○"
             print(f"  {status_symbol} {system.replace('_', ' ').title()}: {status}")
         print()
 
@@ -212,7 +212,7 @@ class IntegratedTradingEmpire:
         print("=" * 30)
         for system, config in tracking_systems.items():
             status = config.get('status', 'unknown')
-            status_symbol = "✓" if status == 'active' else "○"
+            status_symbol = "[OK]" if status == 'active' else "○"
             print(f"  {status_symbol} {system.replace('_', ' ').title()}: {status}")
         print()
 
@@ -263,7 +263,7 @@ class IntegratedTradingEmpire:
         }
 
         for source, data in market_data.items():
-            print(f"  ✓ {source.replace('_', ' ').upper()}: {data}")
+            print(f"  [OK] {source.replace('_', ' ').upper()}: {data}")
 
         print(f"\nMARKET INTELLIGENCE SCORE: 8.7/10 (EXCELLENT)")
         return market_data
@@ -325,7 +325,7 @@ class IntegratedTradingEmpire:
                     'timestamp': datetime.now().isoformat()
                 }
                 executed_trades.append(trade)
-                print(f"  ✓ EXECUTED: {trade['symbol']} Intel-style (AI: {trade['ai_confidence']:.1f})")
+                print(f"  [OK] EXECUTED: {trade['symbol']} Intel-style (AI: {trade['ai_confidence']:.1f})")
 
         # Execute earnings with full architecture support
         for opp in opportunities.get('earnings_opportunities', []):
@@ -341,7 +341,7 @@ class IntegratedTradingEmpire:
                     'timestamp': datetime.now().isoformat()
                 }
                 executed_trades.append(trade)
-                print(f"  ✓ EXECUTED: {trade['symbol']} Earnings (AI: {trade['ai_confidence']:.1f})")
+                print(f"  [OK] EXECUTED: {trade['symbol']} Earnings (AI: {trade['ai_confidence']:.1f})")
 
         return executed_trades
 
@@ -361,7 +361,7 @@ class IntegratedTradingEmpire:
         }
 
         for metric, value in performance_data.items():
-            print(f"  ✓ {metric.replace('_', ' ').title()}: {value}")
+            print(f"  [OK] {metric.replace('_', ' ').title()}: {value}")
 
         # Save institutional-grade report
         filename = f"institutional_week1_execution_{datetime.now().strftime('%Y%m%d_%H%M')}.json"

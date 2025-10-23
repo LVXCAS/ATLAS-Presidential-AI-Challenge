@@ -66,13 +66,13 @@ class RiskManagerDemo:
             print(f"Largest Position:       {risk_metrics.max_position_pct:.2f}%")
             print(f"Sector Concentration:   {risk_metrics.sector_concentration:.2f}%")
             
-            print(f"\n📊 VALUE AT RISK ANALYSIS:")
+            print(f"\n[CHART] VALUE AT RISK ANALYSIS:")
             print(f"VaR 95% (1-day):        ${risk_metrics.var_1d_95:,.2f}")
             print(f"VaR 99% (1-day):        ${risk_metrics.var_1d_99:,.2f}")
             print(f"VaR 95% (5-day):        ${risk_metrics.var_5d_95:,.2f}")
             print(f"Expected Shortfall 95%: ${risk_metrics.expected_shortfall_95:,.2f}")
             
-            print(f"\n🔗 CORRELATION & LIQUIDITY RISK:")
+            print(f"\n[INFO] CORRELATION & LIQUIDITY RISK:")
             print(f"Correlation Risk:       {risk_metrics.correlation_risk:.3f}")
             print(f"Liquidity Risk:         {risk_metrics.liquidity_risk:.2f} days")
             
@@ -80,14 +80,14 @@ class RiskManagerDemo:
             risk_score = self._calculate_overall_risk_score(risk_metrics)
             risk_level = self._get_risk_level(risk_score)
             
-            print(f"\n🎯 OVERALL RISK ASSESSMENT:")
+            print(f"\n[TARGET] OVERALL RISK ASSESSMENT:")
             print(f"Risk Score:             {risk_score:.2f}/100")
             print(f"Risk Level:             {risk_level}")
             
             return risk_metrics
             
         except Exception as e:
-            print(f"❌ Error in portfolio risk monitoring: {e}")
+            print(f"[X] Error in portfolio risk monitoring: {e}")
             return None
     
     async def demo_position_limit_checks(self):
@@ -121,7 +121,7 @@ class RiskManagerDemo:
         ]
         
         for order in test_orders:
-            print(f"\n📋 Testing: {order['name']}")
+            print(f"\n[INFO] Testing: {order['name']}")
             print(f"   Symbol: {order['symbol']}")
             print(f"   Quantity: {order['quantity']:,}")
             print(f"   Price: ${order['price']:,.2f}")
@@ -134,33 +134,33 @@ class RiskManagerDemo:
                     'price': order['price']
                 })
                 
-                status = "✅ APPROVED" if result['approved'] else "❌ REJECTED"
+                status = "[OK] APPROVED" if result['approved'] else "[X] REJECTED"
                 print(f"   Result: {status}")
                 print(f"   Reason: {result['reason']}")
                 
             except Exception as e:
-                print(f"   ❌ Error checking limits: {e}")
+                print(f"   [X] Error checking limits: {e}")
     
     async def demo_emergency_stop_functionality(self):
         """Demonstrate emergency stop and circuit breaker functionality"""
         print("\n\n3. EMERGENCY STOP & CIRCUIT BREAKERS")
         print("-" * 40)
         
-        print("\n🚨 Testing Emergency Stop Functionality:")
+        print("\n[ALERT] Testing Emergency Stop Functionality:")
         
         # Check initial state
         print(f"Initial Emergency Stop Status: {'ACTIVE' if self.risk_manager.is_emergency_stop_active() else 'INACTIVE'}")
         
         # Trigger emergency stop
-        print("\n⚡ Triggering Manual Emergency Stop...")
+        print("\n[FAST] Triggering Manual Emergency Stop...")
         success = self.risk_manager.trigger_emergency_stop("Demo: Testing emergency procedures")
         
         if success:
-            print("✅ Emergency stop activated successfully")
+            print("[OK] Emergency stop activated successfully")
             print(f"Emergency Stop Status: {'ACTIVE' if self.risk_manager.is_emergency_stop_active() else 'INACTIVE'}")
             
             # Test order rejection during emergency stop
-            print("\n📋 Testing order rejection during emergency stop...")
+            print("\n[INFO] Testing order rejection during emergency stop...")
             test_order = {
                 'symbol': 'AAPL',
                 'quantity': 100,
@@ -172,16 +172,16 @@ class RiskManagerDemo:
             print(f"Reason: {result['reason']}")
             
             # Reset emergency stop
-            print("\n🔄 Resetting Emergency Stop...")
+            print("\n[INFO] Resetting Emergency Stop...")
             reset_success = self.risk_manager.reset_emergency_stop()
             
             if reset_success:
-                print("✅ Emergency stop reset successfully")
+                print("[OK] Emergency stop reset successfully")
                 print(f"Emergency Stop Status: {'ACTIVE' if self.risk_manager.is_emergency_stop_active() else 'INACTIVE'}")
             else:
-                print("❌ Failed to reset emergency stop")
+                print("[X] Failed to reset emergency stop")
         else:
-            print("❌ Failed to activate emergency stop")
+            print("[X] Failed to activate emergency stop")
     
     async def demo_risk_scenario_analysis(self):
         """Demonstrate risk analysis under various market scenarios"""
@@ -209,10 +209,10 @@ class RiskManagerDemo:
             }
         ]
         
-        print("\n📈 SCENARIO ANALYSIS RESULTS:")
+        print("\n[UP] SCENARIO ANALYSIS RESULTS:")
         
         for scenario in scenarios:
-            print(f"\n🎭 Scenario: {scenario['name']}")
+            print(f"\n[INFO] Scenario: {scenario['name']}")
             print(f"   Description: {scenario['description']}")
             print(f"   Volatility Multiplier: {scenario['volatility_multiplier']}x")
             print(f"   Correlation Increase: +{scenario['correlation_increase']:.1f}")
@@ -225,9 +225,9 @@ class RiskManagerDemo:
             
             # Risk assessment for scenario
             if scenario_var > self.risk_limits.max_var_95_pct * 100000 / 100:  # Assuming $100k portfolio
-                print("   ⚠️  VaR LIMIT BREACH - Emergency actions recommended")
+                print("   [WARN]  VaR LIMIT BREACH - Emergency actions recommended")
             else:
-                print("   ✅ Within acceptable risk limits")
+                print("   [OK] Within acceptable risk limits")
     
     def demo_risk_alerts_simulation(self):
         """Simulate various risk alert scenarios"""
@@ -266,14 +266,14 @@ class RiskManagerDemo:
             }
         ]
         
-        print("\n🚨 SIMULATED RISK ALERTS:")
+        print("\n[ALERT] SIMULATED RISK ALERTS:")
         
         for alert in simulated_alerts:
             severity_icon = {
-                RiskAlertSeverity.CRITICAL: "🔴",
-                RiskAlertSeverity.HIGH: "🟠",
-                RiskAlertSeverity.MEDIUM: "🟡",
-                RiskAlertSeverity.LOW: "🟢"
+                RiskAlertSeverity.CRITICAL: "[RED]",
+                RiskAlertSeverity.HIGH: "[INFO]",
+                RiskAlertSeverity.MEDIUM: "[YELLOW]",
+                RiskAlertSeverity.LOW: "[GREEN]"
             }
             
             print(f"\n{severity_icon[alert['severity']]} {alert['severity'].value} - {alert['type'].value}")
@@ -286,11 +286,11 @@ class RiskManagerDemo:
             
             # Recommend actions based on severity
             if alert['severity'] == RiskAlertSeverity.CRITICAL:
-                print("   🚨 Recommended Action: EMERGENCY STOP")
+                print("   [ALERT] Recommended Action: EMERGENCY STOP")
             elif alert['severity'] == RiskAlertSeverity.HIGH:
-                print("   ⚠️  Recommended Action: REDUCE POSITIONS")
+                print("   [WARN]  Recommended Action: REDUCE POSITIONS")
             elif alert['severity'] == RiskAlertSeverity.MEDIUM:
-                print("   📊 Recommended Action: INCREASE MONITORING")
+                print("   [CHART] Recommended Action: INCREASE MONITORING")
             else:
                 print("   ℹ️  Recommended Action: CONTINUE MONITORING")
     
@@ -320,20 +320,20 @@ class RiskManagerDemo:
     def _get_risk_level(self, risk_score: float) -> str:
         """Get risk level description based on score"""
         if risk_score >= 80:
-            return "🔴 CRITICAL - Immediate action required"
+            return "[RED] CRITICAL - Immediate action required"
         elif risk_score >= 60:
-            return "🟠 HIGH - Close monitoring needed"
+            return "[INFO] HIGH - Close monitoring needed"
         elif risk_score >= 40:
-            return "🟡 MEDIUM - Normal monitoring"
+            return "[YELLOW] MEDIUM - Normal monitoring"
         elif risk_score >= 20:
-            return "🟢 LOW - Acceptable risk level"
+            return "[GREEN] LOW - Acceptable risk level"
         else:
-            return "🔵 MINIMAL - Very low risk"
+            return "[INFO] MINIMAL - Very low risk"
     
     async def run_complete_demo(self):
         """Run the complete Risk Manager Agent demo"""
-        print("🚀 Starting Risk Manager Agent Demo...")
-        print(f"⏰ Demo started at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
+        print("[LAUNCH] Starting Risk Manager Agent Demo...")
+        print(f"[CLOCK] Demo started at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
         
         try:
             # Run all demo components
@@ -344,20 +344,20 @@ class RiskManagerDemo:
             self.demo_risk_alerts_simulation()
             
             print("\n" + "=" * 80)
-            print("✅ RISK MANAGER AGENT DEMO COMPLETED SUCCESSFULLY")
+            print("[OK] RISK MANAGER AGENT DEMO COMPLETED SUCCESSFULLY")
             print("=" * 80)
             
-            print("\n📋 DEMO SUMMARY:")
-            print("• Portfolio risk monitoring and VaR calculation ✅")
-            print("• Position limit checking for new orders ✅")
-            print("• Emergency stop and circuit breaker functionality ✅")
-            print("• Risk scenario analysis ✅")
-            print("• Risk alerts simulation ✅")
+            print("\n[INFO] DEMO SUMMARY:")
+            print("• Portfolio risk monitoring and VaR calculation [OK]")
+            print("• Position limit checking for new orders [OK]")
+            print("• Emergency stop and circuit breaker functionality [OK]")
+            print("• Risk scenario analysis [OK]")
+            print("• Risk alerts simulation [OK]")
             
-            print(f"\n⏰ Demo completed at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
+            print(f"\n[CLOCK] Demo completed at: {datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M:%S UTC')}")
             
         except Exception as e:
-            print(f"\n❌ Demo failed with error: {e}")
+            print(f"\n[X] Demo failed with error: {e}")
             import traceback
             traceback.print_exc()
 

@@ -97,7 +97,7 @@ def validate_event_driven_framework(logger):
     assert len(engine.trades) == 1, "Trade not executed"
     assert engine.orders[0].status.value == "filled", "Order not filled"
     
-    logger.info("✓ Event-driven framework validation passed")
+    logger.info("[OK] Event-driven framework validation passed")
     return True
 
 
@@ -137,7 +137,7 @@ def validate_slippage_and_commission_models(logger):
     commission = percentage_model.calculate_commission(order, 100.0)
     assert commission == 100.0, f"Expected commission 100.0, got {commission}"
     
-    logger.info("✓ Slippage and commission models validation passed")
+    logger.info("[OK] Slippage and commission models validation passed")
     return True
 
 
@@ -171,7 +171,7 @@ def validate_performance_metrics(logger):
     assert 0 <= metrics.win_rate <= 1, "Win rate should be between 0 and 1"
     assert metrics.total_trades >= 0, "Total trades should be non-negative"
     
-    logger.info("✓ Performance metrics validation passed")
+    logger.info("[OK] Performance metrics validation passed")
     return True
 
 
@@ -208,7 +208,7 @@ def validate_walk_forward_analysis(logger):
         assert metric in agg, f"Missing aggregate metric: {metric}"
         assert isinstance(agg[metric], (int, float)), f"Aggregate metric {metric} should be numeric"
     
-    logger.info("✓ Walk-forward analysis validation passed")
+    logger.info("[OK] Walk-forward analysis validation passed")
     return True
 
 
@@ -252,7 +252,7 @@ def validate_reproducibility(logger):
     )
     assert different_results, "Different seeds/data should give different results"
     
-    logger.info("✓ Reproducibility validation passed")
+    logger.info("[OK] Reproducibility validation passed")
     return True
 
 
@@ -288,7 +288,7 @@ def validate_multi_strategy_support(logger):
     assert results["Buy and Hold"]['performance_metrics'].total_trades >= 0
     assert results["Simple Momentum"]['performance_metrics'].total_trades >= 0
     
-    logger.info("✓ Multi-strategy support validation passed")
+    logger.info("[OK] Multi-strategy support validation passed")
     return True
 
 
@@ -328,7 +328,7 @@ def validate_synthetic_scenarios(logger):
     assert isinstance(up_value, (int, float)), "Final value should be numeric"
     assert isinstance(down_value, (int, float)), "Final value should be numeric"
     
-    logger.info("✓ Synthetic scenario testing validation passed")
+    logger.info("[OK] Synthetic scenario testing validation passed")
     return True
 
 
@@ -368,7 +368,7 @@ def validate_report_generation(logger):
         logger.error(f"Error saving report: {e}")
         raise
     
-    logger.info("✓ Report generation validation passed")
+    logger.info("[OK] Report generation validation passed")
     return True
 
 
@@ -402,14 +402,14 @@ def run_comprehensive_validation():
             success = validation_func(logger)
             if success:
                 passed += 1
-                print(f"✓ {name} validation PASSED")
+                print(f"[OK] {name} validation PASSED")
             else:
                 failed += 1
-                print(f"✗ {name} validation FAILED")
+                print(f"[X] {name} validation FAILED")
                 
         except Exception as e:
             failed += 1
-            print(f"✗ {name} validation FAILED with error: {e}")
+            print(f"[X] {name} validation FAILED with error: {e}")
             logger.error(f"Validation error in {name}: {e}")
     
     print("\n" + "=" * 80)
@@ -421,11 +421,11 @@ def run_comprehensive_validation():
     print(f"Success Rate: {passed/len(validations)*100:.1f}%")
     
     if failed == 0:
-        print("\n🎉 ALL VALIDATIONS PASSED!")
+        print("\n[PARTY] ALL VALIDATIONS PASSED!")
         print("The backtesting engine meets all requirements from Requirement 4.")
         return True
     else:
-        print(f"\n❌ {failed} VALIDATION(S) FAILED!")
+        print(f"\n[X] {failed} VALIDATION(S) FAILED!")
         print("Please review and fix the issues before proceeding.")
         return False
 

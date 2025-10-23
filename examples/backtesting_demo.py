@@ -510,7 +510,7 @@ def run_comprehensive_backtest_demo():
     print(f"Run 1 Return: {return1:.6%}")
     print(f"Run 2 Return: {return2:.6%}")
     print(f"Difference: {abs(return1 - return2):.10f}")
-    print(f"Reproducible: {'✓' if abs(return1 - return2) < 1e-10 else '✗'}")
+    print(f"Reproducible: {'[OK]' if abs(return1 - return2) < 1e-10 else '[X]'}")
     
     print("\n" + "=" * 80)
     print("BACKTESTING DEMO COMPLETED SUCCESSFULLY!")

@@ -1,0 +1,21 @@
+{
+  "timestamp": "20251022_063008",
+  "options_opportunities": 7,
+  "forex_opportunities": 0,
+  "futures_opportunities": 0,
+  "futures_enabled": false,
+  "top_recommendations": [
+    {
+      "symbol": "GOOGL",
+      "asset_type": "OPTIONS",
+      "score": 9.309999999999999,
+      "confidence": 0.6100000000000001
+    },
+    {
+      "symbol": "TSLA",
+      "asset_type": "OPTIONS",
+      "score": 8.81,
+      "confidence": 0.56
+    }
+  ]
+}
