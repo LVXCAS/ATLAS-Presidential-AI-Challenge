@@ -1,0 +1,44 @@
+[
+  {
+    "type": "COMPLETE",
+    "timestamp": "2025-10-30T15:41:32.451767",
+    "pair": "EUR_USD",
+    "direction": "long",
+    "entry_price": 1.085,
+    "position_size": 1200000,
+    "stop_loss": 1.0742,
+    "take_profit": 1.1067,
+    "technical_score": 6.5,
+    "fundamental_score": 4,
+    "combined_confidence": 0.66,
+    "kelly_fraction": 0.131,
+    "kelly_multiplier": 1.31,
+    "win_probability": 0.682,
+    "signals": [
+      "RSI_OVERSOLD",
+      "MACD_BULLISH",
+      "STRONG_TREND"
+    ],
+    "fundamental_reasons": [
+      "FED_HAWKISH",
+      "ECB_NEUTRAL"
+    ],
+    "rsi": 38.5,
+    "macd": "bullish",
+    "adx": 28.3,
+    "volatility": 0.0045,
+    "session": "london",
+    "account_balance": 190307.7,
+    "trade_id": "12345",
+    "status": "closed",
+    "exit_timestamp": "2025-10-30T15:41:32.452684",
+    "exit_price": 1.092,
+    "exit_reason": "take_profit",
+    "pnl": 1750.0,
+    "pnl_pct": 0.92,
+    "duration": "4h 23m",
+    "peak_profit": 2100.0,
+    "peak_loss": -150.0,
+    "outcome": "win"
+  }
+]
