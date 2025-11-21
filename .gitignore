@@ -189,6 +189,7 @@ data/market_data/
 data/historical/
 data/live/
 data/backtest_results/
+backtesting/data/*.csv
 *.h5
 *.hdf5
 *.parquet
