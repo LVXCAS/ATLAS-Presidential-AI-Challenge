@@ -94,6 +94,31 @@
       "enabled": true,
       "initial_weight": 1.0,
       "max_correlated_exposure": 2
+    },
+
+    "QlibResearchAgent": {
+      "enabled": true,
+      "initial_weight": 1.8,
+      "factor_library_size": 1000,
+      "ml_models": ["LSTM", "GRU", "LightGBM"]
+    },
+
+    "GSQuantAgent": {
+      "enabled": true,
+      "initial_weight": 2.0,
+      "is_veto": false,
+      "max_var_pct": 0.02,
+      "max_correlation": 0.7,
+      "risk_scoring_enabled": true
+    },
+
+    "AutoGenRDAgent": {
+      "enabled": true,
+      "initial_weight": 1.0,
+      "research_frequency_days": 7,
+      "min_sharpe_threshold": 1.5,
+      "min_win_rate_threshold": 0.55,
+      "auto_deploy_threshold": 2.0
     }
   },
 
