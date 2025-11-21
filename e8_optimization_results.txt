@@ -1,0 +1,20 @@
+======================================================================
+E8 ROI OPTIMIZER - Testing Parameter Combinations
+======================================================================
+Goal: Maximize ROI while keeping drawdown < 6%
+This may take 5-10 minutes...
+
+[DATA] Loading EUR_USD historical data...
+
+[1/54] Testing: MinScore=2.0, Risk=1.0%, Target=2.0%, Stop=1.0%
+Traceback (most recent call last):
+  File "c:\Users\lucas\PC-HIVE-TRADING\E8_OPTIMIZE_ROI.py", line 350, in <module>
+    optimize()
+    ~~~~~~~~^^
+  File "c:\Users\lucas\PC-HIVE-TRADING\E8_OPTIMIZE_ROI.py", line 306, in optimize
+    print(f"  \u2192 ROI: {result['roi']:+.2f}% | Trades: {result['total_trades']} | Win Rate: {result['win_rate']:.1f}% | Max DD: {result['max_dd']:.2f}%")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\lucas\AppData\Local\Programs\Python\Python313\Lib\encodings\cp1252.py", line 19, in encode
+    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+           ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+UnicodeEncodeError: 'charmap' codec can't encode character '\u2192' in position 2: character maps to <undefined>

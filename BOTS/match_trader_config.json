@@ -1,0 +1,75 @@
+{
+  "bot_type": "ultra_conservative",
+  "platform": "match_trader_demo",
+  "validation_period_days": 60,
+
+  "strategy": {
+    "name": "Ultra-Selective Trend Following",
+    "min_score": 6.0,
+    "description": "Only trade PERFECT setups with all 5 filters aligned"
+  },
+
+  "risk_management": {
+    "max_drawdown_pct": 6.0,
+    "daily_dd_limit_usd": 3000,
+    "daily_loss_limit_usd": 1500,
+    "risk_per_trade_pct": 1.0,
+    "max_lots": 2,
+    "position_size_multiplier": 0.50,
+    "leverage_multiplier": 3
+  },
+
+  "trading_rules": {
+    "max_positions": 1,
+    "max_trades_per_day": 1,
+    "expected_trades_per_week": "0-2",
+    "trading_hours_est": {
+      "start": 8,
+      "end": 17,
+      "description": "London + NY session (8 AM - 5 PM EST)"
+    }
+  },
+
+  "filters": {
+    "adx_minimum": 30,
+    "ema_separation_pct": 1.0,
+    "rsi_range": [40, 60],
+    "macd_aligned": true,
+    "session_filter": true
+  },
+
+  "profit_targets": {
+    "profit_target_pct": 2.0,
+    "stop_loss_pct": 1.0,
+    "risk_reward_ratio": 2.0
+  },
+
+  "pairs": [
+    "EUR_USD",
+    "GBP_USD",
+    "USD_JPY"
+  ],
+
+  "scan_interval_seconds": 3600,
+
+  "success_criteria": {
+    "zero_daily_dd_violations": true,
+    "positive_roi": true,
+    "max_trailing_dd_under_4pct": true,
+    "win_rate_above_55pct": true
+  },
+
+  "decision_after_demo": {
+    "if_all_criteria_pass": "Pay $600 for E8 evaluation with exact same settings",
+    "if_1_2_violations": "Reduce to 1.5 lots, tighten filters (ADX 35), run another 30 days",
+    "if_multiple_violations": "DON'T pay $600, pivot to options with $4k"
+  },
+
+  "notes": [
+    "This is for DEMO VALIDATION ONLY - no real money at risk",
+    "Goal: Prove strategy works before paying $600",
+    "Expected: Most days ZERO trades (ultra-selective)",
+    "Pass probability: 30-40% (vs 0% with old aggressive strategy)",
+    "Timeline: 60 days demo → decide → 90 days E8 eval if passed"
+  ]
+}

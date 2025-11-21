@@ -1,0 +1,19 @@
+GRID SEARCH OPTIMIZATION RESULTS
+======================================================================
+
+Total combinations tested: 900
+
+BEST PARAMETERS:
+----------------------------------------------------------------------
+TP: 1.00%
+SL: 0.50%
+Break threshold: 1 pips
+Retest threshold: 2 pips
+Lookback: 8 hours
+
+PERFORMANCE:
+----------------------------------------------------------------------
+ROI: 0.00%
+Max DD: 100.00%
+Win Rate: 0.0%
+Trades: 0

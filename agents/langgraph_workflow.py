@@ -30,7 +30,7 @@ from .options_volatility_agent import OptionsVolatilityAgent
 from .portfolio_allocator_agent import PortfolioAllocatorAgent
 from .risk_manager_agent import RiskManagerAgent
 from .execution_engine_agent import ExecutionEngineAgent
-from .satellite_trading_agent import SatelliteTradingAgent
+# from .satellite_trading_agent import SatelliteTradingAgent
 
 logger = logging.getLogger(__name__)
 
