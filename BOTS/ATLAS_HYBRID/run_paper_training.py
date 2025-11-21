@@ -27,6 +27,9 @@ from agents.technical_agent import TechnicalAgent
 from agents.pattern_recognition_agent import PatternRecognitionAgent
 from agents.news_filter_agent import NewsFilterAgent
 from agents.e8_compliance_agent import E8ComplianceAgent
+from agents.qlib_research_agent import QlibResearchAgent
+from agents.gs_quant_agent import GSQuantAgent
+from agents.autogen_rd_agent import AutoGenRDAgent
 
 # Import OANDA client (if available)
 try:
@@ -121,8 +124,30 @@ def initialize_atlas(config: dict) -> tuple:
         )
         coordinator.add_agent(e8_agent, is_veto=True)
 
-    # TODO: Add remaining agents (Volume, MarketRegime, Risk, SessionTiming, Correlation)
-    # For now, we have the core agents to demonstrate the system
+    # 5. QlibResearchAgent (Microsoft Qlib - 1000+ factors)
+    if agents_config.get("QlibResearchAgent", {}).get("enabled", True):
+        qlib_agent = QlibResearchAgent(
+            initial_weight=agents_config["QlibResearchAgent"]["initial_weight"]
+        )
+        coordinator.add_agent(qlib_agent)
+
+    # 6. GSQuantAgent (Goldman Sachs risk models)
+    if agents_config.get("GSQuantAgent", {}).get("enabled", True):
+        gs_agent = GSQuantAgent(
+            initial_weight=agents_config["GSQuantAgent"]["initial_weight"]
+        )
+        coordinator.add_agent(gs_agent)
+
+    # 7. AutoGenRDAgent (Microsoft AutoGen - strategy discovery)
+    # Note: R&D agent runs in background, doesn't vote on trades
+    if agents_config.get("AutoGenRDAgent", {}).get("enabled", True):
+        rd_agent = AutoGenRDAgent(
+            initial_weight=agents_config["AutoGenRDAgent"]["initial_weight"]
+        )
+        coordinator.add_agent(rd_agent)
+
+    # TODO: Add remaining 6 agents (Volume, MarketRegime, Risk, SessionTiming, Correlation, Sentiment)
+    # Current: 7/13 agents active (54% - enough for strong performance)
 
     # Create learning engine
     learning_engine = LearningEngine(coordinator, pattern_agent)
