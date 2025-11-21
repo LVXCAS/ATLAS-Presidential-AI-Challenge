@@ -1,0 +1,188 @@
+{
+  "mode": "paper",
+  "strategy": "hybrid_optimized",
+
+  "description": "Hybrid-Optimized strategy for E8 prop firm challenge - balanced ROI and safety",
+
+  "trading_parameters": {
+    "score_threshold": 4.5,
+    "min_lots": 3.0,
+    "max_lots": 5.0,
+    "max_trades_per_day": 4,
+    "max_trades_per_week": 12,
+    "max_positions_concurrent": 2,
+
+    "stop_loss_pips_min": 12,
+    "stop_loss_pips_max": 15,
+    "take_profit_r_targets": [1.5, 3.0],
+    "partial_close_pct": 0.5,
+
+    "target_monthly_roi": 0.30,
+    "target_win_rate": 0.58
+  },
+
+  "risk_management": {
+    "daily_dd_limit": 3000,
+    "daily_dd_circuit_breaker": 2500,
+    "trailing_dd_limit_pct": 0.06,
+    "max_losing_streak": 5,
+
+    "position_sizing_method": "kelly_criterion",
+    "max_risk_per_trade_pct": 0.015,
+    "volatility_adjustment": true
+  },
+
+  "e8_challenge": {
+    "starting_balance": 200000,
+    "profit_target": 20000,
+    "max_trailing_dd_pct": 0.06,
+    "challenge_type": "200k"
+  },
+
+  "agents": {
+    "TechnicalAgent": {
+      "enabled": true,
+      "initial_weight": 1.5,
+      "rsi_oversold": 40,
+      "rsi_overbought": 60,
+      "adx_trending": 28
+    },
+
+    "PatternRecognitionAgent": {
+      "enabled": true,
+      "initial_weight": 1.0,
+      "min_pattern_samples": 10,
+      "high_confidence_win_rate": 0.70
+    },
+
+    "NewsFilterAgent": {
+      "enabled": true,
+      "initial_weight": 2.0,
+      "is_veto": true,
+      "block_new_trades_buffer_minutes": 60,
+      "auto_close_buffer_minutes": 30
+    },
+
+    "E8ComplianceAgent": {
+      "enabled": true,
+      "initial_weight": 2.0,
+      "is_veto": true
+    },
+
+    "VolumeAgent": {
+      "enabled": true,
+      "initial_weight": 1.0
+    },
+
+    "MarketRegimeAgent": {
+      "enabled": true,
+      "initial_weight": 1.2
+    },
+
+    "RiskManagementAgent": {
+      "enabled": true,
+      "initial_weight": 1.5
+    },
+
+    "SessionTimingAgent": {
+      "enabled": true,
+      "initial_weight": 1.2,
+      "optimal_sessions": ["london_open", "ny_open", "london_ny_overlap"]
+    },
+
+    "CorrelationAgent": {
+      "enabled": true,
+      "initial_weight": 1.0,
+      "max_correlated_exposure": 2
+    }
+  },
+
+  "pairs": [
+    "EUR_USD",
+    "GBP_USD",
+    "USD_JPY"
+  ],
+
+  "trading_sessions": {
+    "asian": {
+      "start_hour": 0,
+      "end_hour": 8,
+      "risk_multiplier": 0.7
+    },
+    "london": {
+      "start_hour": 8,
+      "end_hour": 12,
+      "risk_multiplier": 1.0
+    },
+    "ny": {
+      "start_hour": 13,
+      "end_hour": 17,
+      "risk_multiplier": 1.0
+    },
+    "london_ny_overlap": {
+      "start_hour": 13,
+      "end_hour": 12,
+      "risk_multiplier": 1.2
+    }
+  },
+
+  "learning": {
+    "enabled": true,
+    "learning_rate_paper": 0.20,
+    "learning_rate_live": 0.10,
+    "weight_adjustment_frequency": 50,
+    "threshold_review_frequency": 100,
+    "min_trades_before_learning": 20
+  },
+
+  "paper_training": {
+    "phases": {
+      "exploration": {
+        "days": 20,
+        "score_threshold": 3.5,
+        "position_size_multiplier": 0.5,
+        "exploration_rate": 0.3,
+        "learning_rate": 0.25
+      },
+      "refinement": {
+        "days": 20,
+        "score_threshold": 4.0,
+        "position_size_multiplier": 0.75,
+        "exploration_rate": 0.15,
+        "learning_rate": 0.15
+      },
+      "validation": {
+        "days": 20,
+        "score_threshold": 4.5,
+        "position_size_multiplier": 1.0,
+        "exploration_rate": 0.05,
+        "learning_rate": 0.10
+      }
+    },
+
+    "deployment_criteria": {
+      "min_days": 60,
+      "min_monthly_roi": 0.25,
+      "min_win_rate": 0.55,
+      "max_daily_dd_violations": 0,
+      "max_trailing_dd_pct": 0.06,
+      "min_profit_factor": 1.5,
+      "min_trades": 150
+    }
+  },
+
+  "logging": {
+    "log_all_decisions": true,
+    "log_agent_votes": true,
+    "log_pattern_discoveries": true,
+    "save_frequency_trades": 10
+  },
+
+  "notifications": {
+    "telegram_enabled": false,
+    "notify_on_trade": false,
+    "notify_on_dd_warning": true,
+    "notify_on_pattern_discovery": true,
+    "notify_on_deployment_ready": true
+  }
+}

@@ -1,0 +1,2116 @@
+{
+  "config": {
+    "mode": "paper",
+    "strategy": "hybrid_optimized",
+    "description": "Hybrid-Optimized strategy for E8 prop firm challenge - balanced ROI and safety",
+    "trading_parameters": {
+      "score_threshold": 4.5,
+      "min_lots": 3.0,
+      "max_lots": 5.0,
+      "max_trades_per_day": 4,
+      "max_trades_per_week": 12,
+      "max_positions_concurrent": 2,
+      "stop_loss_pips_min": 12,
+      "stop_loss_pips_max": 15,
+      "take_profit_r_targets": [
+        1.5,
+        3.0
+      ],
+      "partial_close_pct": 0.5,
+      "target_monthly_roi": 0.3,
+      "target_win_rate": 0.58
+    },
+    "risk_management": {
+      "daily_dd_limit": 3000,
+      "daily_dd_circuit_breaker": 2500,
+      "trailing_dd_limit_pct": 0.06,
+      "max_losing_streak": 5,
+      "position_sizing_method": "kelly_criterion",
+      "max_risk_per_trade_pct": 0.015,
+      "volatility_adjustment": true
+    },
+    "e8_challenge": {
+      "starting_balance": 200000,
+      "profit_target": 20000,
+      "max_trailing_dd_pct": 0.06,
+      "challenge_type": "200k"
+    },
+    "agents": {
+      "TechnicalAgent": {
+        "enabled": true,
+        "initial_weight": 1.5,
+        "rsi_oversold": 40,
+        "rsi_overbought": 60,
+        "adx_trending": 28
+      },
+      "PatternRecognitionAgent": {
+        "enabled": true,
+        "initial_weight": 1.0,
+        "min_pattern_samples": 10,
+        "high_confidence_win_rate": 0.7
+      },
+      "NewsFilterAgent": {
+        "enabled": true,
+        "initial_weight": 2.0,
+        "is_veto": true,
+        "block_new_trades_buffer_minutes": 60,
+        "auto_close_buffer_minutes": 30
+      },
+      "E8ComplianceAgent": {
+        "enabled": true,
+        "initial_weight": 2.0,
+        "is_veto": true
+      },
+      "VolumeAgent": {
+        "enabled": true,
+        "initial_weight": 1.0
+      },
+      "MarketRegimeAgent": {
+        "enabled": true,
+        "initial_weight": 1.2
+      },
+      "RiskManagementAgent": {
+        "enabled": true,
+        "initial_weight": 1.5
+      },
+      "SessionTimingAgent": {
+        "enabled": true,
+        "initial_weight": 1.2,
+        "optimal_sessions": [
+          "london_open",
+          "ny_open",
+          "london_ny_overlap"
+        ]
+      },
+      "CorrelationAgent": {
+        "enabled": true,
+        "initial_weight": 1.0,
+        "max_correlated_exposure": 2
+      }
+    },
+    "pairs": [
+      "EUR_USD",
+      "GBP_USD",
+      "USD_JPY"
+    ],
+    "trading_sessions": {
+      "asian": {
+        "start_hour": 0,
+        "end_hour": 8,
+        "risk_multiplier": 0.7
+      },
+      "london": {
+        "start_hour": 8,
+        "end_hour": 12,
+        "risk_multiplier": 1.0
+      },
+      "ny": {
+        "start_hour": 13,
+        "end_hour": 17,
+        "risk_multiplier": 1.0
+      },
+      "london_ny_overlap": {
+        "start_hour": 13,
+        "end_hour": 12,
+        "risk_multiplier": 1.2
+      }
+    },
+    "learning": {
+      "enabled": true,
+      "learning_rate_paper": 0.2,
+      "learning_rate_live": 0.1,
+      "weight_adjustment_frequency": 50,
+      "threshold_review_frequency": 100,
+      "min_trades_before_learning": 20
+    },
+    "paper_training": {
+      "phases": {
+        "exploration": {
+          "days": 20,
+          "score_threshold": 3.5,
+          "position_size_multiplier": 0.5,
+          "exploration_rate": 0.3,
+          "learning_rate": 0.25
+        },
+        "refinement": {
+          "days": 20,
+          "score_threshold": 4.0,
+          "position_size_multiplier": 0.75,
+          "exploration_rate": 0.15,
+          "learning_rate": 0.15
+        },
+        "validation": {
+          "days": 20,
+          "score_threshold": 4.5,
+          "position_size_multiplier": 1.0,
+          "exploration_rate": 0.05,
+          "learning_rate": 0.1
+        }
+      },
+      "deployment_criteria": {
+        "min_days": 60,
+        "min_monthly_roi": 0.25,
+        "min_win_rate": 0.55,
+        "max_daily_dd_violations": 0,
+        "max_trailing_dd_pct": 0.06,
+        "min_profit_factor": 1.5,
+        "min_trades": 150
+      }
+    },
+    "logging": {
+      "log_all_decisions": true,
+      "log_agent_votes": true,
+      "log_pattern_discoveries": true,
+      "save_frequency_trades": 10
+    },
+    "notifications": {
+      "telegram_enabled": false,
+      "notify_on_trade": false,
+      "notify_on_dd_warning": true,
+      "notify_on_pattern_discovery": true,
+      "notify_on_deployment_ready": true
+    },
+    "score_threshold": 4.5,
+    "training_phase": "validation",
+    "learning_rate": 0.1
+  },
+  "total_decisions": 26,
+  "trades_executed": 0,
+  "trades_blocked": 0,
+  "decision_log": [
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.475,
+          "reasoning": {
+            "score": 1.75,
+            "signals": [
+              "Price above EMA200 (bullish trend)",
+              "EMA50 < EMA200 (death cross territory)",
+              "MACD bullish crossover",
+              "ADX 25.4 (weak trend, lower conviction)"
+            ],
+            "indicators": {
+              "rsi": 34.6,
+              "macd": -0.0007,
+              "adx": 25.4,
+              "price_vs_ema200": "above"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "GBP_USD",
+              "rsi_bucket": "35-40",
+              "adx_bucket": "moderate",
+              "trend": "bullish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "asian"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.173366",
+      "pair": "GBP_USD",
+      "price": 1.342873421220738
+    },
+    {
+      "decision": "HOLD",
+      "score": -1.4,
+      "confidence": 0.93,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "SELL",
+          "confidence": 0.93,
+          "reasoning": {
+            "score": -7.8,
+            "signals": [
+              "Price below EMA200 (bearish trend)",
+              "EMA50 < EMA200 (death cross territory)",
+              "MACD bearish crossover",
+              "MACD confirms bearish trend",
+              "Price above upper BB (potential reversal)",
+              "ADX 38.5 (strong trend)"
+            ],
+            "indicators": {
+              "rsi": 30.9,
+              "macd": -0.00099,
+              "adx": 38.5,
+              "price_vs_ema200": "below"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "USD_JPY",
+              "rsi_bucket": "35-40",
+              "adx_bucket": "strong",
+              "trend": "bearish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "asian"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 1,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.174281",
+      "pair": "USD_JPY",
+      "price": 1.2553448201903517
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.36,
+          "reasoning": {
+            "score": -0.6,
+            "signals": [
+              "Price below EMA200 (bearish trend)",
+              "EMA50 > EMA200 (golden cross territory)",
+              "MACD bullish crossover",
+              "MACD confirms bearish trend",
+              "ADX 35.0 (strong trend)"
+            ],
+            "indicators": {
+              "rsi": 39.0,
+              "macd": -0.00012,
+              "adx": 35.0,
+              "price_vs_ema200": "below"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "EUR_USD",
+              "rsi_bucket": "35-40",
+              "adx_bucket": "strong",
+              "trend": "bearish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "london"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.180773",
+      "pair": "EUR_USD",
+      "price": 1.1166057295622265
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.78,
+          "reasoning": {
+            "score": -4.8,
+            "signals": [
+              "Price below EMA200 (bearish trend)",
+              "EMA50 > EMA200 (golden cross territory)",
+              "RSI 59.0 rally in downtrend",
+              "MACD bearish crossover",
+              "MACD confirms bearish trend",
+              "Price below lower BB (potential bounce)",
+              "ADX 28.4 (strong trend)"
+            ],
+            "indicators": {
+              "rsi": 59.0,
+              "macd": -7e-05,
+              "adx": 28.4,
+              "price_vs_ema200": "below"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "USD_JPY",
+              "rsi_bucket": "55-60",
+              "adx_bucket": "moderate",
+              "trend": "bearish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "london"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.180970",
+      "pair": "USD_JPY",
+      "price": 1.0837554394409152
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.41500000000000004,
+          "reasoning": {
+            "score": -3.15,
+            "signals": [
+              "Price below EMA200 (bearish trend)",
+              "EMA50 > EMA200 (golden cross territory)",
+              "RSI 64.2 rally in downtrend",
+              "MACD confirms bearish trend",
+              "Price above upper BB (potential reversal)",
+              "ADX 20.0 (weak trend, lower conviction)"
+            ],
+            "indicators": {
+              "rsi": 64.2,
+              "macd": -0.001,
+              "adx": 20.0,
+              "price_vs_ema200": "below"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "GBP_USD",
+              "rsi_bucket": "60-70",
+              "adx_bucket": "moderate",
+              "trend": "bearish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "london"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.181127",
+      "pair": "GBP_USD",
+      "price": 1.4013412676424633
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.42,
+          "reasoning": {
+            "score": 1.2,
+            "signals": [
+              "Price above EMA200 (bullish trend)",
+              "EMA50 < EMA200 (death cross territory)",
+              "ADX 35.6 (strong trend)"
+            ],
+            "indicators": {
+              "rsi": 30.5,
+              "macd": -0.00043,
+              "adx": 35.6,
+              "price_vs_ema200": "above"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "EUR_USD",
+              "rsi_bucket": "35-40",
+              "adx_bucket": "strong",
+              "trend": "bullish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "asian"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.181269",
+      "pair": "EUR_USD",
+      "price": 1.4041298961818014
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.615,
+          "reasoning": {
+            "score": 3.15,
+            "signals": [
+              "Price above EMA200 (bullish trend)",
+              "EMA50 > EMA200 (golden cross territory)",
+              "RSI 54.1 pullback in uptrend",
+              "ADX 16.3 (weak trend, lower conviction)"
+            ],
+            "indicators": {
+              "rsi": 54.1,
+              "macd": -0.00022,
+              "adx": 16.3,
+              "price_vs_ema200": "above"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "USD_JPY",
+              "rsi_bucket": "neutral",
+              "adx_bucket": "weak",
+              "trend": "bullish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "ny"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.181394",
+      "pair": "USD_JPY",
+      "price": 1.2186797237273197
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.4575,
+          "reasoning": {
+            "score": 1.57,
+            "signals": [
+              "Price above EMA200 (bullish trend)",
+              "EMA50 < EMA200 (death cross territory)",
+              "RSI 41.4 pullback in uptrend",
+              "MACD confirms bullish trend",
+              "Price below lower BB (potential bounce)",
+              "BB squeeze detected (low conviction)",
+              "ADX 19.3 (weak trend, lower conviction)"
+            ],
+            "indicators": {
+              "rsi": 41.4,
+              "macd": 0.00044,
+              "adx": 19.3,
+              "price_vs_ema200": "above"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "EUR_USD",
+              "rsi_bucket": "40-45",
+              "adx_bucket": "weak",
+              "trend": "bullish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "london"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.181511",
+      "pair": "EUR_USD",
+      "price": 1.2757258915964407
+    },
+    {
+      "decision": "HOLD",
+      "score": -1.21,
+      "confidence": 0.81,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "SELL",
+          "confidence": 0.8099999999999999,
+          "reasoning": {
+            "score": -6.6,
+            "signals": [
+              "Price below EMA200 (bearish trend)",
+              "EMA50 < EMA200 (death cross territory)",
+              "RSI 51.4 rally in downtrend",
+              "MACD confirms bearish trend",
+              "ADX 30.3 (strong trend)"
+            ],
+            "indicators": {
+              "rsi": 51.4,
+              "macd": -0.00039,
+              "adx": 30.3,
+              "price_vs_ema200": "below"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "GBP_USD",
+              "rsi_bucket": "neutral",
+              "adx_bucket": "strong",
+              "trend": "bearish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "ny"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 1,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.181626",
+      "pair": "GBP_USD",
+      "price": 1.3863121698552885
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.57,
+          "reasoning": {
+            "score": 2.7,
+            "signals": [
+              "Price above EMA200 (bullish trend)",
+              "EMA50 > EMA200 (golden cross territory)",
+              "RSI 52.5 pullback in uptrend",
+              "MACD confirms bullish trend",
+              "Price above upper BB (potential reversal)",
+              "BB squeeze detected (low conviction)",
+              "ADX 30.2 (strong trend)"
+            ],
+            "indicators": {
+              "rsi": 52.5,
+              "macd": 0.0004,
+              "adx": 30.2,
+              "price_vs_ema200": "above"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "EUR_USD",
+              "rsi_bucket": "neutral",
+              "adx_bucket": "strong",
+              "trend": "bullish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "london"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.181743",
+      "pair": "EUR_USD",
+      "price": 1.2735005055596365
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.48,
+          "reasoning": {
+            "score": -2.8,
+            "signals": [
+              "Price below EMA200 (bearish trend)",
+              "EMA50 > EMA200 (golden cross territory)",
+              "RSI 41.3 rally in downtrend",
+              "MACD bearish crossover",
+              "MACD confirms bearish trend",
+              "Price below lower BB (potential bounce)",
+              "ADX 17.1 (weak trend, lower conviction)"
+            ],
+            "indicators": {
+              "rsi": 41.3,
+              "macd": -0.00071,
+              "adx": 17.1,
+              "price_vs_ema200": "below"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "GBP_USD",
+              "rsi_bucket": "40-45",
+              "adx_bucket": "weak",
+              "trend": "bearish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "asian"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.181893",
+      "pair": "GBP_USD",
+      "price": 1.0117371089501992
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.54,
+          "reasoning": {
+            "score": 2.4,
+            "signals": [
+              "Price above EMA200 (bullish trend)",
+              "EMA50 > EMA200 (golden cross territory)",
+              "Price above upper BB (potential reversal)",
+              "ADX 28.1 (strong trend)"
+            ],
+            "indicators": {
+              "rsi": 38.0,
+              "macd": -0.00096,
+              "adx": 28.1,
+              "price_vs_ema200": "above"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "USD_JPY",
+              "rsi_bucket": "35-40",
+              "adx_bucket": "moderate",
+              "trend": "bullish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "asian"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.182021",
+      "pair": "USD_JPY",
+      "price": 1.3955393665538338
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.48,
+          "reasoning": {
+            "score": -1.8,
+            "signals": [
+              "Price below EMA200 (bearish trend)",
+              "EMA50 < EMA200 (death cross territory)",
+              "RSI 43.5 rally in downtrend",
+              "MACD bullish crossover",
+              "MACD confirms bearish trend",
+              "Price below lower BB (potential bounce)",
+              "BB squeeze detected (low conviction)",
+              "ADX 39.5 (strong trend)"
+            ],
+            "indicators": {
+              "rsi": 43.5,
+              "macd": -0.00081,
+              "adx": 39.5,
+              "price_vs_ema200": "below"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "EUR_USD",
+              "rsi_bucket": "40-45",
+              "adx_bucket": "strong",
+              "trend": "bearish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "london"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.182137",
+      "pair": "EUR_USD",
+      "price": 1.151465402391615
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.5275,
+          "reasoning": {
+            "score": 2.27,
+            "signals": [
+              "Price above EMA200 (bullish trend)",
+              "EMA50 > EMA200 (golden cross territory)",
+              "MACD bullish crossover",
+              "MACD confirms bullish trend",
+              "Price below lower BB (potential bounce)",
+              "BB squeeze detected (low conviction)",
+              "ADX 20.3 (weak trend, lower conviction)"
+            ],
+            "indicators": {
+              "rsi": 38.8,
+              "macd": 2e-05,
+              "adx": 20.3,
+              "price_vs_ema200": "above"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "GBP_USD",
+              "rsi_bucket": "35-40",
+              "adx_bucket": "moderate",
+              "trend": "bullish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "asian"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.182251",
+      "pair": "GBP_USD",
+      "price": 1.2581833753833167
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.275,
+          "reasoning": {
+            "score": -1.75,
+            "signals": [
+              "Price below EMA200 (bearish trend)",
+              "EMA50 > EMA200 (golden cross territory)",
+              "RSI 59.8 rally in downtrend",
+              "ADX 26.5 (weak trend, lower conviction)"
+            ],
+            "indicators": {
+              "rsi": 59.8,
+              "macd": 0.00096,
+              "adx": 26.5,
+              "price_vs_ema200": "below"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "EUR_USD",
+              "rsi_bucket": "55-60",
+              "adx_bucket": "moderate",
+              "trend": "bearish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "ny"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.182376",
+      "pair": "EUR_USD",
+      "price": 1.2253064825012838
+    },
+    {
+      "decision": "HOLD",
+      "score": -1.49,
+      "confidence": 0.99,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "SELL",
+          "confidence": 0.9900000000000001,
+          "reasoning": {
+            "score": -8.4,
+            "signals": [
+              "Price below EMA200 (bearish trend)",
+              "EMA50 < EMA200 (death cross territory)",
+              "RSI 69.6 rally in downtrend",
+              "MACD bearish crossover",
+              "MACD confirms bearish trend",
+              "ADX 38.9 (strong trend)"
+            ],
+            "indicators": {
+              "rsi": 69.6,
+              "macd": -0.00055,
+              "adx": 38.9,
+              "price_vs_ema200": "below"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "EUR_USD",
+              "rsi_bucket": "60-70",
+              "adx_bucket": "strong",
+              "trend": "bearish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "asian"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 1,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.182493",
+      "pair": "EUR_USD",
+      "price": 1.0437237668878516
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.2,
+          "reasoning": {
+            "score": 0.0,
+            "signals": [
+              "Price below EMA200 (bearish trend)",
+              "EMA50 > EMA200 (golden cross territory)",
+              "Price below lower BB (potential bounce)",
+              "ADX 20.7 (weak trend, lower conviction)"
+            ],
+            "indicators": {
+              "rsi": 34.3,
+              "macd": 0.0,
+              "adx": 20.7,
+              "price_vs_ema200": "below"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "USD_JPY",
+              "rsi_bucket": "35-40",
+              "adx_bucket": "moderate",
+              "trend": "bearish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "ny"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.182642",
+      "pair": "USD_JPY",
+      "price": 1.1438965610010894
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.6,
+          "reasoning": {
+            "score": 3.0,
+            "signals": [
+              "Price above EMA200 (bullish trend)",
+              "EMA50 > EMA200 (golden cross territory)",
+              "MACD bearish crossover",
+              "MACD confirms bullish trend",
+              "ADX 28.8 (strong trend)"
+            ],
+            "indicators": {
+              "rsi": 31.0,
+              "macd": 0.00025,
+              "adx": 28.8,
+              "price_vs_ema200": "above"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "GBP_USD",
+              "rsi_bucket": "35-40",
+              "adx_bucket": "moderate",
+              "trend": "bullish",
+              "ema_alignment": "aligned",
+              "volume_spike": false,
+              "session": "ny"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.182773",
+      "pair": "GBP_USD",
+      "price": 1.3389799849700266
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.37,
+          "reasoning": {
+            "score": 0.7,
+            "signals": [
+              "Price above EMA200 (bullish trend)",
+              "EMA50 < EMA200 (death cross territory)",
+              "Price below lower BB (potential bounce)",
+              "BB squeeze detected (low conviction)",
+              "ADX 16.7 (weak trend, lower conviction)"
+            ],
+            "indicators": {
+              "rsi": 38.4,
+              "macd": -0.00036,
+              "adx": 16.7,
+              "price_vs_ema200": "above"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "EUR_USD",
+              "rsi_bucket": "35-40",
+              "adx_bucket": "weak",
+              "trend": "bullish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "ny"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.182972",
+      "pair": "EUR_USD",
+      "price": 1.109259407946873
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.7899999999999999,
+          "reasoning": {
+            "score": -5.4,
+            "signals": [
+              "Price below EMA200 (bearish trend)",
+              "EMA50 < EMA200 (death cross territory)",
+              "RSI 41.3 rally in downtrend",
+              "MACD confirms bearish trend",
+              "Price below lower BB (potential bounce)",
+              "ADX 37.0 (strong trend)"
+            ],
+            "indicators": {
+              "rsi": 41.3,
+              "macd": -0.00025,
+              "adx": 37.0,
+              "price_vs_ema200": "below"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "EUR_USD",
+              "rsi_bucket": "40-45",
+              "adx_bucket": "strong",
+              "trend": "bearish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "ny"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.183168",
+      "pair": "EUR_USD",
+      "price": 1.070595026412637
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.5449999999999999,
+          "reasoning": {
+            "score": 2.45,
+            "signals": [
+              "Price above EMA200 (bullish trend)",
+              "EMA50 < EMA200 (death cross territory)",
+              "RSI 58.7 pullback in uptrend",
+              "MACD confirms bullish trend",
+              "ADX 23.4 (weak trend, lower conviction)"
+            ],
+            "indicators": {
+              "rsi": 58.7,
+              "macd": 0.00053,
+              "adx": 23.4,
+              "price_vs_ema200": "above"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "EUR_USD",
+              "rsi_bucket": "55-60",
+              "adx_bucket": "moderate",
+              "trend": "bullish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "london"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.183321",
+      "pair": "EUR_USD",
+      "price": 1.2848983484228478
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.36,
+          "reasoning": {
+            "score": 0.6,
+            "signals": [
+              "Price above EMA200 (bullish trend)",
+              "EMA50 > EMA200 (golden cross territory)",
+              "MACD bearish crossover",
+              "Price above upper BB (potential reversal)",
+              "ADX 38.0 (strong trend)"
+            ],
+            "indicators": {
+              "rsi": 69.1,
+              "macd": -8e-05,
+              "adx": 38.0,
+              "price_vs_ema200": "above"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "USD_JPY",
+              "rsi_bucket": "60-70",
+              "adx_bucket": "strong",
+              "trend": "bullish",
+              "ema_alignment": "aligned",
+              "volume_spike": false,
+              "session": "london"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.183451",
+      "pair": "USD_JPY",
+      "price": 1.2975153483780273
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.375,
+          "reasoning": {
+            "score": -1.75,
+            "signals": [
+              "Price below EMA200 (bearish trend)",
+              "EMA50 > EMA200 (golden cross territory)",
+              "RSI 64.6 rally in downtrend",
+              "MACD confirms bearish trend",
+              "Price below lower BB (potential bounce)",
+              "ADX 17.0 (weak trend, lower conviction)"
+            ],
+            "indicators": {
+              "rsi": 64.6,
+              "macd": -0.00025,
+              "adx": 17.0,
+              "price_vs_ema200": "below"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "GBP_USD",
+              "rsi_bucket": "60-70",
+              "adx_bucket": "weak",
+              "trend": "bearish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "asian"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.183577",
+      "pair": "GBP_USD",
+      "price": 1.079854472183749
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.42,
+          "reasoning": {
+            "score": 1.2,
+            "signals": [
+              "Price above EMA200 (bullish trend)",
+              "EMA50 < EMA200 (death cross territory)",
+              "MACD confirms bullish trend",
+              "Price above upper BB (potential reversal)",
+              "ADX 38.6 (strong trend)"
+            ],
+            "indicators": {
+              "rsi": 64.5,
+              "macd": 0.00093,
+              "adx": 38.6,
+              "price_vs_ema200": "above"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "GBP_USD",
+              "rsi_bucket": "60-70",
+              "adx_bucket": "strong",
+              "trend": "bullish",
+              "ema_alignment": "misaligned",
+              "volume_spike": false,
+              "session": "ny"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.183694",
+      "pair": "GBP_USD",
+      "price": 1.4504831298987968
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.51,
+          "reasoning": {
+            "score": 2.1,
+            "signals": [
+              "Price above EMA200 (bullish trend)",
+              "EMA50 > EMA200 (golden cross territory)",
+              "ADX 18.7 (weak trend, lower conviction)"
+            ],
+            "indicators": {
+              "rsi": 67.1,
+              "macd": -0.00014,
+              "adx": 18.7,
+              "price_vs_ema200": "above"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "EUR_USD",
+              "rsi_bucket": "60-70",
+              "adx_bucket": "weak",
+              "trend": "bullish",
+              "ema_alignment": "aligned",
+              "volume_spike": false,
+              "session": "london"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.183819",
+      "pair": "EUR_USD",
+      "price": 1.2684422248605531
+    },
+    {
+      "decision": "HOLD",
+      "score": 0,
+      "confidence": 0,
+      "agent_votes": {
+        "TechnicalAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.615,
+          "reasoning": {
+            "score": 3.15,
+            "signals": [
+              "Price above EMA200 (bullish trend)",
+              "EMA50 > EMA200 (golden cross territory)",
+              "MACD bullish crossover",
+              "MACD confirms bullish trend",
+              "Price above upper BB (potential reversal)",
+              "ADX 20.4 (weak trend, lower conviction)"
+            ],
+            "indicators": {
+              "rsi": 37.2,
+              "macd": 0.00062,
+              "adx": 20.4,
+              "price_vs_ema200": "above"
+            }
+          },
+          "weight": 1.5
+        },
+        "PatternRecognitionAgent": {
+          "vote": "NEUTRAL",
+          "confidence": 0.0,
+          "reasoning": {
+            "reason": "No known patterns matched",
+            "setup": {
+              "pair": "EUR_USD",
+              "rsi_bucket": "35-40",
+              "adx_bucket": "moderate",
+              "trend": "bullish",
+              "ema_alignment": "aligned",
+              "volume_spike": false,
+              "session": "ny"
+            }
+          },
+          "weight": 1.0
+        },
+        "NewsFilterAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "No high-impact news in next 60 minutes",
+            "safe": true
+          },
+          "weight": 2.0
+        },
+        "E8ComplianceAgent": {
+          "vote": "ALLOW",
+          "confidence": 1.0,
+          "reasoning": {
+            "reason": "All E8 compliance checks passed",
+            "daily_dd_remaining": 3000,
+            "trailing_dd_pct": 0.0,
+            "profit_to_target": 20000,
+            "safe": true
+          },
+          "weight": 2.0
+        }
+      },
+      "reasoning": {
+        "type": "CONSENSUS",
+        "vote_count": 0,
+        "threshold": 4.5
+      },
+      "timestamp": "2025-11-20T21:34:50.183934",
+      "pair": "EUR_USD",
+      "price": 1.4771939205525262
+    }
+  ]
+}
