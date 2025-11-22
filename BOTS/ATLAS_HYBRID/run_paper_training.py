@@ -30,6 +30,7 @@ from agents.e8_compliance_agent import E8ComplianceAgent
 from agents.qlib_research_agent import QlibResearchAgent
 from agents.gs_quant_agent import GSQuantAgent
 from agents.autogen_rd_agent import AutoGenRDAgent
+from agents.monte_carlo_agent import MonteCarloAgent
 
 # Import OANDA client (if available)
 try:
@@ -146,8 +147,25 @@ def initialize_atlas(config: dict) -> tuple:
         )
         coordinator.add_agent(rd_agent)
 
-    # TODO: Add remaining 6 agents (Volume, MarketRegime, Risk, SessionTiming, Correlation, Sentiment)
-    # Current: 7/13 agents active (54% - enough for strong performance)
+    # 8. MonteCarloAgent (Real-time probabilistic risk simulation)
+    if agents_config.get("MonteCarloAgent", {}).get("enabled", True):
+        mc_config = agents_config.get("MonteCarloAgent", {})
+        mc_agent = MonteCarloAgent(
+            initial_weight=mc_config.get("initial_weight", 2.0),
+            is_veto=mc_config.get("is_veto", False)
+        )
+        # Set custom parameters if specified
+        if "num_simulations" in mc_config:
+            mc_agent.num_simulations = mc_config["num_simulations"]
+        if "min_win_probability" in mc_config:
+            mc_agent.min_win_probability = mc_config["min_win_probability"]
+        if "max_dd_risk" in mc_config:
+            mc_agent.max_acceptable_dd_risk = mc_config["max_dd_risk"]
+
+        coordinator.add_agent(mc_agent, is_veto=mc_config.get("is_veto", False))
+
+    # TODO: Add remaining 5 agents (Volume, MarketRegime, Risk, SessionTiming, Correlation)
+    # Current: 8/13 agents active (62% - strong institutional coverage)
 
     # Create learning engine
     learning_engine = LearningEngine(coordinator, pattern_agent)

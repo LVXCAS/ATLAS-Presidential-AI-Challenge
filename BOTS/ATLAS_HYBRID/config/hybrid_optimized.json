@@ -119,6 +119,16 @@
       "min_sharpe_threshold": 1.5,
       "min_win_rate_threshold": 0.55,
       "auto_deploy_threshold": 2.0
+    },
+
+    "MonteCarloAgent": {
+      "enabled": true,
+      "initial_weight": 2.0,
+      "is_veto": false,
+      "num_simulations": 1000,
+      "min_win_probability": 0.55,
+      "max_dd_risk": 0.02,
+      "description": "Real-time Monte Carlo simulation - runs 1000+ simulations per trade to assess risk before execution"
     }
   },
 

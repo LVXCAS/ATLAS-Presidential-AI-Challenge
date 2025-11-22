@@ -13,7 +13,7 @@ Your ATLAS (Adaptive Trading & Learning Agent System) is built and tested. The s
 - **Learning Engine** - Improves performance over time
 - **Base Agent Framework** - Easy to add new agents
 
-### ✅ Specialized Agents (4/10 Built)
+### ✅ Specialized Agents (8/13 Built)
 
 1. **TechnicalAgent** (weight: 1.5)
    - Analyzes RSI, MACD, EMAs, Bollinger Bands, ADX, ATR
@@ -33,6 +33,27 @@ Your ATLAS (Adaptive Trading & Learning Agent System) is built and tested. The s
    - Tracks daily DD ($2,500 circuit breaker)
    - Monitors trailing DD (6% limit)
    - Stops trading on losing streaks (5 losses)
+
+5. **QlibResearchAgent** (weight: 1.8)
+   - Microsoft's AI-powered factor library
+   - 1000+ institutional factors (QTLU, RSTR, STOM, etc.)
+   - Same tools used by WorldQuant
+
+6. **GSQuantAgent** (weight: 2.0)
+   - Goldman Sachs risk models
+   - VaR calculations, correlation analysis
+   - Institutional-grade risk scoring
+
+7. **AutoGenRDAgent** (weight: 1.0)
+   - Microsoft AutoGen for strategy discovery
+   - Automatically discovers 10-20 new strategies per week
+   - Runs in background (R&D mode)
+
+8. **MonteCarloAgent** (weight: 2.0, VETO capable)
+   - Runs 1000+ simulations BEFORE each trade
+   - Blocks trades with <55% win probability
+   - Calculates expected value and worst-case DD
+   - **Revolutionary real-time risk assessment**
 
 ### ✅ Configuration
 - **Hybrid-Optimized mode**: 3-5 lots, 4.5 score threshold, 8-12 trades/week
