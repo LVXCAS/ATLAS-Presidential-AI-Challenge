@@ -1,14 +1,14 @@
 {
-  "cached_at": "2025-11-20T21:34:50.173748",
+  "cached_at": "2025-12-11T17:55:07.482024",
   "events": [
     {
-      "date": "2025-11-07T08:30:00",
+      "date": "2025-12-05T08:30:00",
       "event": "US Non-Farm Payroll (NFP)",
       "impact": "HIGH",
       "currency": "USD"
     },
     {
-      "date": "2025-11-15T08:30:00",
+      "date": "2025-12-15T08:30:00",
       "event": "US Consumer Price Index (CPI)",
       "impact": "HIGH",
       "currency": "USD"

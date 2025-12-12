@@ -42,6 +42,7 @@ class TechnicalAgent(BaseAgent):
         """
         indicators = market_data.get("indicators", {})
         price = market_data.get("price")
+        direction = market_data.get("direction", "long").lower()  # Default to "long" since ATLAS only trades BUY
 
         # Extract indicators
         rsi = indicators.get("rsi", 50)
@@ -56,6 +57,23 @@ class TechnicalAgent(BaseAgent):
         adx = indicators.get("adx", 20)
         atr = indicators.get("atr", 0.001)
 
+        # === RSI EXHAUSTION VETO FILTER (Prevents EUR/USD-style failures) ===
+        # Block trades at momentum exhaustion points to prevent entries at extremes
+        if direction == "long" and rsi > 70:
+            return ("BLOCK", 0.95, {
+                "reason": f"RSI_EXHAUSTION_LONG: RSI {rsi:.1f} indicates overbought exhaustion",
+                "rsi": round(rsi, 1),
+                "message": f"BLOCKED LONG entry - RSI {rsi:.1f} overbought (>70)",
+                "recommendation": "Wait for RSI < 65 before entering LONG positions"
+            })
+        elif direction == "short" and rsi < 30:
+            return ("BLOCK", 0.95, {
+                "reason": f"RSI_EXHAUSTION_SHORT: RSI {rsi:.1f} indicates oversold exhaustion",
+                "rsi": round(rsi, 1),
+                "message": f"BLOCKED SHORT entry - RSI {rsi:.1f} oversold (<30)",
+                "recommendation": "Wait for RSI > 35 before entering SHORT positions"
+            })
+
         # Score different technical signals
         score = 0
         signals = []
@@ -64,22 +82,50 @@ class TechnicalAgent(BaseAgent):
         # === TREND ANALYSIS (Strong weight) ===
 
         # 1. Price vs EMAs (trend direction)
-        if price > ema200:
+        is_bullish_trend = price > ema200
+        is_bearish_trend = price < ema200
+        
+        if is_bullish_trend:
             score += 2.0
             signals.append("Price above EMA200 (bullish trend)")
             confidence_factors.append(0.20)
-        elif price < ema200:
+        elif is_bearish_trend:
             score -= 2.0
             signals.append("Price below EMA200 (bearish trend)")
 
         # 2. EMA alignment
-        if ema50 > ema200:
+        ema_bullish = ema50 > ema200
+        ema_bearish = ema50 < ema200
+        
+        if ema_bullish:
             score += 1.0
             signals.append("EMA50 > EMA200 (golden cross territory)")
             confidence_factors.append(0.10)
-        elif ema50 < ema200:
+        elif ema_bearish:
             score -= 1.0
             signals.append("EMA50 < EMA200 (death cross territory)")
+
+        # === TREND ALIGNMENT BLOCK (Prevents counter-trend trades) ===
+        # Block LONG entries in strong downtrends and SHORT entries in strong uptrends
+        strong_downtrend = is_bearish_trend and ema_bearish and adx > self.adx_trending
+        strong_uptrend = is_bullish_trend and ema_bullish and adx > self.adx_trending
+        
+        if direction == "long" and strong_downtrend:
+            return ("BLOCK", 0.90, {
+                "reason": f"COUNTER_TREND_LONG: Price below EMA200 ({price:.5f} < {ema200:.5f}), EMA50 < EMA200, ADX {adx:.1f} (strong downtrend)",
+                "trend": "bearish",
+                "adx": round(adx, 1),
+                "message": f"BLOCKED LONG entry - Trading against strong downtrend (ADX {adx:.1f})",
+                "recommendation": "Only trade LONG in uptrends or wait for trend reversal confirmation"
+            })
+        elif direction == "short" and strong_uptrend:
+            return ("BLOCK", 0.90, {
+                "reason": f"COUNTER_TREND_SHORT: Price above EMA200 ({price:.5f} > {ema200:.5f}), EMA50 > EMA200, ADX {adx:.1f} (strong uptrend)",
+                "trend": "bullish",
+                "adx": round(adx, 1),
+                "message": f"BLOCKED SHORT entry - Trading against strong uptrend (ADX {adx:.1f})",
+                "recommendation": "Only trade SHORT in downtrends or wait for trend reversal confirmation"
+            })
 
         # === MOMENTUM ANALYSIS ===
 

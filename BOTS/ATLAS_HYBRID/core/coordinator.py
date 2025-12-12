@@ -124,11 +124,18 @@ class ATLASCoordinator:
 
             print(f"  [{agent.name}] {vote} (confidence: {confidence:.2f}, weight: {agent.weight:.2f})")
 
-            # Check for VETO
-            if agent in self.veto_agents and vote == "BLOCK":
-                veto_triggered = True
-                veto_reason = reasoning.get("reason", "Veto triggered")
-                print(f"    ⚠️ VETO: {veto_reason}")
+            # Check for VETO (from veto agents OR high-confidence blocks from any agent)
+            if vote == "BLOCK":
+                # Always honor BLOCK votes from veto agents
+                if agent in self.veto_agents:
+                    veto_triggered = True
+                    veto_reason = reasoning.get("reason", "Veto triggered")
+                    print(f"    ⚠️ VETO: {veto_reason}")
+                # Also honor high-confidence BLOCK votes from other agents (e.g., TechnicalAgent trend blocks)
+                elif confidence >= 0.85:
+                    veto_triggered = True
+                    veto_reason = reasoning.get("reason", reasoning.get("message", "High-confidence block"))
+                    print(f"    ⚠️ BLOCK: {veto_reason} (from {agent.name})")
 
         # If VETO triggered, block trade immediately
         if veto_triggered:
@@ -142,7 +149,7 @@ class ATLASCoordinator:
                 "reasoning": {
                     "type": "VETO",
                     "reason": veto_reason,
-                    "blocked_by": [a.name for a in self.veto_agents if agent_votes[a.name]["vote"] == "BLOCK"]
+                    "blocked_by": [name for name, vote_data in agent_votes.items() if vote_data["vote"] == "BLOCK"]
                 },
                 "timestamp": timestamp.isoformat() if isinstance(timestamp, datetime) else str(timestamp),
                 "pair": pair,

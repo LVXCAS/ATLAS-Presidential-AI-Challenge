@@ -1,0 +1,11 @@
+{
+  "name": "QlibResearchAgent",
+  "weight": 1.8,
+  "total_votes": 0,
+  "wins": 0,
+  "losses": 0,
+  "total_pnl": 0.0,
+  "total_r": 0.0,
+  "performance_history": [],
+  "discovered_patterns": []
+}

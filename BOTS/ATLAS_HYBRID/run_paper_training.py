@@ -9,7 +9,10 @@ Usage:
     python run_paper_training.py --phase validation
 """
 
+print("[STARTUP] Script execution started")
+
 import sys
+print("[STARTUP] sys imported")
 import json
 import argparse
 from pathlib import Path
@@ -27,18 +30,29 @@ from agents.technical_agent import TechnicalAgent
 from agents.pattern_recognition_agent import PatternRecognitionAgent
 from agents.news_filter_agent import NewsFilterAgent
 from agents.e8_compliance_agent import E8ComplianceAgent
+from agents.mean_reversion_agent import MeanReversionAgent
+from agents.xgboost_ml_agent import XGBoostMLAgent
+from agents.sentiment_agent import SentimentAgent
 from agents.qlib_research_agent import QlibResearchAgent
 from agents.gs_quant_agent import GSQuantAgent
 from agents.autogen_rd_agent import AutoGenRDAgent
 from agents.monte_carlo_agent import MonteCarloAgent
+from agents.market_regime_agent import MarketRegimeAgent
+from agents.risk_management_agent import RiskManagementAgent
+from agents.session_timing_agent import SessionTimingAgent
+from agents.correlation_agent import CorrelationAgent
+from agents.multi_timeframe_agent import MultiTimeframeAgent
+from agents.volume_liquidity_agent import VolumeLiquidityAgent
+from agents.support_resistance_agent import SupportResistanceAgent
+from agents.divergence_agent import DivergenceAgent
 
-# Import OANDA client (if available)
+# Import OANDA client
 try:
-    from BOTS.HYBRID_OANDA_TRADELOCKER import HybridAdapter
+    from adapters.oanda_adapter import OandaAdapter
     OANDA_AVAILABLE = True
 except ImportError:
     OANDA_AVAILABLE = False
-    print("[WARNING] OANDA client not available - using simulation mode")
+    print("[WARNING] OANDA adapter not available - using simulation mode")
 
 
 def load_config(phase: str = "validation") -> dict:
@@ -86,21 +100,28 @@ def initialize_atlas(config: dict) -> tuple:
         (coordinator, learning_engine)
     """
     print("[ATLAS] Initializing system...")
+    print("[DEBUG] Creating coordinator...")
 
     # Create coordinator
     coordinator = ATLASCoordinator(config)
+    print("[DEBUG] Coordinator created")
 
     # Initialize agents
     agents_config = config.get("agents", {})
+    print(f"[DEBUG] Loading {len(agents_config)} agent types...")
 
     # 1. TechnicalAgent
+    print("[DEBUG] Loading TechnicalAgent...")
     if agents_config.get("TechnicalAgent", {}).get("enabled", True):
+        tech_config = agents_config["TechnicalAgent"]
         tech_agent = TechnicalAgent(
-            initial_weight=agents_config["TechnicalAgent"]["initial_weight"]
+            initial_weight=tech_config["initial_weight"]
         )
-        coordinator.add_agent(tech_agent)
+        coordinator.add_agent(tech_agent, is_veto=tech_config.get("is_veto", False))
+    print("[DEBUG] TechnicalAgent loaded")
 
     # 2. PatternRecognitionAgent
+    print("[DEBUG] Loading PatternRecognitionAgent...")
     if agents_config.get("PatternRecognitionAgent", {}).get("enabled", True):
         pattern_agent = PatternRecognitionAgent(
             initial_weight=agents_config["PatternRecognitionAgent"]["initial_weight"],
@@ -109,45 +130,112 @@ def initialize_atlas(config: dict) -> tuple:
         coordinator.add_agent(pattern_agent)
     else:
         pattern_agent = None
+    print("[DEBUG] PatternRecognitionAgent loaded")
 
     # 3. NewsFilterAgent (VETO)
+    print("[DEBUG] Loading NewsFilterAgent...")
     if agents_config.get("NewsFilterAgent", {}).get("enabled", True):
         news_agent = NewsFilterAgent(
             initial_weight=agents_config["NewsFilterAgent"]["initial_weight"]
         )
         coordinator.add_agent(news_agent, is_veto=True)
+    print("[DEBUG] NewsFilterAgent loaded")
 
-    # 4. E8ComplianceAgent (VETO)
-    if agents_config.get("E8ComplianceAgent", {}).get("enabled", True):
-        e8_agent = E8ComplianceAgent(
-            starting_balance=config["e8_challenge"]["starting_balance"],
-            initial_weight=agents_config["E8ComplianceAgent"]["initial_weight"]
+    # 3.5 MeanReversionAgent (for range-bound markets)
+    print("[DEBUG] Loading MeanReversionAgent...")
+    if agents_config.get("MeanReversionAgent", {}).get("enabled", True):
+        mean_reversion_agent = MeanReversionAgent(
+            initial_weight=agents_config.get("MeanReversionAgent", {}).get("initial_weight", 1.5)
         )
-        coordinator.add_agent(e8_agent, is_veto=True)
+        coordinator.add_agent(mean_reversion_agent)
+    print("[DEBUG] MeanReversionAgent loaded")
 
-    # 5. QlibResearchAgent (Microsoft Qlib - 1000+ factors)
+    # 4. XGBoostMLAgent (Machine Learning predictions)
+    print("[DEBUG] Loading XGBoostMLAgent...")
+    if agents_config.get("XGBoostMLAgent", {}).get("enabled", True):
+        xgboost_agent = XGBoostMLAgent(
+            initial_weight=agents_config.get("XGBoostMLAgent", {}).get("initial_weight", 2.5)
+        )
+        coordinator.add_agent(xgboost_agent)
+    print("[DEBUG] XGBoostMLAgent loaded")
+
+    # 5. SentimentAgent (FinBERT news sentiment)
+    print("[DEBUG] Loading SentimentAgent...")
+    if agents_config.get("SentimentAgent", {}).get("enabled", True):
+        sentiment_agent = SentimentAgent(
+            initial_weight=agents_config.get("SentimentAgent", {}).get("initial_weight", 1.5)
+        )
+        coordinator.add_agent(sentiment_agent)
+    print("[DEBUG] SentimentAgent loaded")
+
+    # 6. QlibResearchAgent (Microsoft Qlib - 1000+ factors)
+    print("[DEBUG] Loading QlibResearchAgent...")
     if agents_config.get("QlibResearchAgent", {}).get("enabled", True):
         qlib_agent = QlibResearchAgent(
             initial_weight=agents_config["QlibResearchAgent"]["initial_weight"]
         )
         coordinator.add_agent(qlib_agent)
+    print("[DEBUG] QlibResearchAgent loaded")
 
-    # 6. GSQuantAgent (Goldman Sachs risk models)
+    # 7. GSQuantAgent (Goldman Sachs risk models)
+    print("[DEBUG] Loading GSQuantAgent...")
     if agents_config.get("GSQuantAgent", {}).get("enabled", True):
         gs_agent = GSQuantAgent(
             initial_weight=agents_config["GSQuantAgent"]["initial_weight"]
         )
         coordinator.add_agent(gs_agent)
+    print("[DEBUG] GSQuantAgent loaded")
 
-    # 7. AutoGenRDAgent (Microsoft AutoGen - strategy discovery)
+    # 8. AutoGenRDAgent (Microsoft AutoGen - strategy discovery)
     # Note: R&D agent runs in background, doesn't vote on trades
+    print("[DEBUG] Loading AutoGenRDAgent...")
     if agents_config.get("AutoGenRDAgent", {}).get("enabled", True):
         rd_agent = AutoGenRDAgent(
             initial_weight=agents_config["AutoGenRDAgent"]["initial_weight"]
         )
         coordinator.add_agent(rd_agent)
+    print("[DEBUG] AutoGenRDAgent loaded")
+
+    # 9. MarketRegimeAgent (bull/bear/range detection)
+    print("[DEBUG] Loading MarketRegimeAgent...")
+    if agents_config.get("MarketRegimeAgent", {}).get("enabled", True):
+        regime_agent = MarketRegimeAgent(
+            initial_weight=agents_config.get("MarketRegimeAgent", {}).get("initial_weight", 1.2)
+        )
+        coordinator.add_agent(regime_agent)
+    print("[DEBUG] MarketRegimeAgent loaded")
+
+    # 10. RiskManagementAgent (position sizing, VaR)
+    print("[DEBUG] Loading RiskManagementAgent...")
+    if agents_config.get("RiskManagementAgent", {}).get("enabled", True):
+        risk_agent = RiskManagementAgent(
+            initial_weight=agents_config.get("RiskManagementAgent", {}).get("initial_weight", 1.5)
+        )
+        coordinator.add_agent(risk_agent)
+    print("[DEBUG] RiskManagementAgent loaded")
+
+    # 11. SessionTimingAgent (London/NY/Asian sessions)
+    print("[DEBUG] Loading SessionTimingAgent...")
+    if agents_config.get("SessionTimingAgent", {}).get("enabled", True):
+        session_agent = SessionTimingAgent(
+            initial_weight=agents_config.get("SessionTimingAgent", {}).get("initial_weight", 1.2)
+        )
+        coordinator.add_agent(session_agent)
+    print("[DEBUG] SessionTimingAgent loaded")
+
+    # 12. CorrelationAgent (prevent over-exposure)
+    print("[DEBUG] Loading CorrelationAgent...")
+    if agents_config.get("CorrelationAgent", {}).get("enabled", True):
+        correlation_agent = CorrelationAgent(
+            initial_weight=agents_config.get("CorrelationAgent", {}).get("initial_weight", 1.0)
+        )
+        coordinator.add_agent(correlation_agent)
+    print("[DEBUG] CorrelationAgent loaded")
+
+    # Skip E8ComplianceAgent and MonteCarloAgent (disabled per user request)
 
     # 8. MonteCarloAgent (Real-time probabilistic risk simulation)
+    print("[DEBUG] Loading MonteCarloAgent...")
     if agents_config.get("MonteCarloAgent", {}).get("enabled", True):
         mc_config = agents_config.get("MonteCarloAgent", {})
         mc_agent = MonteCarloAgent(
@@ -163,12 +251,48 @@ def initialize_atlas(config: dict) -> tuple:
             mc_agent.max_acceptable_dd_risk = mc_config["max_dd_risk"]
 
         coordinator.add_agent(mc_agent, is_veto=mc_config.get("is_veto", False))
+    print("[DEBUG] MonteCarloAgent loaded")
 
-    # TODO: Add remaining 5 agents (Volume, MarketRegime, Risk, SessionTiming, Correlation)
-    # Current: 8/13 agents active (62% - strong institutional coverage)
+    # 13. MultiTimeframeAgent (M5/M15/H1/H4/D1 trend confirmation)
+    print("[DEBUG] Loading MultiTimeframeAgent...")
+    if agents_config.get("MultiTimeframeAgent", {}).get("enabled", True):
+        mtf_agent = MultiTimeframeAgent(
+            initial_weight=agents_config.get("MultiTimeframeAgent", {}).get("initial_weight", 2.0)
+        )
+        coordinator.add_agent(mtf_agent)
+    print("[DEBUG] MultiTimeframeAgent loaded")
+
+    # 14. VolumeLiquidityAgent (spread detection, institutional flows)
+    print("[DEBUG] Loading VolumeLiquidityAgent...")
+    if agents_config.get("VolumeLiquidityAgent", {}).get("enabled", True):
+        vol_agent = VolumeLiquidityAgent(
+            initial_weight=agents_config.get("VolumeLiquidityAgent", {}).get("initial_weight", 1.8)
+        )
+        coordinator.add_agent(vol_agent)
+    print("[DEBUG] VolumeLiquidityAgent loaded")
+
+    # 15. SupportResistanceAgent (key price level trading)
+    print("[DEBUG] Loading SupportResistanceAgent...")
+    if agents_config.get("SupportResistanceAgent", {}).get("enabled", True):
+        sr_agent = SupportResistanceAgent(
+            initial_weight=agents_config.get("SupportResistanceAgent", {}).get("initial_weight", 1.7)
+        )
+        coordinator.add_agent(sr_agent)
+    print("[DEBUG] SupportResistanceAgent loaded")
+
+    # 16. DivergenceAgent (RSI/MACD divergence detection)
+    print("[DEBUG] Loading DivergenceAgent...")
+    if agents_config.get("DivergenceAgent", {}).get("enabled", True):
+        div_agent = DivergenceAgent(
+            initial_weight=agents_config.get("DivergenceAgent", {}).get("initial_weight", 1.6)
+        )
+        coordinator.add_agent(div_agent)
+    print("[DEBUG] DivergenceAgent loaded")
 
     # Create learning engine
+    print("[DEBUG] Creating learning engine...")
     learning_engine = LearningEngine(coordinator, pattern_agent)
+    print("[DEBUG] Learning engine created")
 
     print(f"[ATLAS] Initialized with {len(coordinator.agents)} agents")
 
@@ -280,26 +404,33 @@ def main():
                         default="validation", help="Training phase")
     parser.add_argument("--days", type=int, default=7, help="Number of days to run (simulation mode)")
     parser.add_argument("--simulation", action="store_true", help="Run in simulation mode")
+    parser.add_argument("--fast-scan", action="store_true", help="Use 1-minute scans for testing (default: 5 min)")
 
     args = parser.parse_args()
 
+    print("[DEBUG] Step 1: Parsing args complete")
+
     # Load configuration
     config = load_config(args.phase)
+    print("[DEBUG] Step 2: Config loaded")
 
     # Initialize ATLAS
     coordinator, learning_engine = initialize_atlas(config)
+    print("[DEBUG] Step 3: ATLAS initialized")
 
     # Load previous state if exists
     state_dir = Path(__file__).parent / "learning" / "state"
+    print(f"[DEBUG] Step 4: Loading state from {state_dir}")
     coordinator.load_state(str(state_dir))
+    print("[DEBUG] Step 5: State loaded successfully")
 
     if args.simulation or not OANDA_AVAILABLE:
         # Run simulation
         run_simulation_mode(coordinator, learning_engine, days=args.days)
     else:
-        print("[ERROR] Live paper trading mode not yet implemented")
-        print("[INFO] Run with --simulation flag for demo")
-        return
+        # Run live paper trading with OANDA
+        from live_trader import run_live_trading
+        run_live_trading(coordinator, learning_engine, days=args.days, fast_scan=args.fast_scan)
 
     # Save state
     coordinator.save_state(str(state_dir))

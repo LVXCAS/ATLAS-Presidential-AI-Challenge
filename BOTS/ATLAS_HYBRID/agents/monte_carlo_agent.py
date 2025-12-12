@@ -13,6 +13,8 @@ Specialization: Pre-trade risk simulation, probabilistic decision making.
 from typing import Dict, Tuple, List
 from .base_agent import BaseAgent
 import numpy as np
+from arch import arch_model
+from scipy import stats
 
 
 class MonteCarloAgent(BaseAgent):
@@ -44,6 +46,10 @@ class MonteCarloAgent(BaseAgent):
         self.historical_avg_loss = 800  # Default: $800 avg loss
         self.historical_win_variance = 0.3  # 30% variance in wins
         self.historical_loss_variance = 0.3  # 30% variance in losses
+        
+        # GARCH volatility forecasting
+        self.price_returns = {}  # Store returns by pair for GARCH
+        self.volatility_forecasts = {}  # Cached GARCH forecasts
 
     def analyze(self, market_data: Dict) -> Tuple[str, float, Dict]:
         """
@@ -392,3 +398,142 @@ class MonteCarloAgentAdvanced(MonteCarloAgent):
             max_correlation = max(max_correlation, abs(corr))
 
         return max_correlation
+
+    def forecast_volatility_garch(self, pair: str, price_data: np.ndarray) -> float:
+        """
+        Forecast next-period volatility using GARCH(1,1) model.
+        
+        GARCH captures volatility clustering - high volatility periods
+        tend to be followed by high volatility periods.
+        
+        Args:
+            pair: Currency pair
+            price_data: Array of recent prices (at least 100 observations)
+            
+        Returns:
+            Forecasted volatility (annualized standard deviation)
+        """
+        try:
+            # Calculate returns
+            returns = np.diff(np.log(price_data)) * 100  # Convert to percentage
+            
+            # Need at least 100 observations for GARCH
+            if len(returns) < 100:
+                # Fall back to simple standard deviation
+                return np.std(returns) * np.sqrt(252)  # Annualized
+            
+            # Fit GARCH(1,1) model
+            model = arch_model(returns, vol='Garch', p=1, q=1)
+            model_fitted = model.fit(disp='off')
+            
+            # Forecast next period volatility
+            forecast = model_fitted.forecast(horizon=1)
+            volatility_forecast = np.sqrt(forecast.variance.values[-1, :][0])
+            
+            # Cache forecast
+            self.volatility_forecasts[pair] = {
+                'volatility': volatility_forecast,
+                'timestamp': np.datetime64('now')
+            }
+            
+            return volatility_forecast
+            
+        except Exception as e:
+            # Fallback to simple volatility if GARCH fails
+            return np.std(returns) * np.sqrt(252) if len(returns) > 0 else 15.0
+    
+    def _run_trade_simulations_advanced(self, current_balance: float, position_size: float,
+                                       stop_loss_pips: float, take_profit_pips: float,
+                                       pair: str = None, price_data: np.ndarray = None) -> Dict:
+        """
+        Enhanced Monte Carlo simulation with GARCH volatility and scipy distributions.
+        
+        Improvements over basic version:
+        1. GARCH volatility forecasting (captures volatility clustering)
+        2. Scipy t-distribution for fat tails (more realistic than normal)
+        3. Volatility-adjusted position sizing
+        4. Skewness and kurtosis from actual return distributions
+        """
+        # Forecast volatility if price data provided
+        if price_data is not None and len(price_data) >= 100:
+            forecasted_vol = self.forecast_volatility_garch(pair, price_data)
+            vol_adjustment = forecasted_vol / 15.0  # Normalize to typical 15% vol
+        else:
+            vol_adjustment = 1.0
+        
+        outcomes = []
+        drawdowns = []
+        
+        for _ in range(self.num_simulations):
+            # Simulate win/loss based on historical win rate
+            is_win = np.random.random() < self.historical_win_rate
+            
+            if is_win:
+                # Use t-distribution for fat tails (more realistic than normal)
+                # df=5 gives heavier tails than normal distribution
+                variance_factor = stats.t.rvs(df=5, loc=1.0, scale=self.historical_win_variance / 2.5)
+                variance_factor = max(0.2, min(2.5, variance_factor))  # Clip extremes
+                
+                pnl_per_lot = take_profit_pips * 10 * vol_adjustment
+                pnl = position_size * pnl_per_lot * variance_factor
+            else:
+                # Losses also use t-distribution
+                variance_factor = stats.t.rvs(df=5, loc=1.0, scale=self.historical_loss_variance / 2.5)
+                variance_factor = max(0.2, min(2.5, variance_factor))
+                
+                pnl_per_lot = stop_loss_pips * 10 * vol_adjustment
+                pnl = -position_size * pnl_per_lot * variance_factor
+            
+            outcomes.append(pnl)
+            
+            # Calculate potential drawdown
+            if pnl < 0:
+                dd_from_trade = abs(pnl) / current_balance
+                drawdowns.append(dd_from_trade)
+        
+        # Calculate statistics using scipy
+        wins = sum(1 for o in outcomes if o > 0)
+        win_probability = wins / self.num_simulations
+        expected_value = np.mean(outcomes)
+        median_outcome = np.median(outcomes)
+        worst_case_dd = max(drawdowns) if drawdowns else 0.0
+        
+        # Additional statistics with scipy
+        skewness = stats.skew(outcomes)
+        kurtosis = stats.kurtosis(outcomes)
+        
+        # Calculate Value at Risk (VaR) at 95% confidence
+        var_95 = np.percentile(outcomes, 5)  # 5th percentile (95% VaR)
+        
+        # Calculate Conditional Value at Risk (CVaR / Expected Shortfall)
+        cvar_95 = np.mean([o for o in outcomes if o <= var_95])
+        
+        return {
+            'win_probability': win_probability,
+            'expected_value': expected_value,
+            'median_outcome': median_outcome,
+            'worst_case_dd': worst_case_dd,
+            'outcomes_distribution': outcomes,
+            'volatility_adjustment': vol_adjustment,
+            'skewness': skewness,
+            'kurtosis': kurtosis,
+            'var_95': var_95,
+            'cvar_95': cvar_95
+        }
+    
+    def update_price_history(self, pair: str, price: float):
+        """
+        Update price history for GARCH modeling.
+        
+        Args:
+            pair: Currency pair
+            price: Current price
+        """
+        if pair not in self.price_returns:
+            self.price_returns[pair] = []
+        
+        self.price_returns[pair].append(price)
+        
+        # Keep last 500 prices (enough for GARCH)
+        if len(self.price_returns[pair]) > 500:
+            self.price_returns[pair] = self.price_returns[pair][-500:]
