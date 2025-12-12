@@ -1,7 +1,13 @@
-# HiveTrading System
+# PC-HIVE-TRADING
 
 ## Overview
-HiveTrading is a comprehensive quantitative trading platform designed for research, backtesting, and live trading. It features a modular architecture with support for multiple asset classes (Forex, Crypto, Futures) and advanced strategies.
+Quantitative trading research platform featuring **ATLAS** - a multi-agent forex trading system with institutional-grade intelligence.
+
+### ATLAS (Adaptive Trading & Learning Agent System)
+The flagship project: 16 specialized AI agents vote on every trade using consensus-based decision making. Combines technical analysis, machine learning (XGBoost, Qlib, GSQuant), and institutional quant libraries.
+
+**Status:** Live on OANDA paper trading ($159,554 balance)
+**Documentation:** See [BOTS/ATLAS_HYBRID/README.md](BOTS/ATLAS_HYBRID/README.md)
 
 ## Prerequisites
 - **Python 3.11+**
