@@ -121,6 +121,8 @@ celerybeat.pid
 
 # Environments
 .env
+.env.*
+!.env.example
 .venv
 env/
 venv/
@@ -169,6 +171,14 @@ cython_debug/
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
+
+# Node (never commit dependencies)
+node_modules/
+frontend/node_modules/
+
+# Runtime artifacts
+*.pid
+*.exe
 
 # Local History for Visual Studio Code
 .history/
@@ -231,6 +241,7 @@ redis_data/
 tmp/
 temp/
 *.tmp
+submission/*.json
 *_results_*.json
 *_analysis_*.json
 *_analysis_*.txt

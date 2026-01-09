@@ -13,8 +13,15 @@ Specialization: Pre-trade risk simulation, probabilistic decision making.
 from typing import Dict, Tuple, List
 from .base_agent import BaseAgent
 import numpy as np
-from arch import arch_model
-from scipy import stats
+try:
+    from arch import arch_model
+except ImportError:  # optional dependency
+    arch_model = None
+
+try:
+    from scipy import stats
+except ImportError:  # optional dependency
+    stats = None
 
 
 class MonteCarloAgent(BaseAgent):
@@ -33,6 +40,8 @@ class MonteCarloAgent(BaseAgent):
 
     def __init__(self, initial_weight: float = 2.0, is_veto: bool = False):
         super().__init__(name="MonteCarloAgent", initial_weight=initial_weight)
+
+        self.advanced_stats_available = (arch_model is not None) and (stats is not None)
 
         # Monte Carlo parameters
         self.num_simulations = 1000  # Run 1000 simulations per trade
@@ -454,6 +463,15 @@ class MonteCarloAgentAdvanced(MonteCarloAgent):
         3. Volatility-adjusted position sizing
         4. Skewness and kurtosis from actual return distributions
         """
+        if stats is None:
+            # Fall back to the basic simulation if scipy isn't installed.
+            return self._run_trade_simulations(
+                current_balance=current_balance,
+                position_size=position_size,
+                stop_loss_pips=stop_loss_pips,
+                take_profit_pips=take_profit_pips,
+            )
+
         # Forecast volatility if price data provided
         if price_data is not None and len(price_data) >= 100:
             forecasted_vol = self.forecast_volatility_garch(pair, price_data)

@@ -47,6 +47,8 @@ class RiskManagementAgent(BaseAgent):
 
     def analyze(self, market_data: Dict) -> Tuple[str, float, Dict]:
         """Enforce professional risk management rules"""
+        persist_state = market_data.get("persist_state", True)
+
         balance = market_data.get("account_balance", 200000)
         atr = market_data.get("indicators", {}).get("atr", 0.001)
 
@@ -57,7 +59,8 @@ class RiskManagementAgent(BaseAgent):
         # RULE 1: Max 3% Daily Drawdown - HARD VETO
         max_daily_loss = balance * 0.03
         if abs(self.daily_pnl) > max_daily_loss and self.daily_pnl < 0:
-            self.save_state()
+            if persist_state:
+                self.save_state()
             return ("HOLD", 1.0, {
                 "veto_reason": f"DAILY_LOSS_LIMIT ({abs(self.daily_pnl):.0f}/{max_daily_loss:.0f})",
                 "daily_pnl": self.daily_pnl,
@@ -66,7 +69,8 @@ class RiskManagementAgent(BaseAgent):
 
         # RULE 2: Max 3 Consecutive Losses - Cooldown
         if self.consecutive_losses >= 3:
-            self.save_state()
+            if persist_state:
+                self.save_state()
             return ("HOLD", 0.9, {
                 "veto_reason": f"CONSECUTIVE_LOSSES ({self.consecutive_losses})",
                 "consecutive_losses": self.consecutive_losses
@@ -74,7 +78,8 @@ class RiskManagementAgent(BaseAgent):
 
         # RULE 3: Max 10 trades per day - Prevent overtrading
         if self.trades_today >= 10:
-            self.save_state()
+            if persist_state:
+                self.save_state()
             return ("HOLD", 1.0, {
                 "veto_reason": f"MAX_DAILY_TRADES ({self.trades_today}/10)",
                 "trades_today": self.trades_today
@@ -85,7 +90,8 @@ class RiskManagementAgent(BaseAgent):
         risk_score = min(1 / (atr * 10000 + 1), 0.85)
 
         # Normal operation - allow trade but with risk-adjusted confidence
-        self.save_state()
+        if persist_state:
+            self.save_state()
         return ("NEUTRAL", 0.5, {
             "risk_score": round(risk_score, 2),
             "atr": atr,

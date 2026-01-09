@@ -10,9 +10,13 @@ Target: Win/Loss prediction
 from typing import Dict, Tuple
 from .base_agent import BaseAgent
 import numpy as np
-import xgboost as xgb
 from pathlib import Path
 import pickle
+
+try:
+    import xgboost as xgb
+except ImportError:  # optional dependency
+    xgb = None
 
 
 class XGBoostMLAgent(BaseAgent):
@@ -25,6 +29,8 @@ class XGBoostMLAgent(BaseAgent):
 
     def __init__(self, initial_weight: float = 2.5):
         super().__init__(name="XGBoostMLAgent", initial_weight=initial_weight)
+
+        self.xgboost_available = xgb is not None
 
         # XGBoost model
         self.model = None
@@ -43,7 +49,8 @@ class XGBoostMLAgent(BaseAgent):
         ]
 
         # Load existing model if available
-        self._load_model()
+        if self.xgboost_available:
+            self._load_model()
 
     def analyze(self, market_data: Dict) -> Tuple[str, float, Dict]:
         """
@@ -52,6 +59,13 @@ class XGBoostMLAgent(BaseAgent):
         Returns:
             (vote, confidence, reasoning)
         """
+        if not self.xgboost_available:
+            return ("NEUTRAL", 0.5, {
+                "agent": self.name,
+                "status": "xgboost_missing",
+                "message": "Install xgboost to enable ML voting; running in neutral mode."
+            })
+
         # Extract features
         features = self._extract_features(market_data)
 
@@ -181,6 +195,9 @@ class XGBoostMLAgent(BaseAgent):
 
         Uses gradient boosting with optimized hyperparameters.
         """
+        if not self.xgboost_available:
+            return
+
         if len(self.outcome_history) < self.min_training_samples:
             return
 
@@ -238,6 +255,9 @@ class XGBoostMLAgent(BaseAgent):
 
     def _load_model(self):
         """Load XGBoost model from disk if exists."""
+        if not self.xgboost_available:
+            return
+
         state_dir = Path(__file__).parent.parent / "learning" / "state"
         model_path = state_dir / "xgboost_model.pkl"
 

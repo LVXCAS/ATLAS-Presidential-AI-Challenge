@@ -1,3 +1,0 @@
-"""
-Autonomous Trading System Utilities
-"""
