@@ -77,6 +77,11 @@ Example:
 python3 Agents/ATLAS_HYBRID/quant_team_demo.py --data-source cached --asset-class fx --symbol EUR_USD
 ```
 
+## Optional external APIs (disabled by default)
+ATLAS can optionally use external data APIs to refresh cached CSVs. Keys belong in
+`.env` and are never committed. The Track II demo remains offline and deterministic.
+See `.env.example` for placeholders.
+
 ## What ATLAS is NOT
 - Not a trading bot
 - Not a prediction engine or price forecaster

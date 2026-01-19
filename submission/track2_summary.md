@@ -67,6 +67,10 @@ If a cached event calendar is provided, the news filter can flag scheduled
 events that may raise volatility. All inputs are historical or delayed.
 CSV files use lowercase headers: `date,open,high,low,close,volume`.
 
+Optional external data APIs can be used to refresh cached CSVs, but they are
+disabled by default. Keys are configured via `.env` (never committed), and the
+Track II demo remains offline and deterministic.
+
 ## Development Challenges and Learning
 Two major challenges were data handling and explainability. We addressed these
 by keeping the system offline, using deterministic indicators, and writing
