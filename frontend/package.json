@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Bloomberg Terminal style trading interface",
+  "homepage": "https://lvxcas.github.io/ATLAS-Presidential-AI-Challenge",
   "dependencies": {
     "@reduxjs/toolkit": "^2.0.1",
     "@types/node": "^20.10.5",
