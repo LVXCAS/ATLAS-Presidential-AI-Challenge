@@ -6,6 +6,7 @@ Goal: make the demo look like an **AI quant desk** (decision discipline + market
 - Have a terminal ready in the repo root.
 - Optional: open `submission/evaluation_results.json` after running the eval.
 - Do not show broker accounts, balances, API keys, or “execution” features.
+- If you want the synthetic stress-window narrative, pass `--data-source synthetic`. Cached CSVs run offline by default.
 
 ## Script (suggested timing)
 
@@ -19,7 +20,7 @@ Goal: make the demo look like an **AI quant desk** (decision discipline + market
 On screen:
 - Briefly describe baseline: “static RSI/ATR rules.”
 - Run the evaluation:
-  - `python3 BOTS/ATLAS_HYBRID/quant_team_eval.py`
+  - `python3 Agents/ATLAS_HYBRID/quant_team_eval.py --data-source synthetic`
 
 Say:
 “The baseline is intentionally simple. It can look confident even during stress windows, which is exactly when beginners make catastrophic mistakes.”
@@ -27,8 +28,8 @@ Say:
 ### 1:20–2:40 — Quant desk walkthrough (2 stress windows)
 On screen:
 - Run the demo and show the summary lines:
-  - `python3 BOTS/ATLAS_HYBRID/quant_team_demo.py --window volatility-spike`
-  - `python3 BOTS/ATLAS_HYBRID/quant_team_demo.py --window regime-shift`
+  - `python3 Agents/ATLAS_HYBRID/quant_team_demo.py --data-source synthetic --window volatility-spike`
+  - `python3 Agents/ATLAS_HYBRID/quant_team_demo.py --data-source synthetic --window regime-shift`
 
 Say:
 “Instead of giving a buy/sell signal, it summarizes multiple specialist perspectives into a single stance and explains why. The point is to teach decision discipline: wait, reduce exposure, or stand down when conditions are unstable.”
@@ -42,7 +43,7 @@ On screen:
 - Open `submission/evaluation_results.json` or read the printed summary.
 
 Say:
-“Our headline evaluation metric is the GREENLIGHT‑in‑stress rate. Lower is better because ‘GREENLIGHT’ during stress is false confidence. Across three stress windows, the AI quant team reduces GREENLIGHT‑in‑stress compared to the baseline.”
+“Our headline evaluation metric is the GREENLIGHT-in-stress rate. Lower is better because ‘GREENLIGHT’ during stress is false confidence. In the current run, the AI quant team reduces GREENLIGHT-in-stress compared to the baseline (see the printed numbers).”
 
 ### 3:20–3:50 — Pilot plan / learning outcome
 Say:

@@ -36,11 +36,11 @@ Use this as a step-by-step checklist to ensure your submission is **rubric-align
 Goal: show how a simple rules dashboard can give **false confidence** in unstable periods, and your system reduces that.
 
 ### Repro steps (screenshot-friendly)
-- [ ] Run evaluation: `python3 BOTS/ATLAS_HYBRID/quant_team_eval.py`
+- [ ] Run evaluation: `python3 Agents/ATLAS_HYBRID/quant_team_eval.py`
 - [ ] Confirm JSON written: `submission/evaluation_results.json`
 - [ ] Run demo windows (for narrative screenshots):  
-  - [ ] `python3 BOTS/ATLAS_HYBRID/quant_team_demo.py --window volatility-spike`  
-  - [ ] `python3 BOTS/ATLAS_HYBRID/quant_team_demo.py --window regime-shift`
+  - [ ] `python3 Agents/ATLAS_HYBRID/quant_team_demo.py --window volatility-spike`  
+  - [ ] `python3 Agents/ATLAS_HYBRID/quant_team_demo.py --window regime-shift`
 
 ### What to include in the PDF (Page 6)
 - [ ] A **1-row table per window** with:
@@ -120,8 +120,8 @@ Goal: explain “AI-ness” without sounding like a trading bot.
 
 ## 10) Final packaging / QA (do this last)
 - [ ] Run from a fresh terminal in repo root:
-  - [ ] `python3 BOTS/ATLAS_HYBRID/quant_team_eval.py`
-  - [ ] `python3 BOTS/ATLAS_HYBRID/quant_team_demo.py --window regime-shift`
+  - [ ] `python3 Agents/ATLAS_HYBRID/quant_team_eval.py`
+  - [ ] `python3 Agents/ATLAS_HYBRID/quant_team_demo.py --window regime-shift`
 - [ ] Confirm `submission/evaluation_results.json` exists and matches what you describe.
 - [ ] Confirm PDF has: title, links, evidence, safety, reflection (500+ words), certification, citations.
 - [ ] Confirm video has no secrets (API keys, accounts, balances).
@@ -129,4 +129,3 @@ Goal: explain “AI-ness” without sounding like a trading bot.
 
 ## Suggested “evidence table” layout (copy into PDF)
 Columns: `Window | Baseline GREENLIGHT-in-stress | Quant-team GREENLIGHT-in-stress | What a student should do | Why (1 sentence)`
-

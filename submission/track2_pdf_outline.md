@@ -83,7 +83,7 @@ Recommended headline metric for this section (secondary metric):
 - `GREENLIGHT-in-stress rate` (lower is better): how often the tool incorrectly “greenlights” during stress conditions.
 
 Repro instructions:
-- `python3 BOTS/ATLAS_HYBRID/quant_team_eval.py`
+- `python3 Agents/ATLAS_HYBRID/quant_team_eval.py`
 
 ---
 

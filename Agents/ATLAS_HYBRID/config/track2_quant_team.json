@@ -1,0 +1,77 @@
+{
+  "mode": "education",
+  "strategy": "track2-quant-team",
+  "score_threshold": 999,
+  "description": "Track II educational AI quant team: multi-agent market regime and risk context (no trade execution).",
+  "agents": {
+    "TechnicalAgent": {
+      "enabled": true,
+      "initial_weight": 1.5,
+      "is_veto": true
+    },
+    "MarketRegimeAgent": {
+      "enabled": true,
+      "initial_weight": 1.2
+    },
+    "CorrelationAgent": {
+      "enabled": true,
+      "initial_weight": 1.0
+    },
+    "GSQuantAgent": {
+      "enabled": true,
+      "initial_weight": 1.6
+    },
+    "MonteCarloAgent": {
+      "enabled": true,
+      "initial_weight": 1.2,
+      "is_veto": false,
+      "num_simulations": 250
+    },
+    "RiskManagementAgent": {
+      "enabled": true,
+      "initial_weight": 1.0
+    },
+    "SentimentAgent": {
+      "enabled": false,
+      "initial_weight": 0.8
+    },
+    "NewsFilterAgent": {
+      "enabled": true,
+      "initial_weight": 1.0,
+      "is_veto": true
+    },
+    "XGBoostMLAgent": {
+      "enabled": false,
+      "initial_weight": 1.0
+    },
+    "QlibResearchAgent": {
+      "enabled": false,
+      "initial_weight": 1.0
+    },
+    "PatternRecognitionAgent": {
+      "enabled": false,
+      "initial_weight": 1.0,
+      "min_pattern_samples": 10
+    },
+    "SessionTimingAgent": {
+      "enabled": true,
+      "initial_weight": 0.8
+    },
+    "MultiTimeframeAgent": {
+      "enabled": true,
+      "initial_weight": 1.0
+    },
+    "VolumeLiquidityAgent": {
+      "enabled": true,
+      "initial_weight": 0.9
+    },
+    "SupportResistanceAgent": {
+      "enabled": true,
+      "initial_weight": 0.9
+    },
+    "DivergenceAgent": {
+      "enabled": true,
+      "initial_weight": 0.9
+    }
+  }
+}

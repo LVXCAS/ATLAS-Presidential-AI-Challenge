@@ -14,6 +14,7 @@ export const BloombergTheme = {
     primary: '#00FF00',      // Bright green for primary text
     secondary: '#FFFF00',    // Yellow for secondary text
     tertiary: '#FFA500',     // Orange for headers and important info
+    textSecondary: '#888888',
     white: '#FFFFFF',
     gray: '#888888',
     darkGray: '#444444',

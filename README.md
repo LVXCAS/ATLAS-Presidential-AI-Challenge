@@ -1,23 +1,109 @@
-# ATLAS AI Quant Team (Presidential AI Challenge — Track II)
+# ATLAS AI Quant Team (Presidential AI Challenge - Track II)
 
-This repo is a cleaned, submission-focused codebase for a Track II technology demo.
-It is intentionally framed as an educational **AI quant team simulator** (multi-agent analysis), not an execution bot.
+ATLAS is a simulation-only, educational AI risk literacy system for K-12 audiences.
+It explains when markets are risky and why, and it teaches when not to act.
+This repo does not predict prices, execute trades, or require API keys.
 
-## What’s in here
-- `BOTS/ATLAS_HYBRID/`: primary runnable demo (multi-agent “quant desk”, simulation-only)
-- `frontend/`: optional UI (install deps yourself; `node_modules/` is intentionally not included)
-- `submission/`: Track II PDF outline, demo script, and evaluation/pilot materials
+## Problem statement
+Students and beginners are exposed to markets and AI tools without understanding risk,
+uncertainty, or how AI decisions are formed. Many tools push trading, hide reasoning,
+or use real money, which creates harm rather than learning. ATLAS addresses this gap
+by making risk transparent, explainable, and safe to explore offline.
 
-## Quick start (CLI demo)
+## Codex Framing
+ATLAS is an agent-based AI reasoning system for risk literacy. Given a cached market
+scenario (CSV) or a synthetic stress window, independent risk agents (volatility,
+regime, correlation, liquidity) compute interpretable signals and the coordinator
+aggregates them into a categorical risk posture (GREENLIGHT, WATCH, STAND_DOWN)
+plus a plain-English explanation.
+
+ATLAS is deterministic, offline, simulation-only, and does not trade or predict prices.
+
+## Why we built this
+Many students want to start investing but do not know where to begin, and
+professional guidance is often out of reach. Online information is rarely
+designed for beginners. ATLAS helps bridge that financial literacy gap by
+explaining market conditions and showing how events can raise or lower risk
+in stocks and forex. The system teaches caution and uncertainty awareness,
+not buy/sell decisions.
+
+ATLAS benefits:
+- Students and investment clubs learning the basics of markets
+- Beginner investors who want to understand risk signals
+- Anyone curious about market conditions and why they change
+
+## Quick start (Track II demo)
 ```bash
-python3 BOTS/ATLAS_HYBRID/quant_team_eval.py
-python3 BOTS/ATLAS_HYBRID/quant_team_demo.py --window regime-shift
+python3 Agents/ATLAS_HYBRID/quant_team_eval.py
+python3 Agents/ATLAS_HYBRID/quant_team_demo.py --window regime-shift
 ```
 
+## Codex execution overview (agentic reasoning)
+ATLAS is an agent-based AI reasoning system in which independent risk agents analyze
+different dimensions of uncertainty and collectively determine a categorical risk posture.
+
+Input -> output contract:
+- **Input:** cached CSV scenario (`date,open,high,low,close,volume`) or a synthetic scenario
+- **Agents:** volatility, regime, correlation, and liquidity proxies (interpretable, rule-based)
+- **Processing:** independent scoring -> weighted aggregation + risk flags
+- **Output:** `posture`, `risk_score`, `risk_flags`, `agent_signals`, `explanation`
+- **Guarantees:** deterministic, offline, no side effects, no live data
+
+Minimal runnable skeleton (Codex-friendly):
+```bash
+python3 src/main.py --input src/tests/data/calm.csv
+python3 src/main.py --scenario crisis
+python3 -m unittest src/tests/test_scenarios.py
+```
+
+## What you get
+- Cached historical CSVs (default if present) loaded offline
+- Synthetic stress windows: stable, volatility-spike, regime-shift (fallback or `--data-source synthetic`)
+- Risk labels: GREENLIGHT, WATCH, STAND_DOWN
+- Plain-English explanations and agent outputs (vote, confidence, reasoning)
+- JSON output at `submission/evaluation_results.json`
+
+ATLAS uses cached historical market data from public sources. Live APIs are intentionally disabled for safety, reproducibility, and educational use. If cached data is missing, the demo falls back to synthetic data with a warning.
+
+## Cached historical data (optional)
+- Place OHLCV CSVs in `data/fx/` or `data/equities/` (see `data/README.md`).
+- Required schema: `date,open,high,low,close,volume` (lowercase headers).
+- Files should be sorted by date; FX volume may be 0.
+- Cached data loading requires `pandas` but the Track II demo still runs without it.
+Note: The repo ships small placeholder CSVs for format only; replace them with real historical data if desired.
+
+Example:
+```bash
+python3 Agents/ATLAS_HYBRID/quant_team_demo.py --data-source cached --asset-class fx --symbol EUR_USD
+```
+
+## What ATLAS is NOT
+- Not a trading bot
+- Not a prediction engine or price forecaster
+- Not financial advice
+- Not connected to live data, brokers, or real money
+- Not an execution system
+
+## Safety and ethics
+See `safety_ethics.md` for formal safety, ethics, and age-appropriate design commitments.
+
+## Optional UI
+- `frontend/` is optional and runs without a backend using mock data
+- If you do not need the UI, you can skip it
+
+## Repo map
+- `Agents/ATLAS_HYBRID/`: primary runnable demo (multi-agent risk desk, simulation-only)
+- `frontend/`: optional React + TypeScript UI
+- `submission/`: Track II writeups, scripts, and generated artifacts
+
 ## Environment
-- Copy `.env.example` to `.env` at the repo root and set values as needed.
+- No `.env` file is required for the Track II demo.
 
 ## More docs
+- Track II summary: `submission/track2_summary.md`
 - Start here: `submission/track2_pdf_outline.md`
 - Demo narration: `submission/demo_script_4min.md`
+- Demo story + team roles: `submission/demo_script.md`
 - Evaluation writeup: `submission/evaluation_artifact.md`
+- Explainability artifact: `explainability.md`
+- Safety & ethics statement: `safety_ethics.md`
