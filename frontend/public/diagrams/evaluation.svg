@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 550" font-family="'Segoe UI', Arial, sans-serif">
+  <defs>
+    <linearGradient id="barGreen" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#48bb78"/>
+      <stop offset="100%" style="stop-color:#38a169"/>
+    </linearGradient>
+    <linearGradient id="barRed" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#fc8181"/>
+      <stop offset="100%" style="stop-color:#f56565"/>
+    </linearGradient>
+    <linearGradient id="barBlue" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#63b3ed"/>
+      <stop offset="100%" style="stop-color:#4299e1"/>
+    </linearGradient>
+    <filter id="barShadow">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="550" fill="#f7fafc"/>
+
+  <!-- Title -->
+  <rect x="0" y="0" width="900" height="50" fill="#1a365d"/>
+  <text x="450" y="32" text-anchor="middle" fill="white" font-size="20" font-weight="bold">ATLAS Evaluation Metrics: Measuring Risk Literacy Impact</text>
+
+  <!-- Primary Metric Section -->
+  <rect x="30" y="70" width="400" height="200" rx="12" fill="white" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="230" y="100" text-anchor="middle" fill="#2d3748" font-size="16" font-weight="bold">Primary Metric: GREENLIGHT-in-Stress Rate</text>
+  <text x="230" y="120" text-anchor="middle" fill="#718096" font-size="11">(Lower is Better - Fewer False Safe Signals During Stress)</text>
+
+  <!-- Bar Chart -->
+  <text x="60" y="155" fill="#4a5568" font-size="12">Baseline (Rule-based)</text>
+  <rect x="180" y="140" width="200" height="25" rx="4" fill="url(#barRed)" filter="url(#barShadow)"/>
+  <text x="390" y="158" fill="#c53030" font-size="12" font-weight="bold">55%</text>
+
+  <text x="60" y="200" fill="#4a5568" font-size="12">ATLAS Quant Team</text>
+  <rect x="180" y="185" width="68" height="25" rx="4" fill="url(#barGreen)" filter="url(#barShadow)"/>
+  <text x="258" y="203" fill="#276749" font-size="12" font-weight="bold">19%</text>
+
+  <rect x="60" y="225" width="350" height="30" rx="6" fill="#c6f6d5"/>
+  <text x="235" y="245" text-anchor="middle" fill="#276749" font-size="13" font-weight="bold">65% Reduction in False Safe Signals</text>
+
+  <!-- What This Means -->
+  <rect x="450" y="70" width="420" height="200" rx="12" fill="white" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="660" y="100" text-anchor="middle" fill="#2d3748" font-size="16" font-weight="bold">What This Means for Students</text>
+
+  <circle cx="485" cy="135" r="15" fill="#48bb78"/>
+  <text x="510" y="140" fill="#2d3748" font-size="12" font-weight="bold">Safer Learning</text>
+  <text x="510" y="155" fill="#718096" font-size="10">Students see warnings during actual stress periods</text>
+
+  <circle cx="485" cy="185" r="15" fill="#4299e1"/>
+  <text x="510" y="190" fill="#2d3748" font-size="12" font-weight="bold">Better Understanding</text>
+  <text x="510" y="205" fill="#718096" font-size="10">Each warning comes with plain-English explanations</text>
+
+  <circle cx="485" cy="235" r="15" fill="#9f7aea"/>
+  <text x="510" y="240" fill="#2d3748" font-size="12" font-weight="bold">Risk Awareness</text>
+  <text x="510" y="255" fill="#718096" font-size="10">Students learn WHEN not to act, not just when to act</text>
+
+  <!-- Scenario Breakdown -->
+  <rect x="30" y="290" width="840" height="180" rx="12" fill="white" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="450" y="320" text-anchor="middle" fill="#2d3748" font-size="16" font-weight="bold">Performance Across Stress Scenarios</text>
+
+  <!-- Scenario Headers -->
+  <text x="150" y="355" text-anchor="middle" fill="#4a5568" font-size="11" font-weight="bold">Calm Market</text>
+  <text x="380" y="355" text-anchor="middle" fill="#4a5568" font-size="11" font-weight="bold">Volatility Spike</text>
+  <text x="610" y="355" text-anchor="middle" fill="#4a5568" font-size="11" font-weight="bold">Regime Shift</text>
+
+  <!-- Scenario 1: Calm -->
+  <rect x="70" y="370" width="160" height="85" rx="8" fill="#f0fff4" stroke="#9ae6b4"/>
+  <text x="150" y="395" text-anchor="middle" fill="#276749" font-size="28" font-weight="bold">GREENLIGHT</text>
+  <text x="150" y="420" text-anchor="middle" fill="#48bb78" font-size="12">Correctly identifies low risk</text>
+  <text x="150" y="440" text-anchor="middle" fill="#718096" font-size="10">Score: 0.18 | Confidence: 82%</text>
+
+  <!-- Scenario 2: Spike -->
+  <rect x="300" y="370" width="160" height="85" rx="8" fill="#fffaf0" stroke="#fbd38d"/>
+  <text x="380" y="395" text-anchor="middle" fill="#c05621" font-size="28" font-weight="bold">WATCH</text>
+  <text x="380" y="420" text-anchor="middle" fill="#dd6b20" font-size="12">Elevated uncertainty flagged</text>
+  <text x="380" y="440" text-anchor="middle" fill="#718096" font-size="10">Score: 0.31 | Confidence: 69%</text>
+
+  <!-- Scenario 3: Regime -->
+  <rect x="530" y="370" width="160" height="85" rx="8" fill="#fff5f5" stroke="#feb2b2"/>
+  <text x="610" y="395" text-anchor="middle" fill="#c53030" font-size="24" font-weight="bold">STAND_DOWN</text>
+  <text x="610" y="420" text-anchor="middle" fill="#e53e3e" font-size="12">High uncertainty detected</text>
+  <text x="610" y="440" text-anchor="middle" fill="#718096" font-size="10">Score: 0.52 | Confidence: 48%</text>
+
+  <!-- Success indicator -->
+  <rect x="720" y="370" width="130" height="85" rx="8" fill="#eef2ff" stroke="#a3bffa"/>
+  <text x="785" y="400" text-anchor="middle" fill="#4c51bf" font-size="12" font-weight="bold">SUCCESS</text>
+  <text x="785" y="425" text-anchor="middle" fill="#5a67d8" font-size="24" font-weight="bold">3/3</text>
+  <text x="785" y="445" text-anchor="middle" fill="#718096" font-size="10">Correct Classifications</text>
+
+  <!-- Key Takeaways -->
+  <rect x="30" y="485" width="840" height="50" rx="8" fill="#1a365d"/>
+  <text x="120" y="515" text-anchor="middle" fill="#90cdf4" font-size="11">Simulation-Only</text>
+  <text x="280" y="515" text-anchor="middle" fill="#90cdf4" font-size="11">No Financial Advice</text>
+  <text x="450" y="515" text-anchor="middle" fill="white" font-size="13" font-weight="bold">Educational AI for K-12 Risk Literacy</text>
+  <text x="620" y="515" text-anchor="middle" fill="#90cdf4" font-size="11">Offline-First</text>
+  <text x="780" y="515" text-anchor="middle" fill="#90cdf4" font-size="11">100% Explainable</text>
+
+</svg>

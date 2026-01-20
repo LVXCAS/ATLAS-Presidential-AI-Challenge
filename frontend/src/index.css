@@ -808,6 +808,55 @@ pre {
   }
 }
 
+/* Diagrams Section */
+.diagrams-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.diagram-card {
+  background: var(--paper-2);
+  border: 1px solid var(--edge);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: 0 4px 12px var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.diagram-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px var(--shadow);
+}
+
+.diagram-card h3 {
+  font-family: var(--font-serif);
+  font-size: 18px;
+  color: var(--ink);
+  margin-bottom: 8px;
+}
+
+.diagram-card p {
+  font-size: 13px;
+  color: var(--ink-2);
+  margin-bottom: 16px;
+}
+
+.diagram-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid var(--edge);
+  background: white;
+}
+
+@media (max-width: 1024px) {
+  .diagrams-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 900px) {
   .nav {
     flex-direction: column;

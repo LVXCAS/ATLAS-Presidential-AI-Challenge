@@ -422,6 +422,7 @@ function App() {
         <nav className="nav__links">
           <a href="#overview">Overview</a>
           <a href="#workflow">Method</a>
+          <a href="#architecture">Architecture</a>
           <a href="#results">Findings</a>
           <a href="#demo">Demo</a>
           <a href="#docs">Run</a>
@@ -510,6 +511,35 @@ function App() {
           <div className="margin-note">
             Research note: an optional ML lab can explore Qlib factors, RD-Agent discovery, and LLM parameter ideas
             offline. These experiments are sandboxed and never used in the Track II demo.
+          </div>
+        </section>
+
+        <section className="section" id="architecture">
+          <div className="section__header">
+            <h2>System Architecture</h2>
+            <p>Visual overview of our multi-agent AI system and how data flows through the risk analysis pipeline.</p>
+          </div>
+          <div className="diagrams-grid">
+            <div className="diagram-card">
+              <h3>Multi-Agent Architecture</h3>
+              <p>13 independent AI agents analyze market conditions from different perspectives.</p>
+              <img src="/ATLAS-Presidential-AI-Challenge/diagrams/architecture.svg" alt="ATLAS Multi-Agent Architecture Diagram" loading="lazy" />
+            </div>
+            <div className="diagram-card">
+              <h3>Data Flow Pipeline</h3>
+              <p>How data moves from input through agents to explainable risk posture output.</p>
+              <img src="/ATLAS-Presidential-AI-Challenge/diagrams/dataflow.svg" alt="ATLAS Data Flow Diagram" loading="lazy" />
+            </div>
+            <div className="diagram-card">
+              <h3>Agent Roster</h3>
+              <p>Complete breakdown of all 13 AI risk agents and their specialized functions.</p>
+              <img src="/ATLAS-Presidential-AI-Challenge/diagrams/agents.svg" alt="ATLAS Agent Roster Diagram" loading="lazy" />
+            </div>
+            <div className="diagram-card">
+              <h3>Evaluation Metrics</h3>
+              <p>How we measure the educational impact and risk literacy improvements.</p>
+              <img src="/ATLAS-Presidential-AI-Challenge/diagrams/evaluation.svg" alt="ATLAS Evaluation Metrics" loading="lazy" />
+            </div>
           </div>
         </section>
 
