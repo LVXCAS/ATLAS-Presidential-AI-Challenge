@@ -1,0 +1,161 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" font-family="'Segoe UI', Arial, sans-serif">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f8fafc"/>
+      <stop offset="100%" style="stop-color:#edf2f7"/>
+    </linearGradient>
+    <filter id="cardShadow">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.1"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="700" fill="url(#bgGrad)"/>
+
+  <!-- Title -->
+  <rect x="0" y="0" width="900" height="50" fill="#1a365d"/>
+  <text x="450" y="32" text-anchor="middle" fill="white" font-size="20" font-weight="bold">ATLAS AI Agent Roster: 13 Independent Risk Lenses</text>
+
+  <!-- Veto Agents Section -->
+  <text x="50" y="85" fill="#c53030" font-size="16" font-weight="bold">VETO AGENTS (Safety-Critical)</text>
+  <text x="50" y="102" fill="#718096" font-size="11">Can force STAND_DOWN if score >= 0.80 (safety-first logic)</text>
+
+  <!-- TechnicalAgent -->
+  <rect x="50" y="115" width="390" height="85" rx="10" fill="white" stroke="#fc8181" stroke-width="2" filter="url(#cardShadow)"/>
+  <rect x="50" y="115" width="8" height="85" rx="4" fill="#e53e3e"/>
+  <circle cx="90" cy="157" r="25" fill="#fed7d7"/>
+  <text x="90" y="163" text-anchor="middle" fill="#c53030" font-size="18" font-weight="bold">1</text>
+  <text x="130" y="140" fill="#2d3748" font-size="14" font-weight="bold">TechnicalAgent</text>
+  <text x="380" y="140" text-anchor="end" fill="#e53e3e" font-size="11" font-weight="bold">VETO | Weight: 1.5</text>
+  <text x="130" y="158" fill="#4a5568" font-size="11">Analyzes RSI, EMA crossovers, Bollinger Bands, and ATR volatility.</text>
+  <text x="130" y="175" fill="#718096" font-size="10">Flags unstable technical conditions that increase uncertainty.</text>
+
+  <!-- NewsFilterAgent -->
+  <rect x="460" y="115" width="390" height="85" rx="10" fill="white" stroke="#fc8181" stroke-width="2" filter="url(#cardShadow)"/>
+  <rect x="460" y="115" width="8" height="85" rx="4" fill="#e53e3e"/>
+  <circle cx="500" cy="157" r="25" fill="#fed7d7"/>
+  <text x="500" y="163" text-anchor="middle" fill="#c53030" font-size="18" font-weight="bold">7</text>
+  <text x="540" y="140" fill="#2d3748" font-size="14" font-weight="bold">NewsFilterAgent</text>
+  <text x="790" y="140" text-anchor="end" fill="#e53e3e" font-size="11" font-weight="bold">VETO | Weight: 1.0</text>
+  <text x="540" y="158" fill="#4a5568" font-size="11">Checks for scheduled high-impact events from cached calendar.</text>
+  <text x="540" y="175" fill="#718096" font-size="10">Flags increased volatility risk around known event windows.</text>
+
+  <!-- Standard Agents Section -->
+  <text x="50" y="225" fill="#2b6cb0" font-size="16" font-weight="bold">STANDARD RISK AGENTS</text>
+  <text x="50" y="242" fill="#718096" font-size="11">Score risk from different perspectives; weighted aggregation determines final posture</text>
+
+  <!-- Row 1 -->
+  <rect x="50" y="255" width="265" height="75" rx="8" fill="white" stroke="#90cdf4" stroke-width="1" filter="url(#cardShadow)"/>
+  <rect x="50" y="255" width="6" height="75" rx="3" fill="#3182ce"/>
+  <circle cx="80" cy="292" r="18" fill="#bee3f8"/>
+  <text x="80" y="298" text-anchor="middle" fill="#2b6cb0" font-size="14" font-weight="bold">2</text>
+  <text x="110" y="278" fill="#2d3748" font-size="12" font-weight="bold">MarketRegimeAgent</text>
+  <text x="255" y="278" text-anchor="end" fill="#4299e1" font-size="9">W: 1.2</text>
+  <text x="110" y="295" fill="#4a5568" font-size="10">Trend vs choppy detection using ADX</text>
+  <text x="110" y="310" fill="#718096" font-size="9">Lower ADX = higher uncertainty</text>
+
+  <rect x="325" y="255" width="265" height="75" rx="8" fill="white" stroke="#90cdf4" stroke-width="1" filter="url(#cardShadow)"/>
+  <rect x="325" y="255" width="6" height="75" rx="3" fill="#3182ce"/>
+  <circle cx="355" cy="292" r="18" fill="#bee3f8"/>
+  <text x="355" y="298" text-anchor="middle" fill="#2b6cb0" font-size="14" font-weight="bold">3</text>
+  <text x="385" y="278" fill="#2d3748" font-size="12" font-weight="bold">CorrelationAgent</text>
+  <text x="530" y="278" text-anchor="end" fill="#4299e1" font-size="9">W: 1.0</text>
+  <text x="385" y="295" fill="#4a5568" font-size="10">Position overlap and concentration</text>
+  <text x="385" y="310" fill="#718096" font-size="9">Checks shared currency exposure</text>
+
+  <rect x="600" y="255" width="265" height="75" rx="8" fill="white" stroke="#90cdf4" stroke-width="1" filter="url(#cardShadow)"/>
+  <rect x="600" y="255" width="6" height="75" rx="3" fill="#3182ce"/>
+  <circle cx="630" cy="292" r="18" fill="#bee3f8"/>
+  <text x="630" y="298" text-anchor="middle" fill="#2b6cb0" font-size="14" font-weight="bold">4</text>
+  <text x="660" y="278" fill="#2d3748" font-size="12" font-weight="bold">GSQuantAgent</text>
+  <text x="805" y="278" text-anchor="end" fill="#4299e1" font-size="9">W: 1.6</text>
+  <text x="660" y="295" fill="#4a5568" font-size="10">VaR-style risk proxy from volatility</text>
+  <text x="660" y="310" fill="#718096" font-size="9">Institutional risk methodology</text>
+
+  <!-- Row 2 -->
+  <rect x="50" y="340" width="265" height="75" rx="8" fill="white" stroke="#90cdf4" stroke-width="1" filter="url(#cardShadow)"/>
+  <rect x="50" y="340" width="6" height="75" rx="3" fill="#3182ce"/>
+  <circle cx="80" cy="377" r="18" fill="#bee3f8"/>
+  <text x="80" y="383" text-anchor="middle" fill="#2b6cb0" font-size="14" font-weight="bold">5</text>
+  <text x="110" y="363" fill="#2d3748" font-size="12" font-weight="bold">MonteCarloAgent</text>
+  <text x="255" y="363" text-anchor="end" fill="#4299e1" font-size="9">W: 1.2</text>
+  <text x="110" y="380" fill="#4a5568" font-size="10">Simulated return paths for tail risk</text>
+  <text x="110" y="395" fill="#718096" font-size="9">Estimates probability of large moves</text>
+
+  <rect x="325" y="340" width="265" height="75" rx="8" fill="white" stroke="#90cdf4" stroke-width="1" filter="url(#cardShadow)"/>
+  <rect x="325" y="340" width="6" height="75" rx="3" fill="#3182ce"/>
+  <circle cx="355" cy="377" r="18" fill="#bee3f8"/>
+  <text x="355" y="383" text-anchor="middle" fill="#2b6cb0" font-size="14" font-weight="bold">6</text>
+  <text x="385" y="363" fill="#2d3748" font-size="12" font-weight="bold">RiskManagementAgent</text>
+  <text x="530" y="363" text-anchor="end" fill="#4299e1" font-size="9">W: 1.0</text>
+  <text x="385" y="380" fill="#4a5568" font-size="10">Account-level safety checks</text>
+  <text x="385" y="395" fill="#718096" font-size="9">Drawdown and position limits</text>
+
+  <rect x="600" y="340" width="265" height="75" rx="8" fill="white" stroke="#90cdf4" stroke-width="1" filter="url(#cardShadow)"/>
+  <rect x="600" y="340" width="6" height="75" rx="3" fill="#3182ce"/>
+  <circle cx="630" cy="377" r="18" fill="#bee3f8"/>
+  <text x="630" y="383" text-anchor="middle" fill="#2b6cb0" font-size="14" font-weight="bold">8</text>
+  <text x="660" y="363" fill="#2d3748" font-size="12" font-weight="bold">SessionTimingAgent</text>
+  <text x="805" y="363" text-anchor="end" fill="#4299e1" font-size="9">W: 0.8</text>
+  <text x="660" y="380" fill="#4a5568" font-size="10">Time-of-day liquidity effects</text>
+  <text x="660" y="395" fill="#718096" font-size="9">Off-hours = thinner liquidity</text>
+
+  <!-- Row 3 -->
+  <rect x="50" y="425" width="265" height="75" rx="8" fill="white" stroke="#90cdf4" stroke-width="1" filter="url(#cardShadow)"/>
+  <rect x="50" y="425" width="6" height="75" rx="3" fill="#3182ce"/>
+  <circle cx="80" cy="462" r="18" fill="#bee3f8"/>
+  <text x="80" y="468" text-anchor="middle" fill="#2b6cb0" font-size="14" font-weight="bold">9</text>
+  <text x="110" y="448" fill="#2d3748" font-size="12" font-weight="bold">MultiTimeframeAgent</text>
+  <text x="255" y="448" text-anchor="end" fill="#4299e1" font-size="9">W: 1.0</text>
+  <text x="110" y="465" fill="#4a5568" font-size="10">Short/mid/long trend alignment</text>
+  <text x="110" y="480" fill="#718096" font-size="9">Mixed signals = higher uncertainty</text>
+
+  <rect x="325" y="425" width="265" height="75" rx="8" fill="white" stroke="#90cdf4" stroke-width="1" filter="url(#cardShadow)"/>
+  <rect x="325" y="425" width="6" height="75" rx="3" fill="#3182ce"/>
+  <circle cx="355" cy="462" r="18" fill="#bee3f8"/>
+  <text x="355" y="468" text-anchor="middle" fill="#2b6cb0" font-size="14" font-weight="bold">10</text>
+  <text x="385" y="448" fill="#2d3748" font-size="12" font-weight="bold">VolumeLiquidityAgent</text>
+  <text x="530" y="448" text-anchor="end" fill="#4299e1" font-size="9">W: 0.9</text>
+  <text x="385" y="465" fill="#4a5568" font-size="10">Spread and liquidity proxy</text>
+  <text x="385" y="480" fill="#718096" font-size="9">Low volume = execution risk</text>
+
+  <rect x="600" y="425" width="265" height="75" rx="8" fill="white" stroke="#90cdf4" stroke-width="1" filter="url(#cardShadow)"/>
+  <rect x="600" y="425" width="6" height="75" rx="3" fill="#3182ce"/>
+  <circle cx="630" cy="462" r="18" fill="#bee3f8"/>
+  <text x="630" y="468" text-anchor="middle" fill="#2b6cb0" font-size="14" font-weight="bold">11</text>
+  <text x="660" y="448" fill="#2d3748" font-size="12" font-weight="bold">SupportResistanceAgent</text>
+  <text x="805" y="448" text-anchor="end" fill="#4299e1" font-size="9">W: 0.9</text>
+  <text x="660" y="465" fill="#4a5568" font-size="10">Key level proximity checks</text>
+  <text x="660" y="480" fill="#718096" font-size="9">Near S/R = decision points</text>
+
+  <!-- Row 4 -->
+  <rect x="50" y="510" width="265" height="75" rx="8" fill="white" stroke="#90cdf4" stroke-width="1" filter="url(#cardShadow)"/>
+  <rect x="50" y="510" width="6" height="75" rx="3" fill="#3182ce"/>
+  <circle cx="80" cy="547" r="18" fill="#bee3f8"/>
+  <text x="80" y="553" text-anchor="middle" fill="#2b6cb0" font-size="14" font-weight="bold">12</text>
+  <text x="110" y="533" fill="#2d3748" font-size="12" font-weight="bold">DivergenceAgent</text>
+  <text x="255" y="533" text-anchor="end" fill="#4299e1" font-size="9">W: 0.9</text>
+  <text x="110" y="550" fill="#4a5568" font-size="10">RSI vs price divergence signals</text>
+  <text x="110" y="565" fill="#718096" font-size="9">Momentum weakening detection</text>
+
+  <!-- ML Agent Section -->
+  <text x="325" y="525" fill="#6b46c1" font-size="16" font-weight="bold">MACHINE LEARNING AGENT</text>
+
+  <rect x="325" y="540" width="540" height="75" rx="8" fill="white" stroke="#b794f4" stroke-width="2" filter="url(#cardShadow)"/>
+  <rect x="325" y="540" width="8" height="75" rx="4" fill="#805ad5"/>
+  <circle cx="365" cy="577" r="22" fill="#e9d8fd"/>
+  <text x="365" y="583" text-anchor="middle" fill="#6b46c1" font-size="16" font-weight="bold">13</text>
+  <text x="400" y="560" fill="#2d3748" font-size="14" font-weight="bold">OfflineMLRiskAgent</text>
+  <text x="805" y="560" text-anchor="end" fill="#805ad5" font-size="11" font-weight="bold">ML | Weight: 1.1</text>
+  <text x="400" y="580" fill="#4a5568" font-size="11">Ridge Regression models for volatility and max-drawdown forecasting</text>
+  <text x="400" y="597" fill="#718096" font-size="10">Offline-trained on historical data • Deterministic • No live API calls</text>
+
+  <!-- Summary Stats -->
+  <rect x="50" y="630" width="815" height="50" rx="8" fill="#1a365d"/>
+  <text x="150" y="660" text-anchor="middle" fill="white" font-size="13" font-weight="bold">13 Agents</text>
+  <text x="300" y="660" text-anchor="middle" fill="#90cdf4" font-size="12">2 Veto Agents</text>
+  <text x="450" y="660" text-anchor="middle" fill="#90cdf4" font-size="12">10 Standard Agents</text>
+  <text x="600" y="660" text-anchor="middle" fill="#90cdf4" font-size="12">1 ML Agent</text>
+  <text x="780" y="660" text-anchor="middle" fill="#48bb78" font-size="12" font-weight="bold">100% Explainable</text>
+
+</svg>

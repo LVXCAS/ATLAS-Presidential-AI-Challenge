@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 500" font-family="'Segoe UI', Arial, sans-serif">
+  <defs>
+    <linearGradient id="step1" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea"/>
+      <stop offset="100%" style="stop-color:#5a67d8"/>
+    </linearGradient>
+    <linearGradient id="step2" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#48bb78"/>
+      <stop offset="100%" style="stop-color:#38a169"/>
+    </linearGradient>
+    <linearGradient id="step3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ed8936"/>
+      <stop offset="100%" style="stop-color:#dd6b20"/>
+    </linearGradient>
+    <linearGradient id="step4" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#e53e3e"/>
+      <stop offset="100%" style="stop-color:#c53030"/>
+    </linearGradient>
+    <linearGradient id="step5" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#9f7aea"/>
+      <stop offset="100%" style="stop-color:#805ad5"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#4a5568"/>
+    </marker>
+    <filter id="glow">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="500" fill="#f8fafc"/>
+
+  <!-- Title -->
+  <rect x="0" y="0" width="900" height="45" fill="#1a365d"/>
+  <text x="450" y="28" text-anchor="middle" fill="white" font-size="18" font-weight="bold">ATLAS Data Flow: From Input to Explainable Risk Posture</text>
+
+  <!-- Step 1: Data Input -->
+  <g transform="translate(30, 70)">
+    <rect width="150" height="120" rx="12" fill="url(#step1)" filter="url(#glow)"/>
+    <circle cx="75" cy="25" r="18" fill="white" fill-opacity="0.2"/>
+    <text x="75" y="30" text-anchor="middle" fill="white" font-size="16" font-weight="bold">1</text>
+    <text x="75" y="55" text-anchor="middle" fill="white" font-size="13" font-weight="bold">DATA INPUT</text>
+    <text x="75" y="75" text-anchor="middle" fill="#e2e8f0" font-size="10">Cached CSV</text>
+    <text x="75" y="90" text-anchor="middle" fill="#e2e8f0" font-size="10">(OHLCV format)</text>
+    <text x="75" y="105" text-anchor="middle" fill="#e2e8f0" font-size="10">OR Synthetic</text>
+  </g>
+
+  <!-- Arrow 1-2 -->
+  <path d="M185 130 L225 130" stroke="#4a5568" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <!-- Step 2: Indicator Calculation -->
+  <g transform="translate(230, 70)">
+    <rect width="150" height="120" rx="12" fill="url(#step2)" filter="url(#glow)"/>
+    <circle cx="75" cy="25" r="18" fill="white" fill-opacity="0.2"/>
+    <text x="75" y="30" text-anchor="middle" fill="white" font-size="16" font-weight="bold">2</text>
+    <text x="75" y="55" text-anchor="middle" fill="white" font-size="13" font-weight="bold">INDICATORS</text>
+    <text x="75" y="75" text-anchor="middle" fill="#e2e8f0" font-size="10">EMA, RSI, ATR</text>
+    <text x="75" y="90" text-anchor="middle" fill="#e2e8f0" font-size="10">Bollinger Bands</text>
+    <text x="75" y="105" text-anchor="middle" fill="#e2e8f0" font-size="10">Volatility Proxies</text>
+  </g>
+
+  <!-- Arrow 2-3 -->
+  <path d="M385 130 L425 130" stroke="#4a5568" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <!-- Step 3: Agent Analysis -->
+  <g transform="translate(430, 70)">
+    <rect width="150" height="120" rx="12" fill="url(#step3)" filter="url(#glow)"/>
+    <circle cx="75" cy="25" r="18" fill="white" fill-opacity="0.2"/>
+    <text x="75" y="30" text-anchor="middle" fill="white" font-size="16" font-weight="bold">3</text>
+    <text x="75" y="55" text-anchor="middle" fill="white" font-size="13" font-weight="bold">13 AI AGENTS</text>
+    <text x="75" y="75" text-anchor="middle" fill="#e2e8f0" font-size="10">Independent Scoring</text>
+    <text x="75" y="90" text-anchor="middle" fill="#e2e8f0" font-size="10">Score: 0.0 - 1.0</text>
+    <text x="75" y="105" text-anchor="middle" fill="#e2e8f0" font-size="10">+ Confidence + Reason</text>
+  </g>
+
+  <!-- Arrow 3-4 -->
+  <path d="M585 130 L625 130" stroke="#4a5568" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <!-- Step 4: Coordination -->
+  <g transform="translate(630, 70)">
+    <rect width="150" height="120" rx="12" fill="url(#step4)" filter="url(#glow)"/>
+    <circle cx="75" cy="25" r="18" fill="white" fill-opacity="0.2"/>
+    <text x="75" y="30" text-anchor="middle" fill="white" font-size="16" font-weight="bold">4</text>
+    <text x="75" y="55" text-anchor="middle" fill="white" font-size="13" font-weight="bold">COORDINATOR</text>
+    <text x="75" y="75" text-anchor="middle" fill="#e2e8f0" font-size="10">Weighted Average</text>
+    <text x="75" y="90" text-anchor="middle" fill="#e2e8f0" font-size="10">Veto Logic</text>
+    <text x="75" y="105" text-anchor="middle" fill="#e2e8f0" font-size="10">Safety-First Rule</text>
+  </g>
+
+  <!-- Arrow 4-5 -->
+  <path d="M705 195 L705 230" stroke="#4a5568" stroke-width="3" marker-end="url(#arrow)"/>
+
+  <!-- Step 5: Output -->
+  <g transform="translate(630, 240)">
+    <rect width="150" height="120" rx="12" fill="url(#step5)" filter="url(#glow)"/>
+    <circle cx="75" cy="25" r="18" fill="white" fill-opacity="0.2"/>
+    <text x="75" y="30" text-anchor="middle" fill="white" font-size="16" font-weight="bold">5</text>
+    <text x="75" y="55" text-anchor="middle" fill="white" font-size="13" font-weight="bold">OUTPUT</text>
+    <text x="75" y="75" text-anchor="middle" fill="#e2e8f0" font-size="10">Risk Posture</text>
+    <text x="75" y="90" text-anchor="middle" fill="#e2e8f0" font-size="10">Explanation</text>
+    <text x="75" y="105" text-anchor="middle" fill="#e2e8f0" font-size="10">Agent Breakdown</text>
+  </g>
+
+  <!-- Detailed Flow Section -->
+  <rect x="30" y="220" width="570" height="250" rx="10" fill="white" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="315" y="245" text-anchor="middle" fill="#2d3748" font-size="14" font-weight="bold">Detailed Processing Pipeline</text>
+
+  <!-- Input Details -->
+  <rect x="50" y="265" width="160" height="80" rx="8" fill="#eef2ff" stroke="#667eea" stroke-width="1"/>
+  <text x="130" y="285" text-anchor="middle" fill="#4338ca" font-size="11" font-weight="bold">Input Format</text>
+  <text x="130" y="305" text-anchor="middle" fill="#4a5568" font-size="10">date, open, high,</text>
+  <text x="130" y="320" text-anchor="middle" fill="#4a5568" font-size="10">low, close, volume</text>
+  <text x="130" y="335" text-anchor="middle" fill="#718096" font-size="9">(Offline CSV data)</text>
+
+  <!-- Processing Arrow -->
+  <path d="M215 305 L240 305" stroke="#a0aec0" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Agent Processing -->
+  <rect x="245" y="265" width="160" height="80" rx="8" fill="#f0fff4" stroke="#48bb78" stroke-width="1"/>
+  <text x="325" y="285" text-anchor="middle" fill="#276749" font-size="11" font-weight="bold">Agent Output</text>
+  <text x="325" y="305" text-anchor="middle" fill="#4a5568" font-size="10">score: 0.34</text>
+  <text x="325" y="320" text-anchor="middle" fill="#4a5568" font-size="10">confidence: 0.66</text>
+  <text x="325" y="335" text-anchor="middle" fill="#718096" font-size="9">"Choppy regime detected"</text>
+
+  <!-- Arrow -->
+  <path d="M410 305 L435 305" stroke="#a0aec0" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <!-- Final Output -->
+  <rect x="440" y="265" width="140" height="80" rx="8" fill="#faf5ff" stroke="#9f7aea" stroke-width="1"/>
+  <text x="510" y="285" text-anchor="middle" fill="#6b46c1" font-size="11" font-weight="bold">Final Output</text>
+  <text x="510" y="305" text-anchor="middle" fill="#4a5568" font-size="10">posture: WATCH</text>
+  <text x="510" y="320" text-anchor="middle" fill="#4a5568" font-size="10">risk_score: 0.34</text>
+  <text x="510" y="335" text-anchor="middle" fill="#718096" font-size="9">flags: [REGIME_SHIFT]</text>
+
+  <!-- Risk Posture Labels -->
+  <rect x="50" y="360" width="530" height="95" rx="8" fill="#fffbeb" stroke="#d69e2e" stroke-width="1"/>
+  <text x="315" y="380" text-anchor="middle" fill="#744210" font-size="12" font-weight="bold">Risk Posture Thresholds</text>
+
+  <rect x="70" y="395" width="150" height="45" rx="6" fill="#48bb78"/>
+  <text x="145" y="415" text-anchor="middle" fill="white" font-size="11" font-weight="bold">GREENLIGHT</text>
+  <text x="145" y="432" text-anchor="middle" fill="#c6f6d5" font-size="10">score &lt; 0.25</text>
+
+  <rect x="240" y="395" width="150" height="45" rx="6" fill="#ecc94b"/>
+  <text x="315" y="415" text-anchor="middle" fill="#744210" font-size="11" font-weight="bold">WATCH</text>
+  <text x="315" y="432" text-anchor="middle" fill="#744210" font-size="10">0.25 - 0.36</text>
+
+  <rect x="410" y="395" width="150" height="45" rx="6" fill="#f56565"/>
+  <text x="485" y="415" text-anchor="middle" fill="white" font-size="11" font-weight="bold">STAND_DOWN</text>
+  <text x="485" y="432" text-anchor="middle" fill="#fed7d7" font-size="10">score >= 0.36</text>
+
+  <!-- Footer -->
+  <text x="450" y="485" text-anchor="middle" fill="#718096" font-size="10">ATLAS - Deterministic, Offline, Simulation-Only | Presidential AI Challenge Track II</text>
+</svg>

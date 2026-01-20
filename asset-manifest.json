@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/ATLAS-Presidential-AI-Challenge/static/css/main.90b8ae35.css",
-    "main.js": "/ATLAS-Presidential-AI-Challenge/static/js/main.d09cd894.js",
+    "main.css": "/ATLAS-Presidential-AI-Challenge/static/css/main.0efa9bb8.css",
+    "main.js": "/ATLAS-Presidential-AI-Challenge/static/js/main.9aed909e.js",
     "index.html": "/ATLAS-Presidential-AI-Challenge/index.html",
-    "main.90b8ae35.css.map": "/ATLAS-Presidential-AI-Challenge/static/css/main.90b8ae35.css.map",
-    "main.d09cd894.js.map": "/ATLAS-Presidential-AI-Challenge/static/js/main.d09cd894.js.map"
+    "main.0efa9bb8.css.map": "/ATLAS-Presidential-AI-Challenge/static/css/main.0efa9bb8.css.map",
+    "main.9aed909e.js.map": "/ATLAS-Presidential-AI-Challenge/static/js/main.9aed909e.js.map"
   },
   "entrypoints": [
-    "static/css/main.90b8ae35.css",
-    "static/js/main.d09cd894.js"
+    "static/css/main.0efa9bb8.css",
+    "static/js/main.9aed909e.js"
   ]
 }
