@@ -133,6 +133,24 @@ See `safety_ethics.md` for formal safety, ethics, and age-appropriate design com
   (run `python3 scripts/generate_matplotlib_figures.py` after a cached eval)
 
 ## Optional research sandbox
+
+## Offline ML risk models (Track II)
+ATLAS includes **two deterministic offline-trained ML models** that act as an additional risk lens in the Track II demo (they do not predict prices and do not trade):
+
+- `offline_ridge_volatility_v1`: forecasts near-term realized volatility (5-step horizon)
+- `offline_ridge_drawdown_v1`: forecasts near-term max drawdown risk (10-step horizon)
+
+Artifacts live in `Agents/ATLAS_HYBRID/ml/models/` and are loaded by `OfflineMLRiskAgent`.
+
+Re-train (offline):
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 Agents/ATLAS_HYBRID/ml/train_offline_models.py
+```
+Validate determinism/metrics:
+```bash
+PYTHONDONTWRITEBYTECODE=1 python3 Agents/ATLAS_HYBRID/ml/validate_offline_models.py --asset-class equities --symbol SPY
+```
+
 - `research/` contains optional Qlib/R&D experiments (not required for Track II)
 - Install extras with `python3 -m pip install -r requirements-research.txt`
 

@@ -34,6 +34,7 @@ Each agent uses simple, explainable signals. If data is insufficient, the agent 
 | VolumeLiquidityAgent | volume history | Liquidity and spread proxy | Risk score + explanation |
 | SupportResistanceAgent | price history | Proximity to key levels | Risk score + explanation |
 | DivergenceAgent | price history, RSI | RSI divergence vs price | Risk score + explanation |
+| OfflineMLRiskAgent | price history, indicators | Offline ridge ML forecasts (volatility + drawdown) | Risk score + explanation |
 
 ## How to reproduce
 From the repo root:
@@ -85,3 +86,13 @@ posture changed. This indicates learning, not just prediction.
 ## What to include in the PDF (recommended)
 - A 1-row summary table per window with baseline vs quant-team GREENLIGHT-in-stress rates.
 - 1-2 sentences explaining why false GREENLIGHT labels are dangerous for beginners.
+
+
+## Offline ML models (deterministic)
+ATLAS includes two **offline-trained ridge regression** models used by `OfflineMLRiskAgent`:
+- **Volatility model**: predicts next-5-step realized volatility
+- **Drawdown model**: predicts next-10-step maximum drawdown
+
+**Features (interpretable):** recent returns, realized volatility, ATR pips, ADX proxy, RSI, EMA separation, Bollinger width, volume z-score, recent drawdown, trend slope.
+
+**Evaluation:** train/test is a deterministic time split; metrics are stored in the model JSON artifacts and included in `evaluation_results.json` under `ml_models`.

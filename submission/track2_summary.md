@@ -27,7 +27,7 @@ approach mirrors how real teams work:
 - A safety-first veto rule prevents overconfidence
 
 ATLAS uses lightweight indicators so outputs are understandable and
-reproducible. The agents explain *why* risk is elevated, not *what* to buy.
+reproducible. We also include two small **offline-trained ML models** (linear ridge regressors) that forecast near-term volatility and drawdown *risk metrics* to support the risk posture (not price prediction).
 
 ## What ATLAS Does (and Does Not Do)
 ATLAS outputs a desk-style risk posture label:

@@ -76,6 +76,10 @@
     "DivergenceAgent": {
       "enabled": true,
       "initial_weight": 0.9
+    },
+    "OfflineMLRiskAgent": {
+      "enabled": true,
+      "initial_weight": 1.1
     }
   }
 }

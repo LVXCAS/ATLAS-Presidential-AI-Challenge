@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import hashlib
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List
@@ -58,6 +59,45 @@ def _safe_iso(dt: Any) -> str:
     if isinstance(dt, datetime):
         return dt.isoformat()
     return str(dt)
+
+
+def _sha256_file(path: Path) -> str:
+    h = hashlib.sha256()
+    with open(path, "rb") as f:
+        for chunk in iter(lambda: f.read(1024 * 1024), b""):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def load_offline_ml_model_cards() -> List[Dict[str, Any]]:
+    """Load deterministic offline ML model cards for the evaluation artifact."""
+    models_dir = Path(__file__).parent / "ml" / "models"
+    candidates = [
+        models_dir / "offline_ridge_volatility_v1.json",
+        models_dir / "offline_ridge_drawdown_v1.json",
+    ]
+
+    cards: List[Dict[str, Any]] = []
+    for p in candidates:
+        if not p.exists():
+            continue
+        raw = json.loads(p.read_text(encoding="utf-8"))
+        cards.append(
+            {
+                "name": raw.get("name"),
+                "model_type": raw.get("model_type"),
+                "target": raw.get("target"),
+                "horizon": raw.get("horizon"),
+                "feature_order": raw.get("feature_order"),
+                "calibration": raw.get("calibration"),
+                "evaluation": raw.get("evaluation"),
+                "training": raw.get("training"),
+                "determinism": raw.get("determinism"),
+                "artifact_path": str(p),
+                "artifact_sha256": _sha256_file(p),
+            }
+        )
+    return cards
 
 
 def main() -> int:
@@ -125,6 +165,7 @@ def main() -> int:
             "risk_posture": {"LOW": "GREENLIGHT", "ELEVATED": "WATCH", "HIGH": "STAND_DOWN"},
         },
         "agents": agent_roster,
+        "ml_models": load_offline_ml_model_cards(),
         "windows": [],
         "summary": {},
     }

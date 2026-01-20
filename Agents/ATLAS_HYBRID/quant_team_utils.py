@@ -667,6 +667,9 @@ def initialize_coordinator(config: Dict[str, Any]):
         if agent_name == "XGBoostMLAgent":
             from agents.xgboost_ml_agent import XGBoostMLAgent
             return XGBoostMLAgent
+        if agent_name == "OfflineMLRiskAgent":
+            from agents.offline_ml_risk_agent import OfflineMLRiskAgent
+            return OfflineMLRiskAgent
         if agent_name == "SentimentAgent":
             from agents.sentiment_agent import SentimentAgent
             return SentimentAgent

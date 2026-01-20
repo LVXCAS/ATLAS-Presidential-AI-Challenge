@@ -35,6 +35,8 @@ flowchart TD
       key levels]
       C12[DivergenceAgent
       RSI vs price]
+      C13[OfflineMLRiskAgent
+      offline ML risk lens]
     end
 
     B --> Agents
