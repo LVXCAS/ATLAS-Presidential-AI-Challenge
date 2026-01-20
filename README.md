@@ -136,6 +136,16 @@ See `safety_ethics.md` for formal safety, ethics, and age-appropriate design com
 - `research/` contains optional Qlib/R&D experiments (not required for Track II)
 - Install extras with `python3 -m pip install -r requirements-research.txt`
 
+## Optional ML strategy lab (research-only)
+For transparency on the ML components, the repo includes a research-only
+strategy lab that backtests simple templates on cached data and can accept
+optional Qlib/RD-Agent/LLM parameter ideas. This is sandboxed and does not
+affect Track II outputs.
+
+```bash
+python3 research/strategy_lab.py --symbol SPY --asset-class equities
+```
+
 ## Repo map
 - `Agents/ATLAS_HYBRID/`: primary runnable demo (multi-agent risk desk, simulation-only)
 - `frontend/`: optional React + TypeScript UI

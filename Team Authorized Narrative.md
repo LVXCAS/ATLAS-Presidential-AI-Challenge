@@ -33,6 +33,11 @@ ATLAS uses multiple small, interpretable agents rather than a black-box model. E
 
 The aggregation step prioritizes safety. Any high-risk veto can force STAND_DOWN. This mirrors real-world risk management and teaches caution over action.
 
+For teams that want to demonstrate ML workflows, ATLAS includes a research-only lab that can use
+Qlib factor models and an RD-Agent workflow (with an optional LLM) to propose and backtest
+strategy parameters on cached data. These experiments are sandboxed, offline, and not part of
+the Track II demo outputs.
+
 ## Data Sources and Caching
 ATLAS runs offline by default using cached CSVs in `data/` (schema: `date,open,high,low,close,volume`). The demo uses local files only, so the project is deterministic and judge-safe.
 

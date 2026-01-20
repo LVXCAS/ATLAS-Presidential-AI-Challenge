@@ -189,12 +189,17 @@ const FIGURES = [
   {
     title: 'SPY close (cached)',
     src: '/figures/spy_close.png',
-    caption: 'Matplotlib snapshot generated from cached OHLCV data.',
+    caption: 'Matplotlib candlesticks generated from cached OHLCV data.',
   },
   {
     title: 'Risk score timeline',
     src: '/figures/risk_scores.png',
     caption: 'Aggregated risk score with GREENLIGHT/WATCH/STAND_DOWN thresholds.',
+  },
+  {
+    title: 'Agent risk lenses',
+    src: '/figures/agent_scores.png',
+    caption: 'Top agent score traces showing which lenses drive uncertainty over time.',
   },
 ];
 
@@ -500,6 +505,11 @@ function App() {
                 <p>{agent.focus}</p>
               </div>
             ))}
+          </div>
+
+          <div className="margin-note">
+            Research note: an optional ML lab can explore Qlib factors, RD-Agent discovery, and LLM parameter ideas
+            offline. These experiments are sandboxed and never used in the Track II demo.
           </div>
         </section>
 
