@@ -38,6 +38,36 @@ python3 Agents/ATLAS_HYBRID/quant_team_eval.py
 python3 Agents/ATLAS_HYBRID/quant_team_demo.py --window regime-shift
 ```
 
+## 🚀 Deploy Website to GitHub Pages (for Presidential AI Challenge)
+
+The ATLAS website is a React app showcasing the AI agents, evaluation results, and interactive demos. Deploy it to GitHub Pages with these simple commands:
+
+### First-Time Setup
+```bash
+cd frontend
+npm install
+npm run build
+npm run deploy
+```
+
+### What This Does
+- `npm install` - Installs all dependencies
+- `npm run build` - Creates optimized production build
+- `npm run deploy` - Deploys to https://lvxcas.github.io/ATLAS-Presidential-AI-Challenge
+
+### After Deployment
+Your website will be live at: **https://lvxcas.github.io/ATLAS-Presidential-AI-Challenge**
+
+This is the link you'll submit for the Presidential AI Challenge!
+
+### Update Website (After Making Changes)
+```bash
+cd frontend
+npm run deploy
+```
+
+That's it! GitHub Pages will automatically update within 1-2 minutes.
+
 ## Codex execution overview (agentic reasoning)
 ATLAS is an agent-based AI reasoning system in which independent risk agents analyze
 different dimensions of uncertainty and collectively determine a categorical risk posture.
@@ -180,3 +210,6 @@ python3 research/strategy_lab.py --symbol SPY --asset-class equities
 - Evaluation writeup: `submission/evaluation_artifact.md`
 - Explainability artifact: `explainability.md`
 - Safety & ethics statement: `safety_ethics.md`
+
+## License
+MIT. See `LICENSE`.

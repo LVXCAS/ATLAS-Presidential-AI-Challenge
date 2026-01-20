@@ -380,7 +380,7 @@ function App() {
 
   const showcaseMetrics = useMemo(() => {
     const primaryWindow = dataset.windows[0];
-    const stressCoverage = primaryWindow && primaryWindow.steps_total
+    const stressCoverage = primaryWindow && primaryWindow.steps_total && primaryWindow.stress_steps
       ? primaryWindow.stress_steps / primaryWindow.steps_total
       : 0;
     return [
