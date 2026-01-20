@@ -712,6 +712,9 @@ def initialize_coordinator(config: Dict[str, Any]):
         if agent_name == "DivergenceAgent":
             from agents.divergence_agent import DivergenceAgent
             return DivergenceAgent
+        if agent_name == "LLMTechnicalAgent":
+            from agents.llm_technical_agent import LLMTechnicalAgent
+            return LLMTechnicalAgent
         return None
 
     for agent_name, agent_cfg in (config.get("agents") or {}).items():

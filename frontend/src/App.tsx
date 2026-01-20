@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import cachedResults from './data/results_cached.json';
 import syntheticResults from './data/results_synthetic.json';
+import candlesSpy from './data/candles_spy.json';
 
 type WindowResult = {
   name: string;
@@ -41,10 +42,26 @@ type DemoSummary = {
   volatility: number;
 };
 
+type Candle = {
+  date: string;
+  open: number;
+  high: number;
+  low: number;
+  close: number;
+};
+
+type CandleSeries = {
+  symbol: string;
+  source: string;
+  candles: Candle[];
+};
+
 const DATASETS: Record<'cached' | 'synthetic', ResultsData> = {
   cached: cachedResults as ResultsData,
   synthetic: syntheticResults as ResultsData,
 };
+
+const CANDLE_SERIES = candlesSpy as CandleSeries;
 
 const FEATURE_CARDS = [
   {
@@ -167,6 +184,10 @@ function toPercent(value: number): string {
   return `${(value * 100).toFixed(1)}%`;
 }
 
+function formatPrice(value: number): string {
+  return value.toFixed(2);
+}
+
 function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, value));
 }
@@ -238,6 +259,75 @@ function summarizeSeries(prices: number[]): DemoSummary {
   return { start, end, changePct: (end - start) / start, volatility };
 }
 
+function CandlestickChart({ candles }: { candles: Candle[] }) {
+  if (!candles.length) {
+    return <div className="candles__empty">No candles loaded.</div>;
+  }
+
+  const width = 760;
+  const height = 280;
+  const padding = 28;
+  const chartWidth = width - padding * 2;
+  const chartHeight = height - padding * 2;
+
+  const highs = candles.map((c) => c.high);
+  const lows = candles.map((c) => c.low);
+  const maxHigh = Math.max(...highs);
+  const minLow = Math.min(...lows);
+  const range = maxHigh - minLow || 1;
+  const slot = chartWidth / candles.length;
+  const bodyWidth = Math.min(12, slot * 0.6);
+
+  const yFor = (value: number) => padding + ((maxHigh - value) / range) * chartHeight;
+  const xFor = (index: number) => padding + slot * index + slot / 2;
+
+  const tickCount = 4;
+  const ticks = Array.from({ length: tickCount + 1 }, (_, i) => minLow + (range * i) / tickCount);
+
+  return (
+    <div className="candles__chart">
+      <svg viewBox={`0 0 ${width} ${height}`} className="candles__svg" role="img" aria-label="Candlestick chart">
+        <rect className="candles__bg" x="0" y="0" width={width} height={height} rx="14" />
+        {ticks.map((value) => {
+          const y = yFor(value);
+          return (
+            <g className="candles__grid" key={`tick-${value}`}>
+              <line x1={padding} x2={width - padding} y1={y} y2={y} />
+              <text className="candles__axis" x={padding - 6} y={y + 4} textAnchor="end">
+                {formatPrice(value)}
+              </text>
+            </g>
+          );
+        })}
+        {candles.map((candle, index) => {
+          const x = xFor(index);
+          const yOpen = yFor(candle.open);
+          const yClose = yFor(candle.close);
+          const yHigh = yFor(candle.high);
+          const yLow = yFor(candle.low);
+          const isUp = candle.close >= candle.open;
+          const bodyHeight = Math.max(2, Math.abs(yClose - yOpen));
+          const bodyY = Math.min(yOpen, yClose);
+
+          return (
+            <g className={isUp ? 'candle candle--up' : 'candle candle--down'} key={`${candle.date}-${index}`}>
+              <line className="candle__wick" x1={x} x2={x} y1={yHigh} y2={yLow} />
+              <rect
+                className="candle__body"
+                x={x - bodyWidth / 2}
+                y={bodyY}
+                width={bodyWidth}
+                height={bodyHeight}
+                rx={2}
+              />
+            </g>
+          );
+        })}
+      </svg>
+    </div>
+  );
+}
+
 function App() {
   const [mode, setMode] = useState<'cached' | 'synthetic'>('cached');
   const [scenario, setScenario] = useState<'stable' | 'stress' | 'regime'>('stable');
@@ -245,17 +335,54 @@ function App() {
 
   const dataset = DATASETS[mode];
   const demoSummary = useMemo(() => summarizeSeries(DEMO_SERIES[scenario].prices), [scenario]);
+  const candleStats = useMemo(() => {
+    if (!CANDLE_SERIES.candles.length) {
+      return null;
+    }
+    const first = CANDLE_SERIES.candles[0];
+    const last = CANDLE_SERIES.candles[CANDLE_SERIES.candles.length - 1];
+    const highs = CANDLE_SERIES.candles.map((c) => c.high);
+    const lows = CANDLE_SERIES.candles.map((c) => c.low);
+    return {
+      start: first.date,
+      end: last.date,
+      high: Math.max(...highs),
+      low: Math.min(...lows),
+    };
+  }, []);
 
   const summaryDelta = useMemo(() => {
     return dataset.summary.baseline_greenlight_in_stress_rate - dataset.summary.quant_team_greenlight_in_stress_rate;
   }, [dataset]);
 
-  const showcaseMetrics = useMemo(() => ([
-    { label: 'Risk literacy quiz lift', value: '+18%', note: 'Prototype metric (replace with study data)' },
-    { label: 'Confidence calibration', value: '+0.21', note: 'Prototype metric' },
-    { label: 'Time-to-caution', value: '-35%', note: 'Prototype metric' },
-    { label: 'Agent coverage', value: `${AGENT_LENSES.length} agents`, note: 'Documented coverage' },
-  ]), []);
+  const showcaseMetrics = useMemo(() => {
+    const primaryWindow = dataset.windows[0];
+    const stressCoverage = primaryWindow && primaryWindow.steps_total
+      ? primaryWindow.stress_steps / primaryWindow.steps_total
+      : 0;
+    return [
+      {
+        label: 'Cached window size',
+        value: `${primaryWindow?.steps_total ?? 0} steps`,
+        note: 'Daily bars used in the evaluation window.',
+      },
+      {
+        label: 'Stress coverage',
+        value: toPercent(stressCoverage),
+        note: 'Share of steps marked as stress.',
+      },
+      {
+        label: 'Avg risk score (stress)',
+        value: dataset.summary.avg_quant_team_score_in_stress.toFixed(2),
+        note: '0 = calm, 1 = high uncertainty.',
+      },
+      {
+        label: 'Candles displayed',
+        value: `${CANDLE_SERIES.candles.length} days`,
+        note: `Latest cached ${CANDLE_SERIES.symbol} candles.`,
+      },
+    ];
+  }, [dataset]);
 
   const handleRunDemo = () => {
     const series = DEMO_SERIES[scenario];
@@ -410,8 +537,28 @@ function App() {
             </div>
           </div>
 
+          <div className="candles">
+            <div className="candles__header">
+              <div>
+                <h3>Candlestick snapshot</h3>
+                <p>Latest cached daily candles (offline) for {CANDLE_SERIES.symbol}.</p>
+              </div>
+              <div className="candles__meta">
+                <span className="pill">Symbol: {CANDLE_SERIES.symbol}</span>
+                <span className="pill">Source: {CANDLE_SERIES.source}</span>
+              </div>
+            </div>
+            <CandlestickChart candles={CANDLE_SERIES.candles} />
+            {candleStats && (
+              <div className="candles__footer">
+                <span>Range: {candleStats.start} → {candleStats.end}</span>
+                <span>High: {formatPrice(candleStats.high)} | Low: {formatPrice(candleStats.low)}</span>
+              </div>
+            )}
+          </div>
+
           <div className="showcase-note">
-            Margin note: prototype metrics for layout only (replace with pilot data when available).
+            Margin note: metrics computed from the latest cached evaluation run.
           </div>
           <div className="showcase-grid">
             {showcaseMetrics.map((metric) => (
@@ -563,7 +710,7 @@ function App() {
             <div className="links__card">
               <h3>Project links</h3>
               <ul>
-                <li><a href="https://github.com/" target="_blank" rel="noreferrer">GitHub repo (replace with your URL)</a></li>
+                <li><a href="https://github.com/lvxcas/ATLAS-Presidential-AI-Challenge" target="_blank" rel="noreferrer">GitHub repo</a></li>
                 <li><a href="https://openbb.co" target="_blank" rel="noreferrer">OpenBB</a></li>
                 <li><a href="https://numpy.org" target="_blank" rel="noreferrer">numpy</a></li>
                 <li><a href="https://pandas.pydata.org" target="_blank" rel="noreferrer">pandas</a></li>

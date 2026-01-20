@@ -70,6 +70,8 @@ CSV files use lowercase headers: `date,open,high,low,close,volume`.
 Optional external data APIs can be used to refresh cached CSVs, but they are
 disabled by default. Keys are configured via `.env` (never committed), and the
 Track II demo remains offline and deterministic.
+We provide a small cache script (`scripts/cache_data.py`) to download data into
+`data/` for offline use.
 
 ## Development Challenges and Learning
 Two major challenges were data handling and explainability. We addressed these

@@ -30,6 +30,10 @@ python3 Agents/ATLAS_HYBRID/quant_team_demo.py --data-source cached --asset-clas
 
 If cached data is missing, the demo falls back to synthetic data with a warning.
 
+Optional: refresh cached CSVs with `scripts/cache_data.py` (requires API keys and `--enable-live`).
+Optional: enable the LLM risk agent by setting `ENABLE_LLM_AGENTS=true` in `.env`
+and toggling `LLMTechnicalAgent` in `Agents/ATLAS_HYBRID/config/track2_quant_team.json`.
+
 ## Key files
 - `Agents/ATLAS_HYBRID/quant_team_demo.py`: prints baseline vs multi-agent summaries
 - `Agents/ATLAS_HYBRID/quant_team_eval.py`: writes `submission/evaluation_results.json`

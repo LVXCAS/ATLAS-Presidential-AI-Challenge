@@ -9,6 +9,10 @@
       "initial_weight": 1.5,
       "is_veto": true
     },
+    "LLMTechnicalAgent": {
+      "enabled": false,
+      "initial_weight": 0.8
+    },
     "MarketRegimeAgent": {
       "enabled": true,
       "initial_weight": 1.2

@@ -80,7 +80,35 @@ python3 Agents/ATLAS_HYBRID/quant_team_demo.py --data-source cached --asset-clas
 ## Optional external APIs (disabled by default)
 ATLAS can optionally use external data APIs to refresh cached CSVs. Keys belong in
 `.env` and are never committed. The Track II demo remains offline and deterministic.
+
+To refresh cached CSVs (example uses Alpha Vantage):
+```bash
+python3 scripts/cache_data.py --enable-live --provider alpha_vantage --asset-class equities --symbols SPY AAPL MSFT
+python3 scripts/cache_data.py --enable-live --provider alpha_vantage --asset-class fx --symbols EURUSD GBPUSD
+```
+
+You can also set `USE_LIVE_DATA=true` in `.env` instead of `--enable-live`.
 See `.env.example` for placeholders.
+
+Other providers:
+```bash
+python3 scripts/cache_data.py --enable-live --provider polygon --asset-class equities --symbols SPY AAPL
+python3 scripts/cache_data.py --enable-live --provider polygon --asset-class fx --symbols EURUSD
+python3 scripts/cache_data.py --enable-live --provider alpaca --asset-class equities --symbols SPY AAPL
+python3 scripts/cache_data.py --enable-live --provider fred --asset-class macro --symbols DGS10 CPIAUCSL
+```
+Notes: Alpaca support is equities only in this script; use Alpha Vantage or Polygon for FX.
+FRED macro data is cached under `data/macro/` and is optional.
+
+Automation helpers (optional):
+```bash
+python3 scripts/refresh_demo_data.py --enable-live
+python3 scripts/run_agentic_pipeline.py --refresh --enable-live --asset-class equities --symbol SPY
+python3 scripts/llm_explain.py --enable-live --input submission/evaluation_results.json --output submission/llm_summary.txt
+```
+The LLM summary is optional and not used by the Track II demo.
+To enable the optional LLM agent, set `ENABLE_LLM_AGENTS=true` in `.env` and
+enable `LLMTechnicalAgent` in `Agents/ATLAS_HYBRID/config/track2_quant_team.json`.
 
 ## What ATLAS is NOT
 - Not a trading bot
@@ -95,6 +123,10 @@ See `safety_ethics.md` for formal safety, ethics, and age-appropriate design com
 ## Optional UI
 - `frontend/` is optional and runs without a backend using mock data
 - If you do not need the UI, you can skip it
+- Candlestick snapshots are sourced from `frontend/src/data/candles_spy.json`
+  (regenerate from cached CSVs via `python3 scripts/export_frontend_candles.py`)
+- Cached evaluation summaries come from `frontend/src/data/results_cached.json`
+  (regenerate via `python3 scripts/export_frontend_results.py`)
 
 ## Repo map
 - `Agents/ATLAS_HYBRID/`: primary runnable demo (multi-agent risk desk, simulation-only)

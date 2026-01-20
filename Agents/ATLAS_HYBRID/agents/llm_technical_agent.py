@@ -1,207 +1,190 @@
 """
-LLM-Enhanced Technical Agent
+LLM-Assisted Technical Risk Agent (Educational)
 
-Uses GPT-4 or Claude to reason through technical setups
-instead of hardcoded rules.
+Uses an optional LLM to summarize risk signals into a normalized 0..1 risk score.
+This agent never outputs buy/sell advice and is disabled by default.
 """
 
-from typing import Dict, Tuple
-from .base_agent import BaseAgent
+from typing import Dict, Optional, Tuple
 import json
 import os
+import urllib.request
+
+from .base_agent import AgentAssessment, BaseAgent
+
+
+def _truthy(value: Optional[str]) -> bool:
+    return str(value or "").strip().lower() in {"1", "true", "yes", "y", "on"}
+
+
+def _build_llm_url(api_base: str) -> str:
+    base = api_base.rstrip("/")
+    if base.endswith("/v1"):
+        return f"{base}/chat/completions"
+    return f"{base}/v1/chat/completions"
 
 
 class LLMTechnicalAgent(BaseAgent):
     """
-    Technical agent powered by LLM reasoning.
-
-    Instead of if/then rules, asks LLM to analyze market data
-    and provide vote + reasoning.
+    Technical risk lens powered by LLM reasoning (optional).
     """
 
-    def __init__(self, initial_weight: float = 1.5, model: str = "gpt-4"):
+    def __init__(self, initial_weight: float = 1.0, model: str = "deepseek-chat"):
         super().__init__(name="LLMTechnicalAgent", initial_weight=initial_weight)
-
         self.model = model
 
-        # Initialize LLM client (example with OpenAI)
-        try:
-            import openai
-            self.openai = openai
-            self.llm_available = True
-        except ImportError:
-            print(f"[{self.name}] WARNING: openai not installed, falling back to rules")
-            self.llm_available = False
+        self.llm_enabled = _truthy(os.getenv("ENABLE_LLM_AGENTS"))
+        self.api_key = os.getenv("LLM_API_KEY") or os.getenv("DEEPSEEK_API_KEY")
+        self.api_base = os.getenv("LLM_API_BASE") or ("https://api.deepseek.com" if os.getenv("DEEPSEEK_API_KEY") else "")
+        self.llm_available = bool(self.llm_enabled and self.api_key and self.api_base)
 
-    def analyze(self, market_data: Dict) -> Tuple[str, float, Dict]:
-        """
-        Analyze market data using LLM reasoning.
-        """
+    def analyze(self, market_data: Dict) -> AgentAssessment:
+        indicators = market_data.get("indicators", {}) or {}
+        price = float(market_data.get("price", 0.0) or 0.0)
+        pair = str(market_data.get("pair", "UNKNOWN"))
+
+        if not indicators or price <= 0:
+            return AgentAssessment(
+                score=0.5,
+                explanation="Insufficient indicator data for LLM risk assessment.",
+                details={"data_sufficiency": "insufficient"},
+            )
+
         if not self.llm_available:
-            return self._fallback_rules_based_analysis(market_data)
+            return AgentAssessment(
+                score=0.5,
+                explanation="LLM agent disabled; returning NEUTRAL.",
+                details={"data_sufficiency": "insufficient", "llm_status": "disabled"},
+            )
 
-        # Extract market data
-        pair = market_data.get("pair", "UNKNOWN")
-        price = market_data.get("price", 0)
-        indicators = market_data.get("indicators", {})
-
-        # Build prompt for LLM
-        prompt = self._build_analysis_prompt(pair, price, indicators)
-
-        # Get LLM response
+        prompt, atr_pips = self._build_analysis_prompt(pair, price, indicators)
         try:
             response = self._call_llm(prompt)
-            vote, confidence, reasoning = self._parse_llm_response(response)
-            return (vote, confidence, reasoning)
-        except Exception as e:
-            print(f"[{self.name}] LLM call failed: {e}, falling back to rules")
-            return self._fallback_rules_based_analysis(market_data)
+            score, explanation, label = self._parse_llm_response(response)
+            return AgentAssessment(
+                score=score,
+                explanation=explanation,
+                details={"llm_status": "ok", "model": self.model, "risk_label": label, "atr_pips": atr_pips},
+            )
+        except Exception as exc:  # pragma: no cover - network dependent
+            return self._fallback_rules_based_assessment(indicators, price, str(exc))
 
-    def _build_analysis_prompt(self, pair: str, price: float, indicators: Dict) -> str:
-        """
-        Build detailed prompt for LLM with market context.
-        """
-        rsi = indicators.get("rsi", 50)
-        macd = indicators.get("macd", 0)
-        macd_hist = indicators.get("macd_hist", 0)
-        adx = indicators.get("adx", 20)
-        ema50 = indicators.get("ema50", price)
-        ema200 = indicators.get("ema200", price)
-        bb_upper = indicators.get("bb_upper", price * 1.02)
-        bb_lower = indicators.get("bb_lower", price * 0.98)
+    def _build_analysis_prompt(self, pair: str, price: float, indicators: Dict) -> Tuple[str, float]:
+        rsi = float(indicators.get("rsi", 50.0))
+        macd = float(indicators.get("macd", 0.0))
+        macd_hist = float(indicators.get("macd_hist", 0.0))
+        adx = float(indicators.get("adx", 20.0))
+        ema50 = float(indicators.get("ema50", price))
+        ema200 = float(indicators.get("ema200", price))
+        bb_upper = float(indicators.get("bb_upper", price * 1.02))
+        bb_lower = float(indicators.get("bb_lower", price * 0.98))
+        atr = float(indicators.get("atr", 0.0))
+        atr_pips = (atr / price) * 10000.0 if price else 0.0
 
-        prompt = f"""You are a professional forex technical analyst with 20 years of experience.
+        prompt = f"""You are an educational risk-literacy assistant.
+Analyze this market snapshot and return a risk score (0.0 to 1.0) plus a short explanation.
+Do NOT give trading advice or predict prices.
 
-Analyze this {pair} setup and provide a trading recommendation:
+Pair: {pair}
+Price: {price:.5f}
+RSI(14): {rsi:.1f}
+MACD: {macd:.6f} (histogram {macd_hist:.6f})
+ADX: {adx:.1f}
+EMA50: {ema50:.5f}
+EMA200: {ema200:.5f}
+Bollinger: upper {bb_upper:.5f}, lower {bb_lower:.5f}
+ATR(14) pips: {atr_pips:.1f}
 
-**Current Market State:**
-- Price: {price:.5f}
-- RSI (14): {rsi:.1f}
-- MACD: {macd:.6f} (histogram: {macd_hist:.6f})
-- ADX: {adx:.1f}
-- EMA50: {ema50:.5f}
-- EMA200: {ema200:.5f}
-- Bollinger Bands: Upper {bb_upper:.5f}, Lower {bb_lower:.5f}
-
-**Context:**
-- Price vs EMA50: {((price/ema50 - 1)*100):+.2f}%
-- Price vs EMA200: {((price/ema200 - 1)*100):+.2f}%
-- BB Position: {((price - bb_lower)/(bb_upper - bb_lower)*100):.0f}% (0=lower, 100=upper)
-- Trend Strength: {"Strong" if adx > 25 else "Weak" if adx > 20 else "No trend"} (ADX {adx:.1f})
-
-**Your Task:**
-1. Analyze the technical setup
-2. Consider trend strength, momentum, mean reversion potential
-3. Provide a clear BUY/SELL/NEUTRAL recommendation
-4. Rate your confidence (0.0 to 1.0)
-5. Explain your reasoning in 2-3 sentences
-
-**Response Format (JSON):**
+Respond in JSON:
 {{
-    "vote": "BUY" | "SELL" | "NEUTRAL",
-    "confidence": 0.0-1.0,
-    "reasoning": "Your 2-3 sentence explanation"
+  "risk_score": 0.0-1.0,
+  "risk_label": "GREENLIGHT" | "WATCH" | "STAND_DOWN",
+  "explanation": "1-2 sentences, student-friendly"
 }}
-
-Be conservative - only vote BUY/SELL with high confidence when you see strong confirming signals.
 """
-        return prompt
+        return prompt, atr_pips
 
     def _call_llm(self, prompt: str) -> str:
-        """
-        Call LLM API (OpenAI example).
-        """
-        response = self.openai.ChatCompletion.create(
-            model=self.model,
-            messages=[
-                {"role": "system", "content": "You are a professional technical analyst."},
-                {"role": "user", "content": prompt}
+        url = _build_llm_url(self.api_base)
+        payload = {
+            "model": self.model,
+            "messages": [
+                {"role": "system", "content": "You explain market risk without trading advice."},
+                {"role": "user", "content": prompt},
             ],
-            temperature=0.3,  # Lower temperature for more consistent analysis
-            max_tokens=300
+            "temperature": 0.0,
+            "max_tokens": 250,
+        }
+        request = urllib.request.Request(
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={
+                "Authorization": f"Bearer {self.api_key}",
+                "Content-Type": "application/json",
+            },
         )
+        with urllib.request.urlopen(request, timeout=30) as response:
+            data = json.loads(response.read().decode("utf-8"))
+        choices = data.get("choices") or []
+        if not choices:
+            raise RuntimeError("LLM response missing choices.")
+        return str(choices[0].get("message", {}).get("content", "")).strip()
 
-        return response.choices[0].message.content
-
-    def _parse_llm_response(self, response: str) -> Tuple[str, float, Dict]:
-        """
-        Parse LLM JSON response into vote, confidence, reasoning.
-        """
+    def _parse_llm_response(self, response: str) -> Tuple[float, str, str]:
         try:
-            # Try to parse as JSON
             data = json.loads(response)
-            vote = data.get("vote", "NEUTRAL").upper()
-            confidence = float(data.get("confidence", 0.5))
-            reasoning_text = data.get("reasoning", "LLM analysis")
+        except json.JSONDecodeError as exc:
+            raise RuntimeError("LLM response was not valid JSON.") from exc
 
-            # Validate vote
-            if vote not in ["BUY", "SELL", "NEUTRAL"]:
-                vote = "NEUTRAL"
-                confidence = 0.3
+        score = float(data.get("risk_score", 0.5))
+        label = str(data.get("risk_label", "WATCH")).upper()
+        explanation = str(data.get("explanation", "")).strip() or "LLM risk summary provided."
 
-            # Clamp confidence
-            confidence = max(0.0, min(1.0, confidence))
+        score = max(0.0, min(1.0, score))
+        if label not in {"GREENLIGHT", "WATCH", "STAND_DOWN"}:
+            label = "WATCH"
+        return score, explanation, label
 
-            reasoning = {
-                "agent": self.name,
-                "vote": vote,
-                "method": "llm_analysis",
-                "model": self.model,
-                "explanation": reasoning_text
-            }
+    def _fallback_rules_based_assessment(
+        self,
+        indicators: Dict,
+        price: float,
+        error_message: str,
+    ) -> AgentAssessment:
+        rsi = float(indicators.get("rsi", 50.0))
+        adx = float(indicators.get("adx", 20.0))
+        atr = float(indicators.get("atr", 0.0))
+        atr_pips = (atr / price) * 10000.0 if price else 0.0
 
-            return (vote, confidence, reasoning)
+        reasons = []
+        score = 0.25
 
-        except json.JSONDecodeError:
-            # LLM didn't return valid JSON, parse text
-            response_lower = response.lower()
+        if atr_pips >= 25:
+            score = 0.90
+            reasons.append("Volatility spike (ATR high)")
+        elif atr_pips >= 15:
+            score = max(score, 0.65)
+            reasons.append("Volatility elevated (ATR medium)")
 
-            if "buy" in response_lower and "sell" not in response_lower:
-                vote = "BUY"
-                confidence = 0.65
-            elif "sell" in response_lower and "buy" not in response_lower:
-                vote = "SELL"
-                confidence = 0.65
-            else:
-                vote = "NEUTRAL"
-                confidence = 0.5
+        if rsi >= 72 or rsi <= 28:
+            score = max(score, 0.60)
+            reasons.append("Momentum extreme (RSI)")
 
-            reasoning = {
-                "agent": self.name,
-                "vote": vote,
-                "method": "llm_text_parsing",
-                "explanation": response[:200]  # First 200 chars
-            }
+        if adx <= 18:
+            score = max(score, 0.60)
+            reasons.append("Choppy regime (low ADX)")
 
-            return (vote, confidence, reasoning)
-
-    def _fallback_rules_based_analysis(self, market_data: Dict) -> Tuple[str, float, Dict]:
-        """
-        Fallback to traditional rule-based analysis if LLM unavailable.
-        """
-        indicators = market_data.get("indicators", {})
-        price = market_data.get("price", 0)
-
-        rsi = indicators.get("rsi", 50)
-        macd = indicators.get("macd", 0)
-        adx = indicators.get("adx", 20)
-        ema50 = indicators.get("ema50", price)
-        ema200 = indicators.get("ema200", price)
-
-        # Simple rule-based logic
-        score = 0
-
-        if price > ema200 and macd > 0 and rsi < 70:
-            score += 2
-        elif price < ema200 and macd < 0 and rsi > 30:
-            score -= 2
-
-        if adx > 25:
-            score *= 1.2  # Stronger signal in trending market
-
-        if score >= 2:
-            return ("BUY", 0.65, {"method": "rules_fallback"})
-        elif score <= -2:
-            return ("SELL", 0.65, {"method": "rules_fallback"})
+        if not reasons:
+            explanation = "No major risk flags; conditions look relatively stable."
         else:
-            return ("NEUTRAL", 0.3, {"method": "rules_fallback"})
+            explanation = "; ".join(reasons)
+
+        return AgentAssessment(
+            score=score,
+            explanation=explanation,
+            details={
+                "llm_status": "fallback",
+                "error": str(error_message)[:120],
+                "atr_pips": round(atr_pips, 1),
+            },
+        )

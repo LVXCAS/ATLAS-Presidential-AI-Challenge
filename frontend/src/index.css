@@ -464,6 +464,112 @@ main {
   color: var(--ink-2);
 }
 
+.candles {
+  margin: 28px 0;
+  background: var(--paper-2);
+  padding: 20px;
+  border-radius: 18px;
+  border: 1px dashed var(--edge);
+  box-shadow: 0 10px 20px rgba(16, 19, 26, 0.08);
+  position: relative;
+}
+
+.candles__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.candles__header h3 {
+  font-family: var(--font-mono);
+  letter-spacing: 0.04em;
+}
+
+.candles__header p {
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
+.candles__meta {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.candles__chart {
+  margin-top: 16px;
+  background: #fffdf3;
+  border-radius: 16px;
+  border: 1px dashed var(--edge);
+  padding: 10px;
+}
+
+.candles__svg {
+  width: 100%;
+  height: 260px;
+  display: block;
+}
+
+.candles__bg {
+  fill: rgba(255, 255, 255, 0.6);
+}
+
+.candles__grid line {
+  stroke: rgba(26, 26, 26, 0.08);
+  stroke-dasharray: 4 6;
+}
+
+.candles__axis {
+  font-size: 10px;
+  fill: var(--ink-2);
+  font-family: var(--font-mono);
+}
+
+.candle__wick {
+  stroke-width: 1.2;
+}
+
+.candle__body {
+  stroke-width: 1.4;
+}
+
+.candle--up .candle__wick,
+.candle--up .candle__body {
+  stroke: var(--accent-2);
+}
+
+.candle--up .candle__body {
+  fill: rgba(59, 107, 91, 0.35);
+}
+
+.candle--down .candle__wick,
+.candle--down .candle__body {
+  stroke: var(--accent);
+}
+
+.candle--down .candle__body {
+  fill: rgba(193, 95, 43, 0.35);
+}
+
+.candles__footer {
+  display: flex;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+}
+
+.candles__empty {
+  padding: 18px;
+  text-align: center;
+  color: var(--ink-2);
+  font-size: 14px;
+}
+
 .demo {
   display: grid;
   gap: 24px;
@@ -540,7 +646,7 @@ main {
   margin-top: 12px;
 }
 
-:is(.panel__card, .metric-card, .showcase-card, .demo__output, .demo__inputs, .docs__block, .links__card)::before {
+:is(.panel__card, .metric-card, .showcase-card, .candles, .demo__output, .demo__inputs, .docs__block, .links__card)::before {
   content: "";
   position: absolute;
   top: -10px;

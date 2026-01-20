@@ -4,7 +4,7 @@
   "summary": {
     "baseline_greenlight_in_stress_rate": 0.0,
     "quant_team_greenlight_in_stress_rate": 0.0,
-    "avg_quant_team_score_in_stress": 0.0
+    "avg_quant_team_score_in_stress": 0.509
   },
   "labels": {
     "GREENLIGHT": "< 0.25",
@@ -18,13 +18,13 @@
   },
   "windows": [
     {
-      "name": "cached-fx-eurusd",
-      "description": "Cached historical data from CSV (fx/EURUSD).",
+      "name": "cached-equities-spy",
+      "description": "Cached historical data from CSV (equities/SPY).",
       "baseline_greenlight_in_stress_rate": 0.0,
       "quant_team_greenlight_in_stress_rate": 0.0,
-      "avg_quant_team_score_in_stress": 0.0,
-      "stress_steps": 0,
-      "steps_total": 260
+      "avg_quant_team_score_in_stress": 0.509,
+      "stress_steps": 248,
+      "steps_total": 250
     }
   ],
   "note": "Cached results are summarized from submission/evaluation_results.json to keep the website lightweight."
