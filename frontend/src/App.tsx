@@ -121,6 +121,11 @@ const DATA_CATALOG = [
   { label: 'FX', items: ['EURUSD', 'GBPUSD', 'USDJPY'] },
 ];
 
+const DATA_SOURCES = [
+  { label: 'Market data (cached)', items: ['Polygon.io', 'Alpha Vantage', 'FRED', 'Alpaca Data API'] },
+  { label: 'Research + AI (optional)', items: ['Qlib (MSR)', 'RDAgent (Microsoft)', 'OpenAI (LLM)', 'DeepSeek (LLM)'] },
+];
+
 const TOOL_STACK = [
   {
     label: 'Core offline stack',
@@ -179,6 +184,19 @@ const DEMO_SERIES = {
     prices: [100, 100.3, 100.4, 100.6, 100.5, 100.3, 99.8, 99.1, 98.4, 97.9],
   },
 };
+
+const FIGURES = [
+  {
+    title: 'SPY close (cached)',
+    src: '/figures/spy_close.png',
+    caption: 'Matplotlib snapshot generated from cached OHLCV data.',
+  },
+  {
+    title: 'Risk score timeline',
+    src: '/figures/risk_scores.png',
+    caption: 'Aggregated risk score with GREENLIGHT/WATCH/STAND_DOWN thresholds.',
+  },
+];
 
 function toPercent(value: number): string {
   return `${(value * 100).toFixed(1)}%`;
@@ -557,6 +575,16 @@ function App() {
             )}
           </div>
 
+          <div className="figure-grid">
+            {FIGURES.map((figure) => (
+              <div className="figure-card" key={figure.title}>
+                <h4>{figure.title}</h4>
+                <img src={figure.src} alt={figure.title} loading="lazy" />
+                <p>{figure.caption}</p>
+              </div>
+            ))}
+          </div>
+
           <div className="showcase-note">
             Margin note: metrics computed from the latest cached evaluation run.
           </div>
@@ -722,6 +750,15 @@ function App() {
                 <div key={stack.label} className="stack">
                   <strong>{stack.label}</strong>
                   <p>{stack.items.join(' / ')}</p>
+                </div>
+              ))}
+            </div>
+            <div className="links__card">
+              <h3>Data sources</h3>
+              {DATA_SOURCES.map((group) => (
+                <div key={group.label} className="stack">
+                  <strong>{group.label}</strong>
+                  <p>{group.items.join(' / ')}</p>
                 </div>
               ))}
             </div>

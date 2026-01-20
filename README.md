@@ -109,6 +109,8 @@ python3 scripts/llm_explain.py --enable-live --input submission/evaluation_resul
 The LLM summary is optional and not used by the Track II demo.
 To enable the optional LLM agent, set `ENABLE_LLM_AGENTS=true` in `.env` and
 enable `LLMTechnicalAgent` in `Agents/ATLAS_HYBRID/config/track2_quant_team.json`.
+For OpenAI-compatible endpoints, set `LLM_API_BASE=https://api.openai.com` and
+provide `LLM_API_KEY` or `OPENAI_API_KEY` in `.env` (never commit keys).
 
 ## What ATLAS is NOT
 - Not a trading bot
@@ -127,6 +129,12 @@ See `safety_ethics.md` for formal safety, ethics, and age-appropriate design com
   (regenerate from cached CSVs via `python3 scripts/export_frontend_candles.py`)
 - Cached evaluation summaries come from `frontend/src/data/results_cached.json`
   (regenerate via `python3 scripts/export_frontend_results.py`)
+- Matplotlib figures are generated under `frontend/public/figures/`
+  (run `python3 scripts/generate_matplotlib_figures.py` after a cached eval)
+
+## Optional research sandbox
+- `research/` contains optional Qlib/R&D experiments (not required for Track II)
+- Install extras with `python3 -m pip install -r requirements-research.txt`
 
 ## Repo map
 - `Agents/ATLAS_HYBRID/`: primary runnable demo (multi-agent risk desk, simulation-only)

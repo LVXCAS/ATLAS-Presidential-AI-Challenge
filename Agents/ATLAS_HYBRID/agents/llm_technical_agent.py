@@ -34,8 +34,16 @@ class LLMTechnicalAgent(BaseAgent):
         self.model = model
 
         self.llm_enabled = _truthy(os.getenv("ENABLE_LLM_AGENTS"))
-        self.api_key = os.getenv("LLM_API_KEY") or os.getenv("DEEPSEEK_API_KEY")
-        self.api_base = os.getenv("LLM_API_BASE") or ("https://api.deepseek.com" if os.getenv("DEEPSEEK_API_KEY") else "")
+        self.api_key = (
+            os.getenv("LLM_API_KEY")
+            or os.getenv("DEEPSEEK_API_KEY")
+            or os.getenv("OPENAI_API_KEY")
+        )
+        self.api_base = os.getenv("LLM_API_BASE") or (
+            "https://api.deepseek.com"
+            if os.getenv("DEEPSEEK_API_KEY")
+            else ("https://api.openai.com" if os.getenv("OPENAI_API_KEY") else "")
+        )
         self.llm_available = bool(self.llm_enabled and self.api_key and self.api_base)
 
     def analyze(self, market_data: Dict) -> AgentAssessment:

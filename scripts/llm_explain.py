@@ -105,10 +105,21 @@ def main() -> int:
         )
         return 1
 
-    api_base = _get_env("LLM_API_BASE", dotenv) or ("https://api.deepseek.com" if _get_env("DEEPSEEK_API_KEY", dotenv) else "")
-    api_key = _get_env("LLM_API_KEY", dotenv) or _get_env("DEEPSEEK_API_KEY", dotenv)
+    api_base = _get_env("LLM_API_BASE", dotenv) or (
+        "https://api.deepseek.com"
+        if _get_env("DEEPSEEK_API_KEY", dotenv)
+        else ("https://api.openai.com" if _get_env("OPENAI_API_KEY", dotenv) else "")
+    )
+    api_key = (
+        _get_env("LLM_API_KEY", dotenv)
+        or _get_env("DEEPSEEK_API_KEY", dotenv)
+        or _get_env("OPENAI_API_KEY", dotenv)
+    )
     if not api_key or not api_base:
-        print("Missing LLM_API_KEY/LLM_API_BASE or DEEPSEEK_API_KEY in environment or .env.", file=sys.stderr)
+        print(
+            "Missing LLM_API_KEY/LLM_API_BASE or DEEPSEEK_API_KEY/OPENAI_API_KEY in environment or .env.",
+            file=sys.stderr,
+        )
         return 2
 
     input_path = root / args.input

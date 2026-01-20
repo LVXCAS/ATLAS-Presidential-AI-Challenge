@@ -570,6 +570,42 @@ main {
   font-size: 14px;
 }
 
+.figure-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 18px;
+  margin-bottom: 24px;
+}
+
+.figure-card {
+  background: var(--paper-2);
+  padding: 18px;
+  border-radius: 18px;
+  border: 1px dashed var(--edge);
+  box-shadow: 0 10px 20px rgba(16, 19, 26, 0.08);
+  position: relative;
+}
+
+.figure-card h4 {
+  font-family: var(--font-mono);
+  margin-bottom: 10px;
+  font-size: 14px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.figure-card img {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid rgba(26, 26, 26, 0.1);
+}
+
+.figure-card p {
+  color: var(--ink-2);
+  font-size: 13px;
+  margin-top: 10px;
+}
+
 .demo {
   display: grid;
   gap: 24px;
@@ -646,7 +682,7 @@ main {
   margin-top: 12px;
 }
 
-:is(.panel__card, .metric-card, .showcase-card, .candles, .demo__output, .demo__inputs, .docs__block, .links__card)::before {
+:is(.panel__card, .metric-card, .showcase-card, .candles, .figure-card, .demo__output, .demo__inputs, .docs__block, .links__card)::before {
   content: "";
   position: absolute;
   top: -10px;

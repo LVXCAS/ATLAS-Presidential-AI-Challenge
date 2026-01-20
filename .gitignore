@@ -316,6 +316,8 @@ k8s/secrets/
 *.jpg
 *.gif
 multi_strategy_backtest_results.png
+!frontend/public/figures/*.png
+.mplconfig/
 
 # IDE and editor files
 .vscode/settings.json.bak
