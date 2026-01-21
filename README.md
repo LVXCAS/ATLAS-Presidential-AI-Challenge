@@ -4,41 +4,6 @@ ATLAS is a simulation-only, educational AI risk literacy system for K-12 audienc
 It explains when markets are risky and why, and it teaches when not to act.
 This repo does not predict prices, execute trades, or require API keys.
 
-## Problem statement
-Students and beginners are exposed to markets and AI tools without understanding risk,
-uncertainty, or how AI decisions are formed. Many tools push trading, hide reasoning,
-or use real money, which creates harm rather than learning. ATLAS addresses this gap
-by making risk transparent, explainable, and safe to explore offline.
-
-## Codex Framing
-ATLAS is a **multi-agent AI system** for risk literacy that combines **symbolic reasoning with statistical learning**. Given a cached market scenario (CSV) or a synthetic stress window, independent risk agents (volatility, regime, correlation, liquidity) compute interpretable signals. These are enriched by **two offline ridge regression ML models** that forecast near-term volatility and drawdown risk. The coordinator then aggregates all signals into a categorical risk posture (GREENLIGHT, WATCH, STAND_DOWN) plus a plain-English explanation.
-
-ATLAS is deterministic, offline, simulation-only, and does not trade or predict prices. It is designed for explainability: every agent decision is interpretable, and all ML predictions include confidence intervals backed by training metrics.
-
-## AI & Machine Learning Integration
-
-ATLAS leverages a **hybrid AI architecture** that combines symbolic reasoning with quantitative ML:
-
-### Offline ML Models for Risk Forecasting
-ATLAS includes two deterministic, offline-trained ridge regression models:
-- **`offline_ridge_volatility_v1`**: Forecasts near-term realized volatility over a 5-step horizon, enabling volatility-sensitive risk adjustments
-- **`offline_ridge_drawdown_v1`**: Forecasts near-term maximum drawdown risk over a 10-step horizon, capturing tail-risk exposure
-
-These models are trained on historical market data and validated for reproducibility. They do not predict prices; instead, they provide statistical signals for risk assessment.
-
-### How ML Drives Decision-Making
-The ML agents provide an additional risk lens by:
-- Quantifying expected volatility using historical price patterns
-- Estimating tail-risk exposure (drawdown) for market stress scenarios
-- Integrating predictions into the coordinator's risk aggregation logic
-- Supplying confidence metrics (R² on test sets) for transparency
-
-### Performance & Validation
-- Ridge regression models achieve strong generalization (high R² on held-out test sets)
-- Deterministic, offline architecture ensures reproducibility across runs
-- All predictions are logged with feature importance and uncertainty estimates
-- Full technical details: see `ML_INTEGRATION_TECHNICAL_BRIEF.md`
-
 ## Why we built this
 Many students want to start investing but do not know where to begin, and
 professional guidance is often out of reach. Online information is rarely
@@ -48,12 +13,9 @@ in stocks and forex. The system teaches caution and uncertainty awareness,
 not buy/sell decisions.
 
 ATLAS benefits:
-- **Students and investment clubs** learning the basics of markets and AI decision-making
-- **Beginner investors** who want to understand risk signals and explainable AI
-- **Anyone curious** about market conditions, why they change, and how AI reasons under uncertainty
-- **Educators** introducing responsible AI governance and explainability to K-12 audiences
-- **Fintech/quantitative finance trainees** learning how ML and symbolic reasoning combine in real risk systems
-- **Policy stakeholders** evaluating educational approaches to AI literacy and responsible tech governance
+- Students and investment clubs learning the basics of markets
+- Beginner investors who want to understand risk signals
+- Anyone curious about market conditions and why they change
 
 ## Quick start (Track II demo)
 ```bash
@@ -61,57 +23,8 @@ python3 Agents/ATLAS_HYBRID/quant_team_eval.py
 python3 Agents/ATLAS_HYBRID/quant_team_demo.py --window regime-shift
 ```
 
-## 🚀 Deploy Website to GitHub Pages (for Presidential AI Challenge)
-
-The ATLAS website is a React app showcasing the AI agents, evaluation results, and interactive demos. Deploy it to GitHub Pages with these simple commands:
-
-### First-Time Setup
-```bash
-cd frontend
-npm install
-npm run build
-npm run deploy
-```
-
-### What This Does
-- `npm install` - Installs all dependencies
-- `npm run build` - Creates optimized production build
-- `npm run deploy` - Deploys to https://lvxcas.github.io/ATLAS-Presidential-AI-Challenge
-
-### After Deployment
-Your website will be live at: **https://lvxcas.github.io/ATLAS-Presidential-AI-Challenge**
-
-This is the link you'll submit for the Presidential AI Challenge!
-
-### Update Website (After Making Changes)
-```bash
-cd frontend
-npm run deploy
-```
-
-That's it! GitHub Pages will automatically update within 1-2 minutes.
-
-## Codex execution overview (agentic reasoning)
-ATLAS is an agent-based AI reasoning system in which independent risk agents analyze
-different dimensions of uncertainty and collectively determine a categorical risk posture.
-
-Input -> output contract:
-- **Input:** cached CSV scenario (`date,open,high,low,close,volume`) or a synthetic scenario
-- **Agents:** volatility, regime, correlation, and liquidity proxies (interpretable, rule-based)
-- **Processing:** independent scoring -> weighted aggregation + risk flags
-- **Output:** `posture`, `risk_score`, `risk_flags`, `agent_signals`, `explanation`
-- **Guarantees:** deterministic, offline, no side effects, no live data
-
-Minimal runnable skeleton (Codex-friendly):
-```bash
-python3 src/main.py --input src/tests/data/calm.csv
-python3 src/main.py --scenario crisis
-python3 -m unittest src/tests/test_scenarios.py
-```
-
 ## What you get
-- Cached historical CSVs (default if present) loaded offline
-- Synthetic stress windows: stable, volatility-spike, regime-shift (fallback or `--data-source synthetic`)
+- Synthetic stress windows: stable, volatility-spike, regime-shift
 - Risk labels: GREENLIGHT, WATCH, STAND_DOWN
 - Plain-English explanations and agent outputs (vote, confidence, reasoning)
 - JSON output at `submission/evaluation_results.json`
@@ -119,103 +32,22 @@ python3 -m unittest src/tests/test_scenarios.py
 ATLAS uses cached historical market data from public sources. Live APIs are intentionally disabled for safety, reproducibility, and educational use. If cached data is missing, the demo falls back to synthetic data with a warning.
 
 ## Cached historical data (optional)
-- Place OHLCV CSVs in `data/fx/` or `data/equities/` (see `data/README.md`).
-- Required schema: `date,open,high,low,close,volume` (lowercase headers).
-- Files should be sorted by date; FX volume may be 0.
+- Place  CSVs in `data/fx/` or `data/equities/` (see `data/README.md`).
 - Cached data loading requires `pandas` but the Track II demo still runs without it.
-Note: The repo ships small placeholder CSVs for format only; replace them with real historical data if desired.
 
 Example:
 ```bash
 python3 Agents/ATLAS_HYBRID/quant_team_demo.py --data-source cached --asset-class fx --symbol EUR_USD
 ```
 
-## Optional external APIs (disabled by default)
-ATLAS can optionally use external data APIs to refresh cached CSVs. Keys belong in
-`.env` and are never committed. The Track II demo remains offline and deterministic.
-
-To refresh cached CSVs (example uses Alpha Vantage):
-```bash
-python3 scripts/cache_data.py --enable-live --provider alpha_vantage --asset-class equities --symbols SPY AAPL MSFT
-python3 scripts/cache_data.py --enable-live --provider alpha_vantage --asset-class fx --symbols EURUSD GBPUSD
-```
-
-You can also set `USE_LIVE_DATA=true` in `.env` instead of `--enable-live`.
-See `.env.example` for placeholders.
-
-Other providers:
-```bash
-python3 scripts/cache_data.py --enable-live --provider polygon --asset-class equities --symbols SPY AAPL
-python3 scripts/cache_data.py --enable-live --provider polygon --asset-class fx --symbols EURUSD
-python3 scripts/cache_data.py --enable-live --provider alpaca --asset-class equities --symbols SPY AAPL
-python3 scripts/cache_data.py --enable-live --provider fred --asset-class macro --symbols DGS10 CPIAUCSL
-```
-Notes: Alpaca support is equities only in this script; use Alpha Vantage or Polygon for FX.
-FRED macro data is cached under `data/macro/` and is optional.
-
-Automation helpers (optional):
-```bash
-python3 scripts/refresh_demo_data.py --enable-live
-python3 scripts/run_agentic_pipeline.py --refresh --enable-live --asset-class equities --symbol SPY
-python3 scripts/llm_explain.py --enable-live --input submission/evaluation_results.json --output submission/llm_summary.txt
-```
-The LLM summary is optional and not used by the Track II demo.
-To enable the optional LLM agent, set `ENABLE_LLM_AGENTS=true` in `.env` and
-enable `LLMTechnicalAgent` in `Agents/ATLAS_HYBRID/config/track2_quant_team.json`.
-For OpenAI-compatible endpoints, set `LLM_API_BASE=https://api.openai.com` and
-provide `LLM_API_KEY` or `OPENAI_API_KEY` in `.env` (never commit keys).
-
-## What ATLAS is NOT
-- Not a trading bot
-- Not a prediction engine or price forecaster
-- Not financial advice
-- Not connected to live data, brokers, or real money
-- Not an execution system
-
-## Safety and ethics
-See `safety_ethics.md` for formal safety, ethics, and age-appropriate design commitments.
+## Safety and scope (non-goals)
+- No live trading, brokerage integration, or order execution
+- No guarantees and no financial advice
+- No API keys required to run the demo
 
 ## Optional UI
 - `frontend/` is optional and runs without a backend using mock data
 - If you do not need the UI, you can skip it
-- Candlestick snapshots are sourced from `frontend/src/data/candles_spy.json`
-  (regenerate from cached CSVs via `python3 scripts/export_frontend_candles.py`)
-- Cached evaluation summaries come from `frontend/src/data/results_cached.json`
-  (regenerate via `python3 scripts/export_frontend_results.py`)
-- Matplotlib figures are generated under `frontend/public/figures/`
-  (run `python3 scripts/generate_matplotlib_figures.py` after a cached eval)
-
-## Optional research sandbox
-
-## Offline ML risk models (Track II)
-ATLAS includes **two deterministic offline-trained ML models** that act as an additional risk lens in the Track II demo (they do not predict prices and do not trade):
-
-- `offline_ridge_volatility_v1`: forecasts near-term realized volatility (5-step horizon)
-- `offline_ridge_drawdown_v1`: forecasts near-term max drawdown risk (10-step horizon)
-
-Artifacts live in `Agents/ATLAS_HYBRID/ml/models/` and are loaded by `OfflineMLRiskAgent`.
-
-Re-train (offline):
-```bash
-PYTHONDONTWRITEBYTECODE=1 python3 Agents/ATLAS_HYBRID/ml/train_offline_models.py
-```
-Validate determinism/metrics:
-```bash
-PYTHONDONTWRITEBYTECODE=1 python3 Agents/ATLAS_HYBRID/ml/validate_offline_models.py --asset-class equities --symbol SPY
-```
-
-- `research/` contains optional Qlib/R&D experiments (not required for Track II)
-- Install extras with `python3 -m pip install -r requirements-research.txt`
-
-## Optional ML strategy lab (research-only)
-For transparency on the ML components, the repo includes a research-only
-strategy lab that backtests simple templates on cached data and can accept
-optional Qlib/RD-Agent/LLM parameter ideas. This is sandboxed and does not
-affect Track II outputs.
-
-```bash
-python3 research/strategy_lab.py --symbol SPY --asset-class equities
-```
 
 ## Repo map
 - `Agents/ATLAS_HYBRID/`: primary runnable demo (multi-agent risk desk, simulation-only)
@@ -223,24 +55,10 @@ python3 research/strategy_lab.py --symbol SPY --asset-class equities
 - `submission/`: Track II writeups, scripts, and generated artifacts
 
 ## Environment
-- No `.env` file is required for the Track II demo.
-
-## Key Documents for Judges
-
-- **`ADMINISTRATION_RELEVANCE.md`** – How ATLAS aligns with K-12 policy, learning standards, and responsible AI governance
-- **`ML_INTEGRATION_TECHNICAL_BRIEF.md`** – Full technical depth on ridge regression models, feature engineering, and validation
-- **`EDUCATIONAL_VALIDATION_FRAMEWORK.md`** – Learning outcomes, assessment rubrics, and student success metrics
-- **`JUDGES_BRIEFING.md`** – Scoring guide and evaluation criteria for the Presidential AI Challenge
-- **`agent_design_rationale.md`** – Architecture decisions, agent roles, and reasoning for the multi-agent design
+- Copy `.env.example` to `.env` at the repo root and set values as needed.
 
 ## More docs
 - Track II summary: `submission/track2_summary.md`
 - Start here: `submission/track2_pdf_outline.md`
 - Demo narration: `submission/demo_script_4min.md`
-- Demo story + team roles: `submission/demo_script.md`
 - Evaluation writeup: `submission/evaluation_artifact.md`
-- Explainability artifact: `explainability.md`
-- Safety & ethics statement: `safety_ethics.md`
-
-## License
- See `LICENSE`.

@@ -1,0 +1,61 @@
+ATLAS VOICEOVER SCRIPT - READ THIS FOR VIDEO
+==============================================
+
+Time: 3 minutes 50 seconds
+Pace: Slow and clear (don't rush)
+
+==============================================
+
+[0:00-0:30] INTRODUCTION
+
+Our proposed solution addresses a critical problem: 57% of high school students lack financial literacy. Yet students are using trading apps without understanding risk. Most AI systems hide their reasoning in black boxes. We built ATLAS—a transparent, multi-agent AI system that teaches students exactly how AI evaluates market risk.
+
+==============================================
+
+[0:30-1:00] HOW IT WORKS
+
+Here's how it works. ATLAS uses 13 specialized AI agents. Instead of one black-box AI, we have agents for volatility, market regime detection, risk forecasting, and liquidity analysis. Each agent independently scores market conditions from 0 to 1. Then we aggregate their perspectives into a simple decision: GREENLIGHT for calm markets, WATCH for elevated risk, or STAND_DOWN when uncertainty is high.
+
+==============================================
+
+[1:00-2:30] LIVE DEMO (Screen shows terminal + graph)
+
+Let me show you ATLAS analyzing real EURUSD market data—actual forex prices from the last 50 trading days.
+
+[PAUSE 3 SECONDS - let terminal output show]
+
+Watch as each day gets analyzed. The system identifies calm periods correctly. When volatility rises, it flags WATCH. During high uncertainty, it recommends STAND_DOWN.
+
+Notice: every decision is explainable. Students see which agents flagged risk and why. This teaches them how AI actually works.
+
+[PAUSE 3 SECONDS - graph appears]
+
+Now look at this visualization. The blue line shows ATLAS risk scores over time. See how it correctly stays low during calm periods and spikes during volatile conditions? The system learns market patterns and warns students when conditions are risky.
+
+==============================================
+
+[2:30-3:20] RESULTS & IMPACT
+
+Our evaluation proves this works. When tested on real market stress periods:
+- Baseline system: 9.27% false confidence
+- ATLAS: 0% false confidence
+
+That's 100% improvement. The multi-agent approach is demonstrably better.
+
+ATLAS addresses four Presidential priorities: economic security through financial literacy, equitable access via free open-source software, workforce development for fintech careers, and responsible AI governance through transparent decision-making.
+
+==============================================
+
+[3:20-3:50] CLOSING
+
+ATLAS proves AI can be sophisticated AND transparent. Students learn that risk is real, AI can be explained, and caution is a professional virtue.
+
+Visit our project at: github dot com slash LVXCAS slash ATLAS-Presidential-AI-Challenge
+
+==============================================
+
+RECORDING TIPS:
+- Speak clearly and slightly slower than normal conversation
+- Pause where indicated (let visuals show)
+- Don't worry about being perfect - one good take is enough
+- Total time should be 3:45-3:55

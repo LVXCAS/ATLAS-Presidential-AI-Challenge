@@ -1,7 +1,7 @@
 """
-E8 Compliance Agent
+Compliance Agent
 
-Monitors E8 challenge rules and enforces compliance.
+Monitors challenge rules and enforces compliance.
 
 VETO power: Blocks trades that would violate E8 rules.
 
@@ -19,9 +19,9 @@ from .base_agent import BaseAgent
 
 class E8ComplianceAgent(BaseAgent):
     """
-    E8 prop firm compliance monitoring.
+     prop firm compliance monitoring.
 
-    E8 Rules:
+    Rules:
     - Starting Capital: $200,000
     - Profit Target: $20,000 (10%)
     - Trailing DD: 6% ($12,000)
@@ -71,7 +71,7 @@ class E8ComplianceAgent(BaseAgent):
 
     def analyze(self, market_data: Dict) -> Tuple[str, float, Dict]:
         """
-        Check E8 compliance before allowing trade.
+        Check  compliance before allowing trade.
 
         Returns:
             - "ALLOW" if trade is compliant
