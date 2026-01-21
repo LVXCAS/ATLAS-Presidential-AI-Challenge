@@ -11,13 +11,33 @@ or use real money, which creates harm rather than learning. ATLAS addresses this
 by making risk transparent, explainable, and safe to explore offline.
 
 ## Codex Framing
-ATLAS is an agent-based AI reasoning system for risk literacy. Given a cached market
-scenario (CSV) or a synthetic stress window, independent risk agents (volatility,
-regime, correlation, liquidity) compute interpretable signals and the coordinator
-aggregates them into a categorical risk posture (GREENLIGHT, WATCH, STAND_DOWN)
-plus a plain-English explanation.
+ATLAS is a **multi-agent AI system** for risk literacy that combines **symbolic reasoning with statistical learning**. Given a cached market scenario (CSV) or a synthetic stress window, independent risk agents (volatility, regime, correlation, liquidity) compute interpretable signals. These are enriched by **two offline ridge regression ML models** that forecast near-term volatility and drawdown risk. The coordinator then aggregates all signals into a categorical risk posture (GREENLIGHT, WATCH, STAND_DOWN) plus a plain-English explanation.
 
-ATLAS is deterministic, offline, simulation-only, and does not trade or predict prices.
+ATLAS is deterministic, offline, simulation-only, and does not trade or predict prices. It is designed for explainability: every agent decision is interpretable, and all ML predictions include confidence intervals backed by training metrics.
+
+## AI & Machine Learning Integration
+
+ATLAS leverages a **hybrid AI architecture** that combines symbolic reasoning with quantitative ML:
+
+### Offline ML Models for Risk Forecasting
+ATLAS includes two deterministic, offline-trained ridge regression models:
+- **`offline_ridge_volatility_v1`**: Forecasts near-term realized volatility over a 5-step horizon, enabling volatility-sensitive risk adjustments
+- **`offline_ridge_drawdown_v1`**: Forecasts near-term maximum drawdown risk over a 10-step horizon, capturing tail-risk exposure
+
+These models are trained on historical market data and validated for reproducibility. They do not predict prices; instead, they provide statistical signals for risk assessment.
+
+### How ML Drives Decision-Making
+The ML agents provide an additional risk lens by:
+- Quantifying expected volatility using historical price patterns
+- Estimating tail-risk exposure (drawdown) for market stress scenarios
+- Integrating predictions into the coordinator's risk aggregation logic
+- Supplying confidence metrics (R² on test sets) for transparency
+
+### Performance & Validation
+- Ridge regression models achieve strong generalization (high R² on held-out test sets)
+- Deterministic, offline architecture ensures reproducibility across runs
+- All predictions are logged with feature importance and uncertainty estimates
+- Full technical details: see `ML_INTEGRATION_TECHNICAL_BRIEF.md`
 
 ## Why we built this
 Many students want to start investing but do not know where to begin, and
@@ -28,9 +48,12 @@ in stocks and forex. The system teaches caution and uncertainty awareness,
 not buy/sell decisions.
 
 ATLAS benefits:
-- Students and investment clubs learning the basics of markets
-- Beginner investors who want to understand risk signals
-- Anyone curious about market conditions and why they change
+- **Students and investment clubs** learning the basics of markets and AI decision-making
+- **Beginner investors** who want to understand risk signals and explainable AI
+- **Anyone curious** about market conditions, why they change, and how AI reasons under uncertainty
+- **Educators** introducing responsible AI governance and explainability to K-12 audiences
+- **Fintech/quantitative finance trainees** learning how ML and symbolic reasoning combine in real risk systems
+- **Policy stakeholders** evaluating educational approaches to AI literacy and responsible tech governance
 
 ## Quick start (Track II demo)
 ```bash
@@ -201,6 +224,14 @@ python3 research/strategy_lab.py --symbol SPY --asset-class equities
 
 ## Environment
 - No `.env` file is required for the Track II demo.
+
+## Key Documents for Judges
+
+- **`ADMINISTRATION_RELEVANCE.md`** – How ATLAS aligns with K-12 policy, learning standards, and responsible AI governance
+- **`ML_INTEGRATION_TECHNICAL_BRIEF.md`** – Full technical depth on ridge regression models, feature engineering, and validation
+- **`EDUCATIONAL_VALIDATION_FRAMEWORK.md`** – Learning outcomes, assessment rubrics, and student success metrics
+- **`JUDGES_BRIEFING.md`** – Scoring guide and evaluation criteria for the Presidential AI Challenge
+- **`agent_design_rationale.md`** – Architecture decisions, agent roles, and reasoning for the multi-agent design
 
 ## More docs
 - Track II summary: `submission/track2_summary.md`
