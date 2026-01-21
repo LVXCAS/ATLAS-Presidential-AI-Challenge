@@ -500,7 +500,7 @@ def _normalize_symbol(symbol: str) -> str:
     return "".join(c.lower() if c.isalnum() else "_" for c in (symbol or "")).strip("_")
 
 
-def infer_stress_flags(prices: List[float], threshold_pips: float = 18.0) -> List[bool]:
+def infer_stress_flags(prices: List[float], threshold_pips: float = 8.0) -> List[bool]:
     """
     Tag stress steps using a simple ATR-like volatility proxy.
     """

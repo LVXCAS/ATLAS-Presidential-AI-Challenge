@@ -1,0 +1,23 @@
+# ATLAS Presidential AI Challenge - Track II Dependencies
+# Python 3.9+ required
+
+# Core numerical and data processing
+numpy==2.0.2
+pandas==2.3.3
+scipy==1.13.1
+
+# Machine learning
+scikit-learn==1.6.1
+
+# Configuration and data handling
+pyyaml==6.0.1
+
+# Visualization (optional, for generating figures)
+matplotlib==3.9.4
+
+# Note: The following are optional and only required for research components (not Track II demo):
+# - pyqlib (research/strategy_lab.py only)
+# - lightgbm (research components only)
+#
+# To install research dependencies, use:
+#   pip install -r requirements-research.txt
