@@ -1,5 +1,11 @@
 # ATLAS AI Quant Team (Presidential AI Challenge - Track II)
 
+**🎬 WATCH THE DEMO VIDEO (4 minutes):**
+- **GitHub Direct**: [Download Video](https://github.com/LVXCAS/ATLAS-Presidential-AI-Challenge/raw/main/submission/ATLAS_Track2_Demo_Video.mp4)
+- **YouTube**: [Watch on YouTube](https://youtu.be/YOUR_VIDEO_ID) *(upload from `submission/ATLAS_Track2_Demo_Video.mp4`)*
+
+---
+
 ATLAS is a simulation-only, educational AI risk literacy system for K-12 audiences.
 It explains when markets are risky and why, and it teaches when not to act.
 This repo does not predict prices, execute trades, or require API keys.
