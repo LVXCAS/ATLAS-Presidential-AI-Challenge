@@ -243,4 +243,4 @@ python3 research/strategy_lab.py --symbol SPY --asset-class equities
 - Safety & ethics statement: `safety_ethics.md`
 
 ## License
-MIT. See `LICENSE`.
+ See `LICENSE`.
